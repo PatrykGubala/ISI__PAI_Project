@@ -1,4 +1,4 @@
-.register-page {
+.Login-page {
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
@@ -8,7 +8,7 @@
 
 }
 
-.register-page h2 {
+.Login-page h2 {
     margin-bottom: 20px;
     text-align: center;
 }
@@ -42,21 +42,4 @@
 
 .form-group button:hover {
     background-color: #0056b3;
-}
-
-Input{
-    border-radius: 3px;
-}
-.password-input {
-    display: flex;
-    align-items: center;
-}
-
-.password-input .ant-input-password {
-    flex: 1;
-    border-radius: 3px;
-}
-
-.password-input .question-icon {
-    margin-left: 5px;
 }

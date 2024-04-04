@@ -7,9 +7,7 @@ const Header = () => {
     const navigate = useNavigate();
 
     const handleMenuItemClick = (path) => {
-        if (path === '/register') {
-            navigate(path);
-        }
+        navigate(path);
     };
 
     const items = [
