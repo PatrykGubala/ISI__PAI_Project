@@ -14,13 +14,14 @@ const Register = () => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleLoginChange = (e) => {
-        if (e.target.value.length <= 20) {
+        if (e.target.value.length <= 30) {
             setLogin(e.target.value);
         }
     };
-
     const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
+        if (e.target.value.length <= 50) {
+            setPassword(e.target.value);
+        }
     };
 
     const handleConfirmPasswordChange = (e) => {
@@ -30,26 +31,29 @@ const Register = () => {
     };
 
     const handleEmailChange = (e) => {
-        setEmail(e.target.value);
+        const value = e.target.value;
+        if (value.length <= 30) {
+            setEmail(value);
+        }
     };
 
     const handleFirstNameChange = (e) => {
         const value = e.target.value;
-        if (/^[a-zA-Z]+$/.test(value) || value === '') {
+        if ((/^[a-zA-Z]+$/.test(value) || value === '') && value.length <= 30) {
             setFirstName(value);
         }
     };
 
     const handleLastNameChange = (e) => {
         const value = e.target.value;
-        if (/^[a-zA-Z]+$/.test(value) || value === '') {
+        if ((/^[a-zA-Z]+$/.test(value) || value === '') && value.length <= 30) {
             setLastName(value);
         }
     };
 
     const handlePhoneNumberChange = (e) => {
         const value = e.target.value;
-        if (/^\d+$/.test(value) || value === '') {
+        if ((/^\d+$/.test(value) || value === '')&& value.length <= 9) {
             setPhoneNumber(value);
         }
     };
@@ -84,25 +88,25 @@ const Register = () => {
             return;
         }
 
-        // Walidacja długości hasła (co najmniej 8 znaków)
+
         if (password.length < 8) {
             setErrorMessage('Hasło musi mieć co najmniej 8 znaków');
             return;
         }
 
-        // Walidacja hasła, czy zawiera przynajmniej jedną dużą literę
+
         if (!/[A-Z]/.test(password)) {
             setErrorMessage('Hasło musi zawierać co najmniej jedną dużą literę');
             return;
         }
 
-        // Walidacja hasła, czy zawiera przynajmniej jedną małą literę
+
         if (!/[a-z]/.test(password)) {
             setErrorMessage('Hasło musi zawierać co najmniej jedną małą literę');
             return;
         }
 
-        // Walidacja hasła, czy zawiera przynajmniej jeden znak specjalny
+
         const specialCharacterRegex = /[!@#$%^&*(),.?":{}|<>]/;
         if (!specialCharacterRegex.test(password)) {
             setErrorMessage('Hasło musi zawierać przynajmniej jeden znak specjalny');
@@ -111,7 +115,7 @@ const Register = () => {
 
         console.log('Wszystkie pola są poprawne');
         setErrorMessage('');
-        // Tutaj można dodać logikę obsługi wysyłania danych do serwera
+
     };
 
     return (
