@@ -2,6 +2,7 @@ import './Register.css';
 import React, { useState } from 'react';
 import { Input, Button, Alert, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import {useNavigate} from "react-router-dom";
 
 const Register = () => {
     const [login, setLogin] = useState('');
@@ -12,6 +13,18 @@ const Register = () => {
     const [lastName, setLastName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
+    const username_SERWER = 'user';
+    const password_SERWER = 'password';
+    const token = btoa(`${username_SERWER}:${password_SERWER}`);
+    const userData = {
+        username: login,
+        email: email,
+        password: password,
+        firstName: firstName,
+        phoneNumber: phoneNumber,
+        lastName: lastName,
+    };
 
     const handleLoginChange = (e) => {
         if (e.target.value.length <= 30) {
@@ -116,6 +129,28 @@ const Register = () => {
         console.log('Wszystkie pola są poprawne');
         setErrorMessage('');
 
+        fetch('http://localhost:8080/api/users/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${token}`
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Registration successful:', data);
+            })
+            .catch(error => {
+                console.error('Error during registration:', error);
+            }, [username_SERWER, password_SERWER]);
+
+        navigate("/");
     };
 
     return (

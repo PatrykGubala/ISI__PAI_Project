@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'antd';
-import './Offer.css';
+import './Offert.css';
 
 const Product = ({ product }) => {
     return (

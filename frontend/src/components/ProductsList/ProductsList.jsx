@@ -1,9 +1,9 @@
 import React from 'react';
-import Offer from '../Offer/Offer.jsx';
+import Offert from '../Offert/Offert.jsx';
 import './ProductsList.css';
 
-const ProductsList = () => {
-    const products = [
+const ProductsList = ({categories, products}) => {
+    const o = [
         {
             id: 1,
             name: 'Eleganckie krzesło do salonu',
@@ -26,9 +26,30 @@ const ProductsList = () => {
         <div>
 
             <div className="products-list-wrapper">
-                {products.map(product => (
-                    <Offer key={product.id} product={product} />
+                {o.map(product => (
+                    <Offert key={product.id} product={product} />
                 ))}
+
+
+
+
+                {categories.map(category => (
+                    <div key={category.categoryId}>
+                        <h3>{category.name}</h3>
+                        <p>{category.description}</p>
+                    </div>
+                ))}
+
+                {products.map(product => (
+                    <div key={product.id}>
+                        <h3>{product.name}</h3>
+                        <p>{product.description}</p>
+                    </div>
+                ))}
+
+
+
+
             </div>
         </div>
     );
