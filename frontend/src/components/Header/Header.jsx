@@ -1,5 +1,6 @@
 import React from 'react';
 import { Menu } from 'antd';
+import { HomeOutlined, PlusOutlined, PhoneOutlined, UserOutlined, LoginOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
@@ -11,12 +12,12 @@ const Header = () => {
     };
 
     const items = [
-        { key: 'search', label: 'Szukaj' },
-        { key: 'add-advertisement', label: 'Dodaj ogłoszenie' },
-        { key: 'contact', label: 'Kontakt' },
-        { key: 'your-account', label: 'Twoje konto' },
-        { key: 'login', label: 'Zaloguj' },
-        { key: 'register', label: 'Zarejestruj' }
+        { key: 'Home', label: 'Dom', icon: <HomeOutlined /> },
+        { key: 'add-advertisement', label: 'Dodaj ogłoszenie', icon: <PlusOutlined /> },
+        { key: 'contact', label: 'Kontakt', icon: <PhoneOutlined /> },
+        { key: 'your-account', label: 'Twoje konto', icon: <UserOutlined /> },
+        { key: 'login', label: 'Zaloguj', icon: <LoginOutlined /> },
+        { key: 'register', label: 'Zarejestruj', icon: <UserAddOutlined /> }
     ];
 
     return (
@@ -28,7 +29,7 @@ const Header = () => {
                 defaultSelectedKeys={['1']}
             >
                 {items.map(item => (
-                    <Menu.Item key={item.key} onClick={() => handleMenuItemClick(`/${item.key}`)}>
+                    <Menu.Item key={item.key} className="menu-item" onClick={() => handleMenuItemClick(`/${item.key}`)} icon={item.icon}>
                         {item.label}
                     </Menu.Item>
                 ))}

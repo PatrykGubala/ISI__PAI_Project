@@ -1,0 +1,53 @@
+
+.ant-form {
+    margin-top: 20px;
+
+
+}
+
+
+.ant-form-item-label {
+    font-weight: bold;
+
+
+}
+
+
+
+.ant-input,
+.ant-select-selection {
+    width: 100%;
+}
+
+.ant-form-item-control {
+}
+
+
+
+.filter-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+
+}
+
+.col {
+    flex-basis: calc(33.33% - 10px);
+    margin-right: 10px;
+}
+
+.colPrice {
+    flex-basis: calc(16% - 10px);
+    margin-right: 10px;
+
+}
+
+
+.custom-datepicker {
+    width: 100%;
+}
