@@ -12,7 +12,7 @@ const Header = () => {
     };
 
     const items = [
-        { key: 'Home', label: 'Dom', icon: <HomeOutlined /> },
+        { key: 'home', label: 'Dom', icon: <HomeOutlined /> },
         { key: 'add-advertisement', label: 'Dodaj ogłoszenie', icon: <PlusOutlined /> },
         { key: 'contact', label: 'Kontakt', icon: <PhoneOutlined /> },
         { key: 'your-account', label: 'Twoje konto', icon: <UserOutlined /> },
