@@ -1,16 +1,22 @@
 import './Login.css';
-import React, { useState } from 'react';
+import React, { useState, useContext  } from 'react';
 import { Input, Button } from 'antd';
+import { AuthContext } from '../../hooks/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const { login: authenticateUser } = useContext(AuthContext);
+    const navigate = useNavigate()
 
     const handleSubmit = () => {
         if (login === password) {
             console.log('Login i hasło są zgodne');
+            authenticateUser();
             setErrorMessage('');
+            navigate(-1);
         } else {
             setErrorMessage('Login i hasło muszą być identyczne');
         }
