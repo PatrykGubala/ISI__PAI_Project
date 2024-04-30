@@ -1,55 +1,37 @@
 package com.example.backend.controller;
 
-import com.example.backend.model.JwtResponse;
+import com.example.backend.model.Product;
 import com.example.backend.model.User;
+import com.example.backend.model.UserDTO;
+import com.example.backend.service.ProductService;
 import com.example.backend.service.UserService;
-import com.example.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
-    private final JwtUtil jwtUtil;
+    private final ProductService productService;
 
     @Autowired
-    public UserController(UserService userService, JwtUtil jwtUtil) {
+    public UserController(UserService userService, ProductService productService) {
         this.userService = userService;
-        this.jwtUtil = jwtUtil;
-    }
+        this.productService = productService;
 
-    @PostMapping("/users/register")
-    public ResponseEntity<JwtResponse> registerUser(@RequestBody User user) {
-        User registeredUser = userService.registerUser(user);
-        String token = jwtUtil.generateToken(registeredUser);
-        return ResponseEntity.ok(new JwtResponse(token));
     }
-
-    @PostMapping("/users/login")
-    public ResponseEntity<JwtResponse> loginUser(@RequestBody User user) {
-        User loggedInUser = userService.loginUser(user.getUsername(), user.getPassword());
-        if (loggedInUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JwtResponse("Login Failed"));
-        }
-        String token = jwtUtil.generateToken(loggedInUser);
-        return ResponseEntity.ok(new JwtResponse(token));
-    }
-    @GetMapping("/user/profile")
+    @GetMapping("/profile")
     public ResponseEntity<User> getUserProfile(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/admin/addCategory")
-    public ResponseEntity<String> addCategory(@RequestBody String category) {
-        return ResponseEntity.ok("Category added");
-    }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
         User existingUser = userService.getUserById(id);
         if (existingUser == null) {
@@ -63,7 +45,7 @@ public class UserController {
         return new ResponseEntity(updatedUser, HttpStatus.OK);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         User user = userService.getUserById(id);
         if (user == null) {
@@ -72,4 +54,23 @@ public class UserController {
         userService.deleteUser(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+
+    @PostMapping("/products")
+    public ResponseEntity<Product> addProduct(@PathVariable("id") Long id, @RequestBody Product product) {
+        Product newProduct = productService.saveProduct(product);
+        return ResponseEntity.ok(newProduct);
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable("id") Long id,@RequestBody Product product) {
+        Product updatedProduct = productService.updateProduct(product);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok("Product deleted successfully");
+    }
+
 }
