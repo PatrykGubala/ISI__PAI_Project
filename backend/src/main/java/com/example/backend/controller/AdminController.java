@@ -78,7 +78,7 @@ public class AdminController {
         return ResponseEntity.ok(updatedProduct);
     }
 
-    @DeleteMapping("/admin/products/{id}")
+    @DeleteMapping("/products/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully");

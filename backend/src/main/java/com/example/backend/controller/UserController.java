@@ -1,6 +1,9 @@
 package com.example.backend.controller;
 
+import com.example.backend.model.Product;
 import com.example.backend.model.User;
+import com.example.backend.model.UserDTO;
+import com.example.backend.service.ProductService;
 import com.example.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +17,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final ProductService productService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ProductService productService) {
         this.userService = userService;
+        this.productService = productService;
+
     }
     @GetMapping("/profile")
     public ResponseEntity<User> getUserProfile(@AuthenticationPrincipal User user) {
@@ -48,4 +54,23 @@ public class UserController {
         userService.deleteUser(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+
+    @PostMapping("/products")
+    public ResponseEntity<Product> addProduct(@PathVariable("id") Long id, @RequestBody Product product) {
+        Product newProduct = productService.saveProduct(product);
+        return ResponseEntity.ok(newProduct);
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable("id") Long id,@RequestBody Product product) {
+        Product updatedProduct = productService.updateProduct(product);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok("Product deleted successfully");
+    }
+
 }
