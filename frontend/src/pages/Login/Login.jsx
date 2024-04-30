@@ -1,37 +1,57 @@
 import './Login.css';
-import React, { useState, useContext  } from 'react';
+import React, { useState, useContext } from 'react';
 import { Input, Button } from 'antd';
 import { AuthContext } from '../../hooks/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const [login, setLogin] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const { login: authenticateUser } = useContext(AuthContext);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const handleSubmit = () => {
-        if (login === password) {
-            console.log('Login i hasło są zgodne');
-            authenticateUser();
-            setErrorMessage('');
-            navigate(-1);
-        } else {
-            setErrorMessage('Login i hasło muszą być identyczne');
-        }
+        const userData = {
+            username: username,
+            password: password
+        };
+
+        fetch('http://localhost:8080/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Login successful:', data);
+                authenticateUser();
+                localStorage.setItem('token', data.token); // Zapisz token w localStorage
+                navigate("/");
+            })
+            .catch(error => {
+                console.error('Error during login:', error);
+                setErrorMessage('Wystąpił błąd podczas logowania');
+            });
     };
 
     return (
         <div className="Login-page">
             <h2>Zaloguj się</h2>
             <div className="form-group">
-                <label htmlFor="login">Login:</label>
+                <label htmlFor="Username">username:</label>
                 <Input
                     type="text"
-                    id="login"
-                    value={login}
-                    onChange={(e) => setLogin(e.target.value)}
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                 />
             </div>
             <div className="form-group">

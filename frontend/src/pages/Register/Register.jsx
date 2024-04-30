@@ -16,15 +16,17 @@ const Register = () => {
     const navigate = useNavigate();
     const username_SERWER = 'user';
     const password_SERWER = 'password';
-    const token = btoa(`${username_SERWER}:${password_SERWER}`);
+    //const token = btoa(`${username_SERWER}:${password_SERWER}`);
     const userData = {
         username: login,
         email: email,
         password: password,
-        firstName: firstName,
+        firstname: firstName,
         phoneNumber: phoneNumber,
-        lastName: lastName,
+        lastname: lastName,
+        role: "USER",
     };
+
 
     const handleLoginChange = (e) => {
         if (e.target.value.length <= 30) {
@@ -129,11 +131,11 @@ const Register = () => {
         console.log('Wszystkie pola są poprawne');
         setErrorMessage('');
 
-        fetch('http://localhost:8080/api/users/register', {
+        fetch('http://localhost:8080/auth/register', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Basic ${token}`
+                'Content-Type': 'application/json'
+                //'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(userData)
         })
