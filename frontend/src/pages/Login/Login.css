@@ -3,31 +3,41 @@
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9
+    border-radius: 40px;
+    background: linear-gradient(to bottom, #f9f9f9, #e6e6e6);
+
+
 
 }
 
 .Login-page h2 {
     margin-bottom: 20px;
     text-align: center;
+
 }
 
 .form-group {
     margin-bottom: 15px;
+
+
 }
 
 .form-group label {
     display: block;
     margin-bottom: 5px;
+    color: black;
+
+
 }
 
 .form-group input {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
-    border-radius: 3px;
+    border-radius: 30px;
     box-sizing: border-box;
+
+
 }
 
 .form-group button {
@@ -42,4 +52,5 @@
 
 .form-group button:hover {
     background-color: #0056b3;
+
 }

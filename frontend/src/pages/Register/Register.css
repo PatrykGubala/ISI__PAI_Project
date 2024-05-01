@@ -2,16 +2,16 @@
     max-width: 500px;
     margin: 0 auto;
     padding: 40px;
-    border: 2px solid #ff69b4;
+    border: 2px solid #000000;
     border-radius: 20px;
-    background-color: #ffe4e1;
+    background-color: #dddddd;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
 }
 
 .register-page h2 {
     margin-bottom: 30px;
     text-align: center;
-    color: #ff1493;
+    color: black;
     font-size: 28px;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -24,14 +24,14 @@
 .form-group label {
     display: block;
     margin-bottom: 10px;
-    color: #ff69b4;
+    color: #ddd;
     font-size: 16px;
 }
 
 .form-group input {
     width: 100%;
     padding: 12px;
-    border: 2px solid #ff69b4;
+    border: 2px solid #ddd;
     border-radius: 10px;
     box-sizing: border-box;
     font-size: 16px;
@@ -42,14 +42,14 @@
 
 .form-group input:focus {
     outline: none;
-    border-color: #ff1493;
+    border-color: #ddd;
 }
 
 .form-group button {
     width: 100%;
     border: none;
     border-radius: 10px;
-    background-color: #ff69b4;
+    background-color: #dddddd;
     color: #fff;
     cursor: pointer;
     font-size: 18px;
@@ -59,7 +59,7 @@
 }
 
 .form-group button:hover {
-    background-color: #ff1493;
+    background-color: #dddd;
 }
 
 .password-input {
@@ -71,7 +71,7 @@
 .password-input .ant-input-password {
     flex: 1;
     border-radius: 10px;
-    border: 2px solid #ff69b4;
+    border: 2px solid #ddddd;
     padding: 12px;
     box-sizing: border-box;
     font-size: 16px;
@@ -82,11 +82,11 @@
 
 .password-input .ant-input-password:focus {
     outline: none;
-    border-color: #ff1493;
+    border-color: #dddddd;
 }
 
 .password-input .question-icon {
     margin-left: 10px;
-    color: #ff1493;
+    color: #dddddd;
     font-size: 20px;
 }
