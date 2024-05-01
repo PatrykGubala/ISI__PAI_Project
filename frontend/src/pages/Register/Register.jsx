@@ -24,7 +24,7 @@ const Register = () => {
         firstname: firstName,
         phoneNumber: phoneNumber,
         lastname: lastName,
-        role: "USER",
+        role: "USER",  //aktualnie na sztywno każde logowanie jest USEREM
     };
 
 

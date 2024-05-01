@@ -33,7 +33,7 @@ const Login = () => {
             .then(data => {
                 console.log('Login successful:', data);
                 authenticateUser();
-                localStorage.setItem('token', data.token); // Zapisz token w localStorage
+                localStorage.setItem('token', data.token); //tu zapisałem token, do zmiany
                 navigate("/");
             })
             .catch(error => {
@@ -46,7 +46,7 @@ const Login = () => {
         <div className="Login-page">
             <h2>Zaloguj się</h2>
             <div className="form-group">
-                <label htmlFor="Username">username:</label>
+                <label htmlFor="Login">Login:</label>
                 <Input
                     type="text"
                     id="username"
