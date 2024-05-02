@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/AuthContext.jsx";
 import PrivateRoute from "./hooks/PrivateRoute.jsx";
 import Error404 from "./pages/Error404/Error404.jsx";
-import AddAdvertisement from "./pages/AddAdvertisement/AddAdvertisement.jsx";
+import AddAdvertisement from "./pages/Advertisement/Advertisement.jsx";
 
 const App = () => {
     return (

@@ -1,24 +1,37 @@
+@keyframes animatedBackground {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 100% 100%;
+    }
+}
+
 .register-page {
     max-width: 500px;
     margin: 0 auto;
     padding: 40px;
-    border: 2px solid #000000;
     border-radius: 20px;
-    background-color: #dddddd;
+    background: linear-gradient(35deg, #005AA7, #FFFDE4);
+    background-size: 400% 400%;
+    animation: animatedBackground 10s ease infinite;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 .register-page h2 {
     margin-bottom: 30px;
     text-align: center;
-    color: black;
+    color: white;
     font-size: 28px;
     text-transform: uppercase;
     letter-spacing: 2px;
+    animation: slideIn 0.5s ease-in-out;
 }
 
 .form-group {
     margin-bottom: 25px;
+    animation: slideIn 0.5s ease-in-out;
 }
 
 .form-group label {
@@ -28,28 +41,31 @@
     font-size: 16px;
 }
 
-.form-group input {
+.form-group input,
+.form-group .ant-input-password {
     width: 100%;
     padding: 12px;
-    border: 2px solid #ddd;
+    border: none;
     border-radius: 10px;
     box-sizing: border-box;
     font-size: 16px;
     color: #333;
-    background-color: #fff;
-    transition: border-color 0.3s;
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group .ant-input-password:focus {
+    background-color: rgba(255, 255, 255, 0.2); /* Darker semi-transparent background on focus */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     outline: none;
-    border-color: #ddd;
 }
 
 .form-group button {
     width: 100%;
     border: none;
     border-radius: 10px;
-    background-color: #dddddd;
+    background-color: #4caf50;
     color: #fff;
     cursor: pointer;
     font-size: 18px;
@@ -59,7 +75,7 @@
 }
 
 .form-group button:hover {
-    background-color: #dddd;
+    background-color: #388e3c;
 }
 
 .password-input {
@@ -70,23 +86,37 @@
 
 .password-input .ant-input-password {
     flex: 1;
-    border-radius: 10px;
-    border: 2px solid #ddddd;
-    padding: 12px;
-    box-sizing: border-box;
-    font-size: 16px;
-    color: #333;
-    background-color: #fff;
-    transition: border-color 0.3s;
-}
-
-.password-input .ant-input-password:focus {
-    outline: none;
-    border-color: #dddddd;
 }
 
 .password-input .question-icon {
     margin-left: 10px;
-    color: #dddddd;
+    color: #fff;
     font-size: 20px;
+}
+
+.error-alert {
+    margin-top: 20px;
+    animation: slideIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

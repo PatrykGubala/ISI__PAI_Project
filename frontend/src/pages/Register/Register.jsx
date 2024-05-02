@@ -163,6 +163,7 @@ const Register = () => {
                 <Input
                     type="text"
                     id="firstName"
+                    placeholder="Imię"
                     value={firstName}
                     onChange={handleFirstNameChange}
                 />
@@ -172,6 +173,7 @@ const Register = () => {
                 <Input
                     type="text"
                     id="lastName"
+                    placeholder="Nazwisko"
                     value={lastName}
                     onChange={handleLastNameChange}
                 />
@@ -181,6 +183,7 @@ const Register = () => {
                 <Input
                     type="text"
                     id="phoneNumber"
+                    placeholder="Numer telefonu"
                     value={phoneNumber}
                     onChange={handlePhoneNumberChange}
                 />
@@ -190,6 +193,7 @@ const Register = () => {
                 <Input
                     type="text"
                     id="login"
+                    placeholder="Login"
                     value={login}
                     onChange={handleLoginChange}
                 />
@@ -200,12 +204,13 @@ const Register = () => {
                     Email:
                 </label>
                 <div className="password-input">
-                <Input
-                    type="text"
-                    id="email"
-                    value={email}
-                    onChange={handleEmailChange}
-                />
+                    <Input
+                        type="text"
+                        id="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={handleEmailChange}
+                    />
                     <Tooltip
                         placement="right"
                         title={
@@ -216,7 +221,7 @@ const Register = () => {
                     >
                         <QuestionCircleOutlined className="question-icon"/>
                     </Tooltip>
-            </div>
+                </div>
             </div>
 
             <div className="form-group">
@@ -224,6 +229,7 @@ const Register = () => {
                 <div className="password-input">
                     <Input.Password
                         id="password"
+                        placeholder="Hasło"
                         value={password}
                         onChange={handlePasswordChange}
                     />
@@ -247,6 +253,7 @@ const Register = () => {
                 <label htmlFor="confirmPassword">Potwierdź hasło:</label>
                 <Input.Password
                     id="confirmPassword"
+                    placeholder="Potwierdź hasło"
                     value={confirmPassword}
                     onChange={handleConfirmPasswordChange}
                 />
