@@ -1,11 +1,24 @@
-import React from 'react';
-import { Form, Input, Select, Button, DatePicker, Space } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input, Select, Button, DatePicker } from 'antd';
 import './Filter.css';
 
 const { Option } = Select;
 
 const Filter = ({ handleFilter }) => {
     const [form] = Form.useForm();
+    const [subcategories, setSubcategories] = useState([]);
+
+    const categories = {
+        electronics: ["Laptopy", "Akcesoria"],
+        furniture: ["Nowoczesne", "Klasyczne"],
+        cars: ["Hatchback", "SUV", "Limuzyna", "Sedan"]
+    };
+
+    const handleCategoryChange = (value) => {
+        const selectedCategory = categories[value] || [];
+        setSubcategories(selectedCategory);
+        form.setFieldsValue({ subcategory: undefined });
+    };
 
     const onFinish = (values) => {
         handleFilter(values);
@@ -19,10 +32,9 @@ const Filter = ({ handleFilter }) => {
                 onFinish={onFinish}
             >
                 <div className="row">
-
                     <div className="col">
                         <Form.Item label="Kategoria" name="category">
-                            <Select placeholder="Wybierz kategorie">
+                            <Select placeholder="Wybierz kategorie" onChange={handleCategoryChange}>
                                 <Option value="electronics">Elektronika</Option>
                                 <Option value="furniture">Meble</Option>
                                 <Option value="cars">Auta</Option>
@@ -30,12 +42,12 @@ const Filter = ({ handleFilter }) => {
                         </Form.Item>
                     </div>
 
-
                     <div className="col">
-                        <Form.Item label="Stan" name="condition">
-                            <Select placeholder="Wybierz stan">
-                                <Option value="new">Nowy</Option>
-                                <Option value="used">Używany</Option>
+                        <Form.Item label="Podkategoria" name="subcategory">
+                            <Select placeholder="Wybierz podkategorie">
+                                {subcategories.map((subcategory) => (
+                                    <Option key={subcategory} value={subcategory}>{subcategory}</Option>
+                                ))}
                             </Select>
                         </Form.Item>
                     </div>
@@ -51,10 +63,7 @@ const Filter = ({ handleFilter }) => {
                             <Input placeholder="Do"/>
                         </Form.Item>
                     </div>
-
-
                 </div>
-
 
                 <div className="row">
                     <div className="col">
@@ -63,45 +72,14 @@ const Filter = ({ handleFilter }) => {
                         </Form.Item>
                     </div>
 
-
-
                     <div className="col">
                         <Form.Item label="Data produkcji" name="date">
-                            <DatePicker picker="year" className="custom-datepicker"/>
+                            <DatePicker picker="year" className="custom-datepicker" placeholder="Wybierz rok"/>
                         </Form.Item>
                     </div>
-
 
                     <div className="col">
                         <Form.Item label="Stan" name="condition">
-                            <Select placeholder="Wybierz stan">
-                                <Option value="new">Nowy</Option>
-                                <Option value="used">Używany</Option>
-                            </Select>
-                        </Form.Item>
-                    </div>
-                </div>
-
-                <div className="row">
-
-                    <div className="col">
-                        <Form.Item label="Stan" name="condition">
-                            <Select placeholder="Wybierz stan">
-                            <Option value="new">Nowy</Option>
-                                <Option value="used">Używany</Option>
-                            </Select>
-                        </Form.Item>
-                    </div>
-                    <div className="col">
-                        <Form.Item label="Stan" name="condition">
-                            <Select placeholder="Wybierz stan">
-                                <Option value="new">Nowy</Option>
-                                <Option value="used">Używany</Option>
-                            </Select>
-                        </Form.Item>
-                    </div>
-                    <div className="col">
-                        <Form.Item label="Stan" name="condition" >
                             <Select placeholder="Wybierz stan">
                                 <Option value="new">Nowy</Option>
                                 <Option value="used">Używany</Option>
