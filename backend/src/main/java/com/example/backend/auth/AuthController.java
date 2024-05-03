@@ -19,15 +19,17 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
-            @RequestBody RegisterRequest request
+            @RequestBody RegisterRequest request, HttpServletResponse response
     ) {
-        return ResponseEntity.ok(authService.register(request));
+        AuthResponse authResponse = authService.register(request, response);
+        return ResponseEntity.ok(authResponse);
     }
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticate(
-            @RequestBody AuthRequest request
+            @RequestBody AuthRequest request, HttpServletResponse response
     ) {
-        return ResponseEntity.ok(authService.authenticate(request));
+        AuthResponse authResponse = authService.authenticate(request, response);
+        return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping("/refresh-token")

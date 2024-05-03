@@ -1,12 +1,19 @@
 package com.example.backend;
 
+import com.example.backend.auth.AuthResponse;
 import com.example.backend.auth.AuthService;
 import com.example.backend.auth.RegisterRequest;
-import com.example.backend.repository.UserRepository;
+import com.example.backend.model.*;
+import com.example.backend.repository.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import static com.example.backend.model.Role.ADMIN;
 import static com.example.backend.model.Role.USER;
@@ -19,10 +26,11 @@ public class BackendApplication {
 	}
 
 	@Bean
-	public CommandLineRunner commandLineRunner(AuthService service, UserRepository userRepository) {
+	public CommandLineRunner commandLineRunner(AuthService service, UserRepository userRepository, CategoryRepository categoryRepository, ProductRepository productRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
 		return args -> {
+
 			if (userRepository.findByUsername("user").isEmpty()) {
-				var admin = RegisterRequest.builder()
+				var user = RegisterRequest.builder()
 						.username("user")
 						.firstname("User")
 						.lastname("Userovic")
@@ -31,13 +39,15 @@ public class BackendApplication {
 						.phoneNumber("123456789")
 						.role(USER)
 						.build();
-				System.out.println("Admin token: " + service.register(admin).getAccessToken());
+				AuthResponse userResponse = service.register(user, null);
+				System.out.println("User added. User token: " + userResponse.getAccessToken());
+
 			} else {
-				System.out.println("Admin user already exists.");
+				System.out.println("User already exists.");
 			}
 
 			if (userRepository.findByUsername("admin").isEmpty()) {
-				var manager = RegisterRequest.builder()
+				var admin = RegisterRequest.builder()
 						.username("admin")
 						.firstname("Admin")
 						.lastname("Adminovic")
@@ -46,10 +56,17 @@ public class BackendApplication {
 						.phoneNumber("123456789")
 						.role(ADMIN)
 						.build();
-				System.out.println("Manager token: " + service.register(manager).getAccessToken());
+				AuthResponse adminResponse = service.register(admin, null);
+				System.out.println("Admin added"  + adminResponse.getAccessToken());
 			} else {
-				System.out.println("Manager user already exists.");
+				System.out.println("Admin user already exists.");
 			}
+
+
+
+
+
+
 		};
 	}
 }

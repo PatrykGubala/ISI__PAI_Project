@@ -1,4 +1,4 @@
-version: '4.16.3'
+version: '4.29'
 
 networks:
   default:
@@ -14,21 +14,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_DATABASE: olx_database
-    restart:
-      always
-
-  backend:
-    container_name: olx_backend
-    build: .
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/olx_database?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: pass
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
     restart:
       always
 

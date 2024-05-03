@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -32,7 +34,7 @@ public class UserController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable("id") UUID id, @RequestBody User user) {
         User existingUser = userService.getUserById(id);
         if (existingUser == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -46,7 +48,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") UUID id) {
         User user = userService.getUserById(id);
         if (user == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -56,19 +58,19 @@ public class UserController {
     }
 
     @PostMapping("/products")
-    public ResponseEntity<Product> addProduct(@PathVariable("id") Long id, @RequestBody Product product) {
+    public ResponseEntity<Product> addProduct(@PathVariable("id") UUID id, @RequestBody Product product) {
         Product newProduct = productService.saveProduct(product);
         return ResponseEntity.ok(newProduct);
     }
 
     @PutMapping("/products/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable("id") Long id,@RequestBody Product product) {
+    public ResponseEntity<Product> updateProduct(@PathVariable("id") UUID id,@RequestBody Product product) {
         Product updatedProduct = productService.updateProduct(product);
         return ResponseEntity.ok(updatedProduct);
     }
 
     @DeleteMapping("/products/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
+    public ResponseEntity<String> deleteProduct(@PathVariable("id") UUID id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully");
     }

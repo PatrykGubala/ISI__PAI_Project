@@ -1,12 +1,11 @@
 package com.example.backend.repository;
 
-import com.example.backend.model.Category;
+import com.example.backend.model.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, UUID> {
+public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
 }
-
