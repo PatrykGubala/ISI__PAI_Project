@@ -1,5 +1,4 @@
-package com.example.backend.model;
-
+package com.example.backend.user;
 
 import com.example.backend.token.Token;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -10,11 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-
 
 @Entity
 @Table(name = "users")

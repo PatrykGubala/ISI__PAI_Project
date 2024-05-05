@@ -1,5 +1,6 @@
-package com.example.backend.model;
+package com.example.backend.product;
 
+import com.example.backend.category.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

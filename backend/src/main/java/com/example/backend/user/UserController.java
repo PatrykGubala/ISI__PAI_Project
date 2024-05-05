@@ -1,14 +1,10 @@
-package com.example.backend.controller;
+package com.example.backend.user;
 
-import com.example.backend.model.Product;
-import com.example.backend.model.User;
-import com.example.backend.model.UserDTO;
-import com.example.backend.service.ProductService;
-import com.example.backend.service.UserService;
+import com.example.backend.product.Product;
+import com.example.backend.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

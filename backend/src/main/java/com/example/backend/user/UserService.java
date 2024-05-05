@@ -1,7 +1,4 @@
-package com.example.backend.service;
-
-import com.example.backend.model.User;
-import com.example.backend.model.UserDTO;
+package com.example.backend.user;
 
 import java.util.List;
 import java.util.Optional;

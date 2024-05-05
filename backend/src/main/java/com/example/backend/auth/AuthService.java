@@ -1,11 +1,11 @@
 package com.example.backend.auth;
 
-import com.example.backend.configuration.JwtService;
+import com.example.backend.jwt.JwtService;
 import com.example.backend.token.Token;
 import com.example.backend.token.TokenRepository;
 import com.example.backend.token.TokenType;
-import com.example.backend.model.User;
-import com.example.backend.repository.UserRepository;
+import com.example.backend.user.User;
+import com.example.backend.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

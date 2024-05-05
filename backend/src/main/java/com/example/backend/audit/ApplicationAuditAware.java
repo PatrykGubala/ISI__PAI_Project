@@ -1,6 +1,6 @@
 package com.example.backend.audit;
 
-import com.example.backend.model.User;
+import com.example.backend.user.User;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
