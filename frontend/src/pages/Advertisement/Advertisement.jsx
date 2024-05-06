@@ -1,81 +1,159 @@
 import React, { useState } from 'react';
 import './Advertisement.css';
-import { PushpinFilled } from '@ant-design/icons';
-import { Image, Carousel, Button } from 'antd';
-import Header from '../../components/Header/Header.jsx';
+import { Button, Input, Upload, DatePicker, Form, message, Select } from 'antd';
+import { CameraOutlined, TagsOutlined, DollarOutlined, PhoneOutlined, EnvironmentOutlined, AlignLeftOutlined } from '@ant-design/icons';
+import moment from 'moment';
+
+const { Option } = Select;
 
 const Advertisement = () => {
-    const [showNumber, setShowNumber] = useState(false);
-    const phoneNumber = '641 570 198';
+    const [advertisementData, setAdvertisementData] = useState({
+        title: '',
+        price: '',
+        date: moment(),
+        phoneNumber: '',
+        location: '',
+        description: '',
+        category: '', // Nowe pole dla kategorii
+        images: []
+    });
 
-    const handleShowNumber = () => {
-        setShowNumber(!showNumber);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setAdvertisementData({ ...advertisementData, [name]: value });
     };
 
+    const handleImageUpload = (info) => {
+        if (info.fileList.length > 0) {
+            const images = info.fileList.map((file) => file.originFileObj);
+            setAdvertisementData({ ...advertisementData, images });
+        }
+    };
+
+    const handleCategoryChange = (value) => {
+        setAdvertisementData({ ...advertisementData, category: value });
+    };
+
+    const handleSubmit = () => {
+        if (!advertisementData.title || !advertisementData.price || !advertisementData.phoneNumber || !advertisementData.location || !advertisementData.description || !advertisementData.category) {
+            message.error('Wypełnij wszystkie wymagane pola');
+            return;
+        }
+
+        if (!/^\d+$/.test(advertisementData.price)) {
+            message.error('Cena powinna zawierać tylko cyfry');
+            return;
+        }
+
+        if (!/^\d{9}$/.test(advertisementData.phoneNumber)) {
+            message.error('Numer telefonu powinien zawierać dokładnie 9 cyfr');
+            return;
+        }
+
+        if (advertisementData.title.length > 50) {
+            message.error('Tytuł może zawierać maksymalnie 50 znaków');
+            return;
+        }
+        if (advertisementData.location.length > 50) {
+            message.error('Lokalizacja może zawierać maksymalnie 50 znaków');
+            return;
+        }
+
+        if (advertisementData.description.length > 500) {
+            message.error('Opis może zawierać maksymalnie 500 znaków');
+            return;
+        }
+
+        console.log(advertisementData);
+        message.success('Oferta została dodana');
+    };
 
     return (
-        <div>
-            <Header/>
-            <div className="row-boards">
-                <div className="advertisement-left">
-                    <Carousel autoplay>
-                        <div>
-                            <Image
-                                width={600}
-                                height={400}
-                                src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Krowa.jpg"
-                                alt="Cow"
-                            />
-                        </div>
-                        <div>
-                            <Image
-                                width={600}
-                                height={400}
-                                src="https://pfhb.pl/fileadmin/aktualnosci/2021/ciekawostki/sluch.JPG"
-                                alt="Cow"
-                            />
-                        </div>
-                        <div>
-                            <Image
-                                width={600}
-                                height={400}
-                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Cow_female_black_white.jpg/1200px-Cow_female_black_white.jpg"
-                                alt="Cow"
-                            />
-                        </div>
-                    </Carousel>
-                </div>
-                <div className="column">
-                    <div className="advertisement-right">
-                        <div className="date">Dodano 01.05.2024</div>
-
-                        <div className="title">KROWA tanio SUPER inwestycja!!!</div>
-                        <div className="price">15 000 zł</div>
-                        <Button type="primary">Kup</Button>
-                        <Button type="default" onClick={handleShowNumber}>
-                            {showNumber ? phoneNumber : 'Pokaż numer'}
-                        </Button>
-                    </div>
-                    <div className="advertisement-right">
-                        <div className="location-title">LOKALIZACJA</div>
-                        <div className="row">
-
-                            <div> <PushpinFilled className="pushpin-icon"/> </div>
-                            <div className="location">Gdynia</div>
-                        </div>
-
-                    </div>
-                </div>
+        <Form className="advertisement-form">
+            <div className="image-upload">
+                <Form.Item>
+                    <Upload
+                        accept="image/*"
+                        beforeUpload={() => false}
+                        onChange={handleImageUpload}
+                        multiple
+                    >
+                        <Button icon={<CameraOutlined />} className="upload-button">Wybierz zdjęcia</Button>
+                    </Upload>
+                </Form.Item>
             </div>
-            <div className="advertisement">
-                <div className="advertisement-down">
-                    <div className="description-title">OPIS</div>
-                    <div className="description">
-                        <p>Piękna krowa, daje dużo mleka. Mało je, ekonomiczna w utrzymaniu.</p>
-                    </div>
-                </div>
+            <div className="advertisement-details">
+                <Form.Item label="Data dodania">
+                    <DatePicker
+                        defaultValue={advertisementData.date}
+                        disabled
+                        style={{ width: '100%' }}
+                    />
+                </Form.Item>
+                <Form.Item label="Kategoria" required>
+                    <Select
+                        placeholder="Wybierz kategorię"
+                        onChange={handleCategoryChange}
+                        value={advertisementData.category}
+                    >
+                        <Option value="meble">Meble</Option>
+                        <Option value="elektronika">Elektronika</Option>
+                        <Option value="samochody">Samochody</Option>
+                    </Select>
+                </Form.Item>
+                <Form.Item label="Tytuł" required>
+                    <Input
+                        prefix={<TagsOutlined />}
+                        placeholder="Tytuł"
+                        name="title"
+                        value={advertisementData.title}
+                        onChange={handleInputChange}
+                        maxLength={50}
+                    />
+                </Form.Item>
+                <Form.Item label="Cena" required>
+                    <Input
+                        prefix={<DollarOutlined />}
+                        placeholder="Cena"
+                        name="price"
+                        value={advertisementData.price}
+                        onChange={handleInputChange}
+                    />
+                </Form.Item>
+                <Form.Item label="Numer telefonu" required>
+                    <Input
+                        prefix={<PhoneOutlined />}
+                        placeholder="Numer telefonu"
+                        name="phoneNumber"
+                        value={advertisementData.phoneNumber}
+                        onChange={handleInputChange}
+                    />
+                </Form.Item>
+                <Form.Item label="Lokalizacja" required>
+                    <Input
+                        prefix={<EnvironmentOutlined />}
+                        placeholder="Lokalizacja"
+                        name="location"
+                        value={advertisementData.location}
+                        onChange={handleInputChange}
+                    />
+                </Form.Item>
+                <Form.Item label="Opis" required>
+                    <Input.TextArea
+                        prefix={<AlignLeftOutlined />}
+                        placeholder="Opis"
+                        name="description"
+                        value={advertisementData.description}
+                        onChange={handleInputChange}
+                        autoSize={{ minRows: 3 }}
+                        maxLength={500}
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" onClick={handleSubmit}>Dodaj ofertę</Button>
+                </Form.Item>
             </div>
-        </div>
+        </Form>
     );
 }
 
