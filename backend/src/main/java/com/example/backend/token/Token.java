@@ -1,6 +1,6 @@
 package com.example.backend.token;
 
-import com.example.backend.model.User;
+import com.example.backend.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,9 +28,9 @@ public class Token {
     @Enumerated(EnumType.STRING)
     public TokenType tokenType = TokenType.BEARER;
 
-    public boolean revoked;
+    private boolean revoked;
 
-    public boolean expired;
+    private boolean expired;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)

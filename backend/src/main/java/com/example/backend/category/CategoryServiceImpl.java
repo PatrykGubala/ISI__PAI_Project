@@ -1,7 +1,5 @@
-package com.example.backend.service;
+package com.example.backend.category;
 
-import com.example.backend.model.Category;
-import com.example.backend.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

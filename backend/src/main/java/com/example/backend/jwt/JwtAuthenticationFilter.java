@@ -1,4 +1,4 @@
-package com.example.backend.configuration;
+package com.example.backend.jwt;
 
 import com.example.backend.token.TokenRepository;
 import jakarta.servlet.FilterChain;

@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.user;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.example.backend.model.Permission.*;
+import static com.example.backend.user.Permission.*;
 
 
+@Getter
 @RequiredArgsConstructor
 public enum Role {
     ADMIN(
@@ -21,7 +22,13 @@ public enum Role {
                     USER_READ,
                     USER_UPDATE,
                     USER_DELETE,
-                    USER_CREATE
+                    USER_CREATE,
+                    ADD_CATEGORY,
+                    UPDATE_CATEGORY,
+                    DELETE_CATEGORY,
+                    ADD_PRODUCT,
+                    UPDATE_PRODUCT,
+                    DELETE_PRODUCT
             )
     ),
     USER(
@@ -29,13 +36,13 @@ public enum Role {
                     USER_READ,
                     USER_UPDATE,
                     USER_DELETE,
-                    USER_CREATE
+                    USER_CREATE,
+                    ADD_PRODUCT,
+                    UPDATE_PRODUCT,
+                    DELETE_PRODUCT
             )
-    )
+    );
 
-    ;
-
-    @Getter
     private final Set<Permission> permissions;
 
     public List<SimpleGrantedAuthority> getAuthorities() {

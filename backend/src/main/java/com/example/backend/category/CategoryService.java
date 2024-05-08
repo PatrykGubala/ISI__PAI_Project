@@ -1,6 +1,4 @@
-package com.example.backend.service;
-
-import com.example.backend.model.Category;
+package com.example.backend.category;
 
 import java.util.List;
 import java.util.UUID;

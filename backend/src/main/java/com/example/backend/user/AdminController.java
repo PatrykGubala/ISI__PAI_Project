@@ -1,13 +1,11 @@
-package com.example.backend.controller;
+package com.example.backend.user;
 
-import com.example.backend.model.Category;
-import com.example.backend.model.Product;
-import com.example.backend.model.User;
-import com.example.backend.model.UserDTO;
-import com.example.backend.service.CategoryService;
-import com.example.backend.service.ProductService;
-import com.example.backend.service.UserService;
+import com.example.backend.category.Category;
+import com.example.backend.product.Product;
+import com.example.backend.category.CategoryService;
+import com.example.backend.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +16,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
+
 public class AdminController {
 
     private final UserService userService;
@@ -30,23 +29,31 @@ public class AdminController {
         this.categoryService = categoryService;
         this.productService = productService;
     }
-
     @PostMapping("/addCategory")
-    public ResponseEntity<String> addCategory(@RequestBody Category category) {
-        Category newCategory = categoryService.saveCategory(category);
-        return ResponseEntity.ok("Category added successfully with ID: " + newCategory.getCategoryId());
+    public ResponseEntity<Category> addCategory(@RequestBody Category category) {
+        Category savedCategory = categoryService.saveCategory(category);
+        return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
     }
 
     @PutMapping("/categories/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable("id") UUID id, @RequestBody Category category) {
-        Category updatedCategory = categoryService.updateCategory(category);
-        return ResponseEntity.ok(updatedCategory);
+        Category existingCategory = categoryService.getCategoryById(id);
+        if (existingCategory == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        category.setCategoryId(id);
+        Category updatedCategory = categoryService.saveCategory(category);
+        return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
     }
 
     @DeleteMapping("/categories/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable("id") UUID id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable("id") UUID id) {
+        Category category = categoryService.getCategoryById(id);
+        if (category == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         categoryService.deleteCategory(id);
-        return ResponseEntity.ok("Category deleted successfully");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/users")

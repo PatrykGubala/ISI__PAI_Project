@@ -1,7 +1,7 @@
 package com.example.backend.configuration;
 
 import com.example.backend.audit.ApplicationAuditAware;
-import com.example.backend.repository.UserRepository;
+import com.example.backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

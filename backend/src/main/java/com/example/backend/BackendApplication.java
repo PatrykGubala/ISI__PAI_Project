@@ -3,20 +3,19 @@ package com.example.backend;
 import com.example.backend.auth.AuthResponse;
 import com.example.backend.auth.AuthService;
 import com.example.backend.auth.RegisterRequest;
-import com.example.backend.model.*;
-import com.example.backend.repository.*;
-import jakarta.servlet.http.HttpServletResponse;
+import com.example.backend.category.CategoryRepository;
+import com.example.backend.order.OrderItemRepository;
+import com.example.backend.order.OrderRepository;
+import com.example.backend.product.ProductRepository;
+import com.example.backend.user.User;
+import com.example.backend.user.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import static com.example.backend.model.Role.ADMIN;
-import static com.example.backend.model.Role.USER;
+import static com.example.backend.user.Role.ADMIN;
+import static com.example.backend.user.Role.USER;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -43,8 +42,9 @@ public class BackendApplication {
 				System.out.println("User added. User token: " + userResponse.getAccessToken());
 
 			} else {
-				System.out.println("User already exists.");
-			}
+                userRepository.findByUsername("user").ifPresent(
+						existingUser -> System.out.println("User already exists. "));
+            }
 
 			if (userRepository.findByUsername("admin").isEmpty()) {
 				var admin = RegisterRequest.builder()
@@ -57,16 +57,11 @@ public class BackendApplication {
 						.role(ADMIN)
 						.build();
 				AuthResponse adminResponse = service.register(admin, null);
-				System.out.println("Admin added"  + adminResponse.getAccessToken());
+				System.out.println("Admin added. Admin token: "  + adminResponse.getAccessToken());
 			} else {
-				System.out.println("Admin user already exists.");
-			}
-
-
-
-
-
-
+                userRepository.findByUsername("admin").ifPresent(
+						existingUser -> System.out.println("Admin already exists. "));
+            }
 		};
 	}
 }

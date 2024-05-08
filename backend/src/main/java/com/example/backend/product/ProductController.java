@@ -1,7 +1,5 @@
-package com.example.backend.controller;
+package com.example.backend.product;
 
-import com.example.backend.model.Product;
-import com.example.backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
