@@ -34,6 +34,7 @@ const Login = () => {
                 console.log('Login successful:', data);
                 authenticateUser();
                 localStorage.setItem('token', data.token); //tu zapisałem token, do zmiany
+
                 navigate("/");
             })
             .catch(error => {

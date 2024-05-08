@@ -1,159 +1,108 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import './Advertisement.css';
-import { Button, Input, Upload, DatePicker, Form, message, Select } from 'antd';
-import { CameraOutlined, TagsOutlined, DollarOutlined, PhoneOutlined, EnvironmentOutlined, AlignLeftOutlined } from '@ant-design/icons';
-import moment from 'moment';
-
-const { Option } = Select;
+import { PushpinFilled } from '@ant-design/icons';
+import { Image, Carousel, Button } from 'antd';
+import Header from '../../components/Header/Header.jsx';
 
 const Advertisement = () => {
-    const [advertisementData, setAdvertisementData] = useState({
-        title: '',
-        price: '',
-        date: moment(),
-        phoneNumber: '',
-        location: '',
-        description: '',
-        category: '', // Nowe pole dla kategorii
-        images: []
-    });
+    const { id } = useParams();
+    const [advertisementData, setAdvertisementData] = useState(null);
+    const [showNumber, setShowNumber] = useState(false);
+    const phoneNumber = '641 570 198';
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setAdvertisementData({ ...advertisementData, [name]: value });
+    const handleShowNumber = () => {
+        setShowNumber(!showNumber);
     };
 
-    const handleImageUpload = (info) => {
-        if (info.fileList.length > 0) {
-            const images = info.fileList.map((file) => file.originFileObj);
-            setAdvertisementData({ ...advertisementData, images });
-        }
-    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/products/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-    const handleCategoryChange = (value) => {
-        setAdvertisementData({ ...advertisementData, category: value });
-    };
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
 
-    const handleSubmit = () => {
-        if (!advertisementData.title || !advertisementData.price || !advertisementData.phoneNumber || !advertisementData.location || !advertisementData.description || !advertisementData.category) {
-            message.error('Wypełnij wszystkie wymagane pola');
-            return;
-        }
+                const data = await response.json();
+                setAdvertisementData(data);
+            } catch (error) {
+                console.error('Error fetching advertisement data:', error);
+            }
+        };
 
-        if (!/^\d+$/.test(advertisementData.price)) {
-            message.error('Cena powinna zawierać tylko cyfry');
-            return;
-        }
+        fetchData();
+    }, [id]);
 
-        if (!/^\d{9}$/.test(advertisementData.phoneNumber)) {
-            message.error('Numer telefonu powinien zawierać dokładnie 9 cyfr');
-            return;
-        }
-
-        if (advertisementData.title.length > 50) {
-            message.error('Tytuł może zawierać maksymalnie 50 znaków');
-            return;
-        }
-        if (advertisementData.location.length > 50) {
-            message.error('Lokalizacja może zawierać maksymalnie 50 znaków');
-            return;
-        }
-
-        if (advertisementData.description.length > 500) {
-            message.error('Opis może zawierać maksymalnie 500 znaków');
-            return;
-        }
-
-        console.log(advertisementData);
-        message.success('Oferta została dodana');
-    };
+    if (!advertisementData) {
+        return <div>Loading...</div>;
+    }
 
     return (
-        <Form className="advertisement-form">
-            <div className="image-upload">
-                <Form.Item>
-                    <Upload
-                        accept="image/*"
-                        beforeUpload={() => false}
-                        onChange={handleImageUpload}
-                        multiple
-                    >
-                        <Button icon={<CameraOutlined />} className="upload-button">Wybierz zdjęcia</Button>
-                    </Upload>
-                </Form.Item>
+        <div>
+            <Header />
+            <div className="row-boards">
+                <div className="advertisement-left">
+                    <Carousel autoplay>
+                        <div>
+                            <Image
+                                width={600}
+                                height={400}
+                                src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Krowa.jpg"
+                                alt="Cow"
+                            />
+                        </div>
+                        <div>
+                            <Image
+                                width={600}
+                                height={400}
+                                src="https://pfhb.pl/fileadmin/aktualnosci/2021/ciekawostki/sluch.JPG"
+                                alt="Cow"
+                            />
+                        </div>
+                        <div>
+                            <Image
+                                width={600}
+                                height={400}
+                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Cow_female_black_white.jpg/1200px-Cow_female_black_white.jpg"
+                                alt="Cow"
+                            />
+                        </div>
+                    </Carousel>
+                </div>
+                <div className="column">
+                    <div className="advertisement-right">
+                        <div className="date">Dodano {advertisementData.date}</div>
+                        <div className="title">{advertisementData.name}</div>
+                        <div className="price">{advertisementData.price} PLN</div>
+                        <Button type="primary">Kup</Button>
+                        <Button type="default" onClick={handleShowNumber}>
+                            {showNumber ? phoneNumber : 'Pokaż numer'}
+                        </Button>
+                    </div>
+                    <div className="advertisement-right">
+                        <div className="location-title">LOKALIZACJA</div>
+                        <div className="row">
+                            <div><PushpinFilled className="pushpin-icon" /></div>
+                            <div className="location">{advertisementData.location}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="advertisement-details">
-                <Form.Item label="Data dodania">
-                    <DatePicker
-                        defaultValue={advertisementData.date}
-                        disabled
-                        style={{ width: '100%' }}
-                    />
-                </Form.Item>
-                <Form.Item label="Kategoria" required>
-                    <Select
-                        placeholder="Wybierz kategorię"
-                        onChange={handleCategoryChange}
-                        value={advertisementData.category}
-                    >
-                        <Option value="meble">Meble</Option>
-                        <Option value="elektronika">Elektronika</Option>
-                        <Option value="samochody">Samochody</Option>
-                    </Select>
-                </Form.Item>
-                <Form.Item label="Tytuł" required>
-                    <Input
-                        prefix={<TagsOutlined />}
-                        placeholder="Tytuł"
-                        name="title"
-                        value={advertisementData.title}
-                        onChange={handleInputChange}
-                        maxLength={50}
-                    />
-                </Form.Item>
-                <Form.Item label="Cena" required>
-                    <Input
-                        prefix={<DollarOutlined />}
-                        placeholder="Cena"
-                        name="price"
-                        value={advertisementData.price}
-                        onChange={handleInputChange}
-                    />
-                </Form.Item>
-                <Form.Item label="Numer telefonu" required>
-                    <Input
-                        prefix={<PhoneOutlined />}
-                        placeholder="Numer telefonu"
-                        name="phoneNumber"
-                        value={advertisementData.phoneNumber}
-                        onChange={handleInputChange}
-                    />
-                </Form.Item>
-                <Form.Item label="Lokalizacja" required>
-                    <Input
-                        prefix={<EnvironmentOutlined />}
-                        placeholder="Lokalizacja"
-                        name="location"
-                        value={advertisementData.location}
-                        onChange={handleInputChange}
-                    />
-                </Form.Item>
-                <Form.Item label="Opis" required>
-                    <Input.TextArea
-                        prefix={<AlignLeftOutlined />}
-                        placeholder="Opis"
-                        name="description"
-                        value={advertisementData.description}
-                        onChange={handleInputChange}
-                        autoSize={{ minRows: 3 }}
-                        maxLength={500}
-                    />
-                </Form.Item>
-                <Form.Item>
-                    <Button type="primary" onClick={handleSubmit}>Dodaj ofertę</Button>
-                </Form.Item>
+            <div className="advertisement">
+                <div className="advertisement-down">
+                    <div className="description-title">OPIS</div>
+                    <div className="description">
+                        <p>{advertisementData.description}</p>
+                    </div>
+                </div>
             </div>
-        </Form>
+        </div>
     );
 }
 
