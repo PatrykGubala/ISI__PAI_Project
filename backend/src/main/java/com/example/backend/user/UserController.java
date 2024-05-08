@@ -1,6 +1,7 @@
 package com.example.backend.user;
 
 import com.example.backend.category.Category;
+import com.example.backend.category.CategoryService;
 import com.example.backend.product.Product;
 import com.example.backend.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,15 @@ public class UserController {
 
     private final UserService userService;
     private final ProductService productService;
+    private final CategoryService categoryService;
 
     @Autowired
-    public UserController(UserService userService, ProductService productService) {
+    public UserController(UserService userService, ProductService productService, CategoryService categoryService) {
         this.userService = userService;
         this.productService = productService;
-
+        this.categoryService = categoryService;
     }
+
     @GetMapping("/profile")
     public ResponseEntity<User> getUserProfile(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(user);
@@ -57,10 +60,17 @@ public class UserController {
     }
 
     @PostMapping("/addProduct")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> addProduct(@RequestBody Product product, @RequestParam UUID categoryId) {
+        Category category = categoryService.getCategoryById(categoryId);
+        if (category == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        product.setCategory(category);
+
         Product savedProduct = productService.saveProduct(product);
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
+
 
     @PutMapping("/products/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable("id") UUID id,@RequestBody Product product) {

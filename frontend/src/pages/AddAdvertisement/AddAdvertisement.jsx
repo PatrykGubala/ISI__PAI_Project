@@ -1,160 +1,141 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddAdvertisement.css';
-import { Button, Input, Upload, DatePicker, Form, message, Select } from 'antd';
-import { CameraOutlined, TagsOutlined, DollarOutlined, PhoneOutlined, EnvironmentOutlined, AlignLeftOutlined } from '@ant-design/icons';
-import moment from 'moment';
-
+import { Button, Input, Form, message, Select } from 'antd';
 const { Option } = Select;
-
+const API_BASE_URL = 'http://localhost:8080';
+import {useNavigate} from "react-router-dom";
 const AddAdvertisement = () => {
-    const [advertisementData, setAdvertisementData] = useState({
-        title: '',
-        price: '',
-        date: moment(),
-        phoneNumber: '',
-        location: '',
-        description: '',
-        category: '', // Nowe pole dla kategorii
-        images: []
-    });
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setAdvertisementData({ ...advertisementData, [name]: value });
-    };
-
-    const handleImageUpload = (info) => {
-        if (info.fileList.length > 0) {
-            const images = info.fileList.map((file) => file.originFileObj);
-            setAdvertisementData({ ...advertisementData, images });
+    const [categories, setCategories] = useState([]);
+    const [form] = Form.useForm();
+    const navigate = useNavigate();
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/categories`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
         }
     };
 
-    const handleCategoryChange = (value) => {
-        setAdvertisementData({ ...advertisementData, category: value });
-    };
+    useEffect(() => {
+        fetchCategories();
+    }, []);
 
-    const handleSubmit = () => {
-        if (!advertisementData.title || !advertisementData.price || !advertisementData.phoneNumber || !advertisementData.location || !advertisementData.description || !advertisementData.category) {
-            message.error('Wypełnij wszystkie wymagane pola');
-            return;
-        }
+    const handleSubmit = async (formData) => {
+        try {
+            console.log('Form Data:', formData);
+            const response = await fetch(`${API_BASE_URL}/user/addProduct?categoryId=${formData.categoryId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwiaWF0IjoxNzE1MjAzNDQyLCJleHAiOjE3MTUyMDQwNDJ9.IUzuYdmQebzvCNxxWKV6s81VlwO6IPiW5p97xMT0Acw'}` // tu trzeba token odebrać
+                },
+                body: JSON.stringify(formData),
+            });
+            if (!response.ok) {
+                console.error('Network response was not ok:', response.statusText);
+                throw new Error('Network response was not ok');
+            }
 
-        if (!/^\d+$/.test(advertisementData.price)) {
-            message.error('Cena powinna zawierać tylko cyfry');
-            return;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                console.log('successful:', data);
+                message.success('Advertisement added successfully');
+            } else {
+                console.log('successful:', response.statusText);
+                message.success('Advertisement added successfully');
+            }
+        } catch (error) {
+            console.error('Error during adding:', error);
+            message.error(error.message || 'Failed to add advertisement');
         }
-
-        if (!/^\d{9}$/.test(advertisementData.phoneNumber)) {
-            message.error('Numer telefonu powinien zawierać dokładnie 9 cyfr');
-            return;
-        }
-
-        if (advertisementData.title.length > 50) {
-            message.error('Tytuł może zawierać maksymalnie 50 znaków');
-            return;
-        }
-        if (advertisementData.location.length > 50) {
-            message.error('Lokalizacja może zawierać maksymalnie 50 znaków');
-            return;
-        }
-
-        if (advertisementData.description.length > 500) {
-            message.error('Opis może zawierać maksymalnie 500 znaków');
-            return;
-        }
-
-        console.log(advertisementData);
-        message.success('Oferta została dodana');
+        navigate("/");
     };
 
     return (
-        <Form className="advertisement-form">
-            <div className="image-upload">
-                <Form.Item>
-                    <Upload
-                        accept="image/*"
-                        beforeUpload={() => false}
-                        onChange={handleImageUpload}
-                        multiple
-                    >
-                        <Button icon={<CameraOutlined />} className="upload-button">Wybierz zdjęcia</Button>
-                    </Upload>
+        <div className="add-advertisement-container">
+            <Form
+                form={form}
+                onFinish={handleSubmit}
+                initialValues={{
+                    name: '',
+                    description: '',
+                    price: '',
+                    categoryId: '',
+                }}
+            >
+                <Form.Item
+                    label="Name"
+                    name="name"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter the name',
+                        },
+                    ]}
+                >
+                    <Input />
                 </Form.Item>
-            </div>
-            <div className="advertisement-details">
-                <Form.Item label="Data dodania">
-                    <DatePicker
-                        defaultValue={advertisementData.date}
-                        disabled
-                        style={{ width: '100%' }}
-                    />
+                <Form.Item
+                    label="Description"
+                    name="description"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter the description',
+                        },
+                    ]}
+                >
+                    <Input.TextArea />
                 </Form.Item>
-                <Form.Item label="Kategoria" required>
-                    <Select
-                        placeholder="Wybierz kategorię"
-                        onChange={handleCategoryChange}
-                        value={advertisementData.category}
-                    >
-                        <Option value="meble">Meble</Option>
-                        <Option value="elektronika">Elektronika</Option>
-                        <Option value="samochody">Samochody</Option>
+                <Form.Item
+                    label="Price"
+                    name="price"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please enter the price',
+                        },
+                    ]}
+                >
+                    <Input type="number" />
+                </Form.Item>
+                <Form.Item
+                    label="Category"
+                    name="categoryId"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please select the category',
+                        },
+                    ]}
+                >
+                    <Select>
+                        {categories.map((category) => (
+                            <Option key={category.categoryId} value={category.categoryId}>
+                                {category.name}
+                            </Option>
+                        ))}
                     </Select>
                 </Form.Item>
-                <Form.Item label="Tytuł" required>
-                    <Input
-                        prefix={<TagsOutlined />}
-                        placeholder="Tytuł"
-                        name="title"
-                        value={advertisementData.title}
-                        onChange={handleInputChange}
-                        maxLength={50}
-                    />
-                </Form.Item>
-                <Form.Item label="Cena" required>
-                    <Input
-                        prefix={<DollarOutlined />}
-                        placeholder="Cena"
-                        name="price"
-                        value={advertisementData.price}
-                        onChange={handleInputChange}
-                    />
-                </Form.Item>
-                <Form.Item label="Numer telefonu" required>
-                    <Input
-                        prefix={<PhoneOutlined />}
-                        placeholder="Numer telefonu"
-                        name="phoneNumber"
-                        value={advertisementData.phoneNumber}
-                        onChange={handleInputChange}
-                    />
-                </Form.Item>
-                <Form.Item label="Lokalizacja" required>
-                    <Input
-                        prefix={<EnvironmentOutlined />}
-                        placeholder="Lokalizacja"
-                        name="location"
-                        value={advertisementData.location}
-                        onChange={handleInputChange}
-                    />
-                </Form.Item>
-                <Form.Item label="Opis" required>
-                    <Input.TextArea
-                        prefix={<AlignLeftOutlined />}
-                        placeholder="Opis"
-                        name="description"
-                        value={advertisementData.description}
-                        onChange={handleInputChange}
-                        autoSize={{ minRows: 3 }}
-                        maxLength={500}
-                    />
-                </Form.Item>
                 <Form.Item>
-                    <Button type="primary" onClick={handleSubmit}>Dodaj ofertę</Button>
+                    <Button type="primary" htmlType="submit">
+                        Add Advertisement
+                    </Button>
                 </Form.Item>
-            </div>
-        </Form>
+            </Form>
+        </div>
     );
-}
+};
 
 export default AddAdvertisement;
