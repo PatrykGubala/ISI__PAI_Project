@@ -72,11 +72,7 @@ const Filter = ({ handleFilter }) => {
                         </Form.Item>
                     </div>
 
-                    <div className="col">
-                        <Form.Item label="Data produkcji" name="date">
-                            <DatePicker picker="year" className="custom-datepicker" placeholder="Wybierz rok"/>
-                        </Form.Item>
-                    </div>
+
 
                     <div className="col">
                         <Form.Item label="Stan" name="condition">

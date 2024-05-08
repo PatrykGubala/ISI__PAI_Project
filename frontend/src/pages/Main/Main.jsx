@@ -19,49 +19,10 @@ const Main = () => {
     const username = 'user';
     const password = 'password';
 
-    const o = [
-        {
-            id: 1,
-            name: 'Eleganckie krzesło do salonu',
-            price: '50 PLN',
-            date: '2024-04-05',
-            location: 'Kielce',
-            image: 'https://domartstyl.com/wp-content/uploads/2021/04/1-nowoczesne-kremowe-krzeslo-welurowe-do-jadalni-altura-ideal-gold-150x150.jpg'
-        },
-        {
-            id: 2,
-            name: 'TOYOTA YARIS CROSS !!! SUPER CENA !!! OKAZJA',
-            price: '70 000 PLN',
-            date: '2024-04-06',
-            location: 'Warszawa',
-            image: 'https://truck-van.pl/wp-content/uploads/2023/02/truckvan_toyota_yaris_cross_2022_28-150x150.jpg'
-        },
-    ];
-
-
     useEffect(() => {
         const token = btoa(`${username}:${password}`);
-        fetch('http://localhost:8080/api/categories', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Basic ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('All categories:', data);
-                setCategories(data);
-            })
-            .catch(error => {
-                console.error('Error fetching categories:', error);
-            });
 
-        fetch('http://localhost:8080/api/products', {
+        fetch('http://localhost:8080/products', {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`
@@ -82,12 +43,9 @@ const Main = () => {
             });
     }, [username, password]);
 
-
     const handleFilter = (values) => {
         console.log('Filtrowanie z wartościami:', values);
     };
-
-
 
     return (
         <Layout>
@@ -95,8 +53,7 @@ const Main = () => {
             <AntContent>
                 <Search/>
                 <Filter handleFilter={handleFilter} />
-
-                <ProductsList categories={categories} products={products} o={o} />
+                <ProductsList categories={categories} products={products} />
             </AntContent>
             <Footer />
         </Layout>
