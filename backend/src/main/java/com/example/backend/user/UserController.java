@@ -1,10 +1,12 @@
 package com.example.backend.user;
 
+import com.example.backend.category.Category;
 import com.example.backend.product.Product;
 import com.example.backend.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
+@PreAuthorize("hasRole('USER')")
 public class UserController {
 
     private final UserService userService;
@@ -53,10 +56,10 @@ public class UserController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/products")
-    public ResponseEntity<Product> addProduct(@PathVariable("id") UUID id, @RequestBody Product product) {
-        Product newProduct = productService.saveProduct(product);
-        return ResponseEntity.ok(newProduct);
+    @PostMapping("/addProduct")
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+        Product savedProduct = productService.saveProduct(product);
+        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
 
     @PutMapping("/products/{id}")
