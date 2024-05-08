@@ -3,9 +3,11 @@ package com.example.backend;
 import com.example.backend.auth.AuthResponse;
 import com.example.backend.auth.AuthService;
 import com.example.backend.auth.RegisterRequest;
+import com.example.backend.category.Category;
 import com.example.backend.category.CategoryRepository;
 import com.example.backend.order.OrderItemRepository;
 import com.example.backend.order.OrderRepository;
+import com.example.backend.product.Product;
 import com.example.backend.product.ProductRepository;
 import com.example.backend.user.User;
 import com.example.backend.user.UserRepository;
@@ -13,6 +15,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import java.util.UUID;
 
 import static com.example.backend.user.Role.ADMIN;
 import static com.example.backend.user.Role.USER;
@@ -62,6 +66,30 @@ public class BackendApplication {
                 userRepository.findByUsername("admin").ifPresent(
 						existingUser -> System.out.println("Admin already exists. "));
             }
+
+			if (categoryRepository.findAll().isEmpty()) {
+				Category electronics = new Category(UUID.randomUUID(), "Elektronika", "No rzeczy elektorniczne");
+				Category furniture = new Category(UUID.randomUUID(), "Meble", "Meble i wgl");
+
+				electronics = categoryRepository.save(electronics);
+				furniture = categoryRepository.save(furniture);
+
+				Product phone = new Product(UUID.randomUUID(), "Smartfon", "Nowy dobry tel", 1999.99, electronics);
+				Product laptop = new Product(UUID.randomUUID(), "Laptop", "Gamingowy laptop", 5299.99, electronics);
+
+				productRepository.save(phone);
+				productRepository.save(laptop);
+
+				Product chair = new Product(UUID.randomUUID(), "Krzesło gamingowe", "My name is PEWDIEPIE", 1999.99, furniture);
+				Product desk = new Product(UUID.randomUUID(), "Krzesło biurowe", "krzsł", 2999.99, furniture);
+
+				productRepository.save(chair);
+				productRepository.save(desk);
+
+				System.out.println("Categories and products added.");
+			} else {
+				System.out.println("Categories already exist.");
+			}
 		};
 	}
 }
