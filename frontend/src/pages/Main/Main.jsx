@@ -22,7 +22,7 @@ const Main = () => {
     useEffect(() => {
         const token = btoa(`${username}:${password}`);
 
-        fetch('http://localhost:8080/products', {
+        fetch('http://localhost:8080/products?page=0&size=5', {
             method: 'GET',
             headers: {
                 'Authorization': `Basic ${token}`
@@ -35,8 +35,8 @@ const Main = () => {
                 return response.json();
             })
             .then(data => {
-                console.log('All products:', data);
-                setProducts(data);
+                console.log('All products:', data.content);
+                setProducts(data.content);
             })
             .catch(error => {
                 console.error('Error fetching products:', error);
