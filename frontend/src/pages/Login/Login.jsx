@@ -32,11 +32,14 @@ const Login = () => {
             })
             .then(data => {
                 console.log('Login successful:', data);
+                const { access_token, refresh_token } = data;
                 authenticateUser();
-                localStorage.setItem('token', data.token); //tu zapisałem token, do zmiany
-
+                localStorage.setItem('access_token', access_token);
+                localStorage.setItem('refresh_token', refresh_token);
                 navigate("/");
             })
+
+
             .catch(error => {
                 console.error('Error during login:', error);
                 setErrorMessage('Wystąpił błąd podczas logowania');
