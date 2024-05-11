@@ -1,0 +1,21 @@
+version: '4.29'
+
+networks:
+  default:
+
+services:
+  db:
+    image: mysql:8.0.32
+    container_name: olx_database
+    ports:
+      - 3306:3306
+    volumes:
+        - "./.data/db:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: olx_database
+    restart:
+      always
+
+
+
