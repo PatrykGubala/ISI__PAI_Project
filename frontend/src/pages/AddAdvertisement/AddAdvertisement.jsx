@@ -4,6 +4,9 @@ import { Button, Input, Form, message, Select } from 'antd';
 const { Option } = Select;
 const API_BASE_URL = 'http://localhost:8080';
 import {useNavigate} from "react-router-dom";
+import axiosInstance from "../../hooks/Interceptor.jsx";
+
+
 const AddAdvertisement = () => {
     const [categories, setCategories] = useState([]);
     const [form] = Form.useForm();
@@ -38,7 +41,7 @@ const AddAdvertisement = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // tu trzeba token odebrać
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(formData),
             });

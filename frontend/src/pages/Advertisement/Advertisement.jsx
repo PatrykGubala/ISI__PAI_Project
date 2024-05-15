@@ -4,6 +4,7 @@ import './Advertisement.css';
 import { PushpinFilled } from '@ant-design/icons';
 import { Image, Carousel, Button } from 'antd';
 import Header from '../../components/Header/Header.jsx';
+import AdminAdvertisementDrawer from "../../components/AdminAdvertisementDrawer/AdminAdvertisementDrawer.jsx";
 
 const Advertisement = () => {
     const { id } = useParams();
@@ -46,6 +47,8 @@ const Advertisement = () => {
     return (
         <div>
             <Header />
+            <AdminAdvertisementDrawer advertisementData={advertisementData} />
+
             <div className="row-boards">
                 <div className="advertisement-left">
                     <Carousel autoplay>
