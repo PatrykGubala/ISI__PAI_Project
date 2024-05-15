@@ -1,34 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import './AddAdvertisement.css';
 import { Button, Input, Form, message, Select } from 'antd';
+import axiosInstance from '../Interceptors/axiosInstance';
+import { useNavigate } from 'react-router-dom';
+
 const { Option } = Select;
-const API_BASE_URL = 'http://localhost:8080';
-import {useNavigate} from "react-router-dom";
-import axiosInstance from "../../hooks/Interceptor.jsx";
-
-
 const AddAdvertisement = () => {
     const [categories, setCategories] = useState([]);
     const [form] = Form.useForm();
     const navigate = useNavigate();
+
     const fetchCategories = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/categories`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            setCategories(data);
+            const response = await axiosInstance.get('/categories');
+            setCategories(response.data);
         } catch (error) {
             console.error('Error fetching categories:', error);
         }
     };
-    const token = localStorage.getItem('access_token');
 
     useEffect(() => {
         fetchCategories();
@@ -36,34 +25,13 @@ const AddAdvertisement = () => {
 
     const handleSubmit = async (formData) => {
         try {
-            console.log('Form Data:', formData);
-            const response = await fetch(`${API_BASE_URL}/user/addProduct?categoryId=${formData.categoryId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData),
-            });
-            if (!response.ok) {
-                console.error('Network response was not ok:', response.statusText);
-                throw new Error('Network response was not ok');
-            }
-
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                const data = await response.json();
-                console.log('successful:', data);
-                message.success('Advertisement added successfully');
-            } else {
-                console.log('successful:', response.statusText);
-                message.success('Advertisement added successfully');
-            }
+            const response = await axiosInstance.post(`/user/addProduct?categoryId=${formData.categoryId}`, formData);
+            message.success('Advertisement added successfully');
+            navigate('/');
         } catch (error) {
             console.error('Error during adding:', error);
             message.error(error.message || 'Failed to add advertisement');
         }
-        navigate("/");
     };
 
     return (
