@@ -1,4 +1,3 @@
-// src/pages/AddAdvertisement/AddAdvertisement.js
 import React, { useState, useEffect } from 'react';
 import './AddAdvertisement.css';
 import { Button, Input, Form, message, Select } from 'antd';
