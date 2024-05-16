@@ -53,7 +53,12 @@ public class UserServiceImpl implements UserService {
     public User getUserById(UUID id) {
         return userRepository.findById(id).orElse(null);
     }
-
+    @Override
+    public UserDTO getUserDTOById(UUID id) {
+        return userRepository.findById(id)
+                .map(this::convertToDTO)
+                .orElse(null);
+    }
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();

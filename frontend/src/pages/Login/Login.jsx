@@ -8,6 +8,7 @@ import axiosInstance from '../Interceptors/axiosInstance';
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [userId, setUid] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const { login: authenticateUser } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -20,10 +21,12 @@ const Login = () => {
 
         try {
             const response = await axiosInstance.post('/auth/login', userData);
-            const { access_token, refresh_token } = response.data;
+
+            const { access_token, refresh_token} = response.data;
             authenticateUser();
             localStorage.setItem('access_token', access_token);
             localStorage.setItem('refresh_token', refresh_token);
+            localStorage.setItem('username', username);
             navigate('/');
         } catch (error) {
             console.error('Error during login:', error);
