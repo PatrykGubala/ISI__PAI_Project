@@ -34,6 +34,16 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/profile/{userUuid}")
+    public ResponseEntity<UserDTO> getUserByUuid(@PathVariable UUID userUuid) {
+        UserDTO user = userService.getUserDTOById(userUuid);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") UUID id, @RequestBody User user) {
