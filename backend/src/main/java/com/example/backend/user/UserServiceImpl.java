@@ -2,11 +2,9 @@ package com.example.backend.user;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -67,10 +65,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getAllUserDTOs() {
         return userRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .map(this::convertToDTO).
+                toList();
     }
-    private UserDTO convertToDTO(User user) {
+    @Override
+    public UserDTO convertToDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setUserId(user.getUserId());
         dto.setUsername(user.getUsername());

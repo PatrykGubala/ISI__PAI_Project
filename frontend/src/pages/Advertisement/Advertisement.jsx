@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './Advertisement.css';
-import { PushpinFilled } from '@ant-design/icons';
 import { Image, Carousel, Button } from 'antd';
 import Header from '../../components/Header/Header.jsx';
 import AdminAdvertisementDrawer from "../../components/AdminAdvertisementDrawer/AdminAdvertisementDrawer.jsx";
+import axiosInstance from '../Interceptors/axiosInstance';
+import './Advertisement.css';
 
 const Advertisement = () => {
     const { id } = useParams();
@@ -19,19 +19,8 @@ const Advertisement = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/products/${id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const data = await response.json();
-                setAdvertisementData(data);
+                const response = await axiosInstance.get(`/products/${id}`);
+                setAdvertisementData(response.data);
             } catch (error) {
                 console.error('Error fetching advertisement data:', error);
             }
@@ -52,30 +41,16 @@ const Advertisement = () => {
             <div className="row-boards">
                 <div className="advertisement-left">
                     <Carousel autoplay>
-                        <div>
-                            <Image
-                                width={600}
-                                height={400}
-                                src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Krowa.jpg"
-                                alt="Cow"
-                            />
-                        </div>
-                        <div>
-                            <Image
-                                width={600}
-                                height={400}
-                                src="https://pfhb.pl/fileadmin/aktualnosci/2021/ciekawostki/sluch.JPG"
-                                alt="Cow"
-                            />
-                        </div>
-                        <div>
-                            <Image
-                                width={600}
-                                height={400}
-                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Cow_female_black_white.jpg/1200px-Cow_female_black_white.jpg"
-                                alt="Cow"
-                            />
-                        </div>
+                        {advertisementData.images.map((image) => (
+                            <div key={image.id}>
+                                <Image
+                                    width={600}
+                                    height={400}
+                                    src={image.imageUrl}
+                                    alt={advertisementData.name}
+                                />
+                            </div>
+                        ))}
                     </Carousel>
                 </div>
                 <div className="column">
@@ -91,7 +66,7 @@ const Advertisement = () => {
                     <div className="advertisement-right">
                         <div className="location-title">LOKALIZACJA</div>
                         <div className="row">
-                            <div><PushpinFilled className="pushpin-icon" /></div>
+                            <div className="pushpin-icon" />
                             <div className="location">{advertisementData.location}</div>
                         </div>
                     </div>

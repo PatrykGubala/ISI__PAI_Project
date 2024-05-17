@@ -14,5 +14,6 @@ public interface UserService {
     Optional<User> findByUsername(String username);
     List<User> getAllUsers();
     List<UserDTO> getAllUserDTOs();
+    UserDTO convertToDTO(User user);
 
 }

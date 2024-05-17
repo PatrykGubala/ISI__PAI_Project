@@ -1,90 +1,70 @@
-.main {
-  
-    display: flex; 
-    align-items: flex-start;
+.profile-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
     background-color: #f9f9f9;
-}
-.profil-container {
-    width: 72%;
-    height: 200px;
-    padding: 1rem;
-    background-color: #fff;
-    margin-top: 2rem;
     border-radius: 10px;
-    margin-bottom: 1rem;
-    margin-left: 2%;
-    text-align: center;
-    flex-direction: row;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.profil-container1 {
-    width: 28%;
-    height: 200px;
-    background-color: #fff;
-    border-radius: 10px;
-    margin-top: 30px;
-    display: flex; 
-    align-items: center; 
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.profile-image {
+    flex: 1;
+    display: flex;
     justify-content: center;
 }
-.bottom {
-    background-color: #fff;
-    width: 100%;
-    height: 175px;
-    text-decoration: none;
+
+.profile-details {
+    flex: 2;
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.products-list-wrapper {
-    background: #fff;
-    padding: 24px;
-    border-radius: 8px;
-    margin-top: 40px;
-}
 .profile-info {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-h2{
-    margin-bottom: 4%;
+.profile-info strong {
+    display: inline-block;
+    width: 150px;
 }
 
-.title1{
-    padding-top: 4%;
-    padding-left: 4%;
-    font-size: 18px;
-    font-weight: bold;
-}
-a{
-    text-decoration: none;
-}
-.Top{
-    margin-top: 2%;
+.input {
     width: 100%;
-    height: 50px;
-    background: #fff;
-    text-align: center;
-    justify-content: center;
-}
-.inputt{
-   text-align: center;
-}
-.blue{
-    padding-top: 10px;
-}
-.submit-button {
     border: none;
-    border-radius: 8px;
-    padding: 15px;
-    background-color: #1890ff;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
+    background-color: #f0f0f0;
+    padding: 0.5rem;
+    border-radius: 5px;
 }
 
-.submit-button:hover {
-    background-color: #40a9ff;
-    transform: translateY(-3px);
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+.edit-button {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.profile-products {
+    margin-top: 2rem;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }

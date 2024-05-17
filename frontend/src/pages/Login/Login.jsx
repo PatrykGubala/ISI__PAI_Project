@@ -33,7 +33,9 @@ const Login = () => {
             setErrorMessage('Wystąpił błąd podczas logowania');
         }
     };
-
+    const handleOAuth2Login = (provider) => {
+        window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
+    };
     return (
         <div className="Login-page">
             <h2>Zaloguj się</h2>
@@ -60,7 +62,15 @@ const Login = () => {
             <div className="form-group">
                 <Button type="primary" onClick={handleSubmit}>Zaloguj</Button>
             </div>
-            {errorMessage && <Alert className="error-alert" message={errorMessage} type="error" showIcon />}
+            {errorMessage && <Alert className="error-alert" message={errorMessage} type="error" showIcon/>}
+            <div className="oauth2-buttons">
+                <button className="google-login-button" onClick={() => handleOAuth2Login('google')}>
+                    <img
+                        src='https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_"G"_logo.svg'
+                        alt="Google logo" width="20" height="20"/>
+                    Login with Google
+                </button>
+            </div>
         </div>
     );
 };
