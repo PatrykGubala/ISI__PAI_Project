@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,11 +56,33 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable("id") UUID id) {
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable("id") UUID id) {
         Product product = productService.getProductById(id);
         if (product == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        ProductDTO productDTO = convertToProductDTO(product);
+        return new ResponseEntity<>(productDTO, HttpStatus.OK);
     }
+
+    private ProductDTO convertToProductDTO(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(product.getId());
+        productDTO.setName(product.getName());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setPrice(product.getPrice());
+        productDTO.setCategory(product.getCategory());
+
+        List<ProductImageDTO> productImageDTOs = new ArrayList<>();
+        for (ProductImage productImage : product.getImages()) {
+            ProductImageDTO productImageDTO = new ProductImageDTO();
+            productImageDTO.setId(productImage.getId());
+            productImageDTO.setImageUrl(productImage.getImageUrl());
+            productImageDTOs.add(productImageDTO);
+        }
+        productDTO.setImages(productImageDTOs);
+
+        return productDTO;
+    }
+
 }

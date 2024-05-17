@@ -1,36 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import './AddAdvertisement.css';
 import { Button, Input, Form, message, Select } from 'antd';
 import axiosInstance from '../Interceptors/axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import './AddAdvertisement.css';
 
 const { Option } = Select;
+
 const AddAdvertisement = () => {
     const [categories, setCategories] = useState([]);
+    const [fileList, setFileList] = useState([]);
     const [form] = Form.useForm();
     const navigate = useNavigate();
 
-    const fetchCategories = async () => {
-        try {
-            const response = await axiosInstance.get('/categories');
-            setCategories(response.data);
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
-    };
-
     useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axiosInstance.get('/categories');
+                setCategories(response.data);
+            } catch (error) {
+                console.error('Błąd przy pobieraniu kategorii:', error);
+            }
+        };
         fetchCategories();
     }, []);
 
+    const handleFileChange = event => {
+        setFileList([...event.target.files]);
+    };
+
     const handleSubmit = async (formData) => {
+        const data = new FormData();
+        data.append('name', formData.name);
+        data.append('description', formData.description);
+        data.append('price', formData.price);
+        data.append('categoryId', formData.categoryId);
+
+        fileList.forEach(file => {
+            data.append('images', file);
+        });
+
         try {
-            const response = await axiosInstance.post(`/user/addProduct?categoryId=${formData.categoryId}`, formData);
-            message.success('Advertisement added successfully');
+            const response = await axiosInstance.post('/user/addProductWithImage', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            message.success('Ogłoszenie dodane pomyślnie');
             navigate('/');
         } catch (error) {
-            console.error('Error during adding:', error);
-            message.error(error.message || 'Failed to add advertisement');
+            console.error('Błąd podczas dodawania:', error);
+            message.error('Nie udało się dodać ogłoszenia');
         }
     };
 
@@ -47,62 +66,48 @@ const AddAdvertisement = () => {
                 }}
             >
                 <Form.Item
-                    label="Name"
+                    label="Nazwa"
                     name="name"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please enter the name',
-                        },
-                    ]}
+                    rules={[{ required: true, message: 'Proszę wprowadzić nazwę' }]}
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
-                    label="Description"
+                    label="Opis"
                     name="description"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please enter the description',
-                        },
-                    ]}
+                    rules={[{ required: true, message: 'Proszę wprowadzić opis' }]}
                 >
                     <Input.TextArea />
                 </Form.Item>
                 <Form.Item
-                    label="Price"
+                    label="Cena"
                     name="price"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please enter the price',
-                        },
-                    ]}
+                    rules={[{ required: true, message: 'Proszę wprowadzić cenę' }]}
                 >
                     <Input type="number" />
                 </Form.Item>
                 <Form.Item
-                    label="Category"
+                    label="Kategoria"
                     name="categoryId"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please select the category',
-                        },
-                    ]}
+                    rules={[{ required: true, message: 'Proszę wybrać kategorię' }]}
                 >
-                    <Select>
-                        {categories.map((category) => (
+                    <Select placeholder="Wybierz kategorię">
+                        {categories.map(category => (
                             <Option key={category.categoryId} value={category.categoryId}>
                                 {category.name}
                             </Option>
                         ))}
                     </Select>
                 </Form.Item>
+                <Form.Item
+                    label="Zdjęcia"
+                    name="images"
+                >
+                    <Input type="file" multiple onChange={handleFileChange} />
+                </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit">
-                        Add Advertisement
+                        Dodaj ogłoszenie
                     </Button>
                 </Form.Item>
             </Form>
