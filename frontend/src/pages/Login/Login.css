@@ -46,15 +46,26 @@
     color: #000;
     box-sizing: border-box;
 }
-.form-group button{
+
+.form-group button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    padding-bottom: 30px;
-    padding-top: 10px;
-    border: none;
+    height: 45px;
+    padding: 12px;
     border-radius: 5px;
+    border: none;
     background-color: #3498db;
+    color: white;
     cursor: pointer;
     transition: background-color 0.3s;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.form-group button:hover {
+    background-color: #2980b9;
 }
 
 .error-alert {
@@ -62,3 +73,33 @@
     animation: slideIn 0.5s ease-in-out;
 }
 
+.oauth2-buttons {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.google-login-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    height: 45px;
+
+    color: #4285F4;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #4285F4;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+}
+
+.google-login-button:hover {
+    background-color: #f1f1f1;
+}
+
+.google-login-button img {
+    margin-right: 8px;
+}

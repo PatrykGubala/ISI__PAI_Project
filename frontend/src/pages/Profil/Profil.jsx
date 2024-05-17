@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Image, Input, Button } from 'antd';
-import axiosInstance from '../Interceptors/axiosInstance.js';
-import Header from '../../components/Header/Header.jsx';
-import ProductsList from '../../components/ProductsList/ProductsList.jsx';
-import Error404 from '../Error404/Error404.jsx';
+import { Layout, Typography, Image, Input, Button, Spin } from 'antd';
+import axiosInstance from '../Interceptors/axiosInstance';
+import Header from '../../components/Header/Header';
+import ProductsList from '../../components/ProductsList/ProductsList';
 import { Link } from 'react-router-dom';
 import './Profil.css';
 
@@ -11,33 +10,18 @@ const { Content: AntContent } = Layout;
 const { Title } = Typography;
 
 const Profil = () => {
-    const [profileData, setProfileData] = useState('');
+    const [profileData, setProfileData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
     const username = localStorage.getItem('username');
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const token = btoa(`${username}:password`);
-                const response = await axiosInstance.get(`/profile/${userUuid}`, {
-                    headers: {
-                        'Authorization': `Basic ${token}`
-                    }
-                });
+                const response = await axiosInstance.get('/user/profile');
                 const userData = response.data;
-                if (userData) {
-                    setProfileData({
-                        firstName: userData.firstName,
-                        lastName: userData.lastName,
-                        email: userData.email,
-                        phoneNumber: userData.phoneNumber
-                    });
-                    setLoading(false);
-                } else {
-                    console.error('No user data found');
-                }
+                setProfileData(userData);
+                setLoading(false);
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
@@ -45,13 +29,8 @@ const Profil = () => {
 
         const fetchProductsData = async () => {
             try {
-                const response = await fetch('http://localhost:8080/products?page=0&size=5');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                console.log('All products:', data.content);
-                setProducts(data.content);
+                const response = await axiosInstance.get('/products?page=0&size=5');
+                setProducts(response.data.content);
             } catch (error) {
                 console.error('Error fetching products:', error);
             }
@@ -61,48 +40,61 @@ const Profil = () => {
         fetchProductsData();
     }, [username]);
 
+    if (loading) {
+        return (
+            <div className="loading">
+                <Spin size="large" />
+            </div>
+        );
+    }
+
     return (
-        <div>
+        <Layout>
             <Header />
-            <div className="Top">
-                <h2>Strona użytkownika: {username}</h2>
-            </div>
-            <div className="main">
-                <div className="profil-container1">
-                    <Image
-                        width={300}
-                        height={175}
-                        src="https://pfhb.pl/fileadmin/aktualnosci/2021/ciekawostki/sluch.JPG"
-                        alt="Cow"
-                    />
-                </div>
-                <div className="profil-container">
-                    <h2>Twoje Dane </h2>
-                    <div className="profile-info">
-                        <div>
-                            <strong>Imię i Nazwisko:</strong> <Input className="inputt" name="fullName" value={`${profileData.firstName} ${profileData.lastName}`} />
+            <AntContent>
+                <div className="profile-page">
+                    <div className="profile-header">
+                        <Title level={2}>Strona użytkownika: {username}</Title>
+                    </div>
+                    <div className="profile-content">
+                        <div className="profile-image">
+                            <Image
+                                width={300}
+                                height={175}
+                                src="https://pfhb.pl/fileadmin/aktualnosci/2021/ciekawostki/sluch.JPG"
+                                alt="Profile"
+                            />
                         </div>
-                        <div>
-                            <strong>Email:</strong> <Input className="inputt" name="email" value={profileData.email} />
-                        </div>
-                        <div>
-                            <strong>Numer telefonu:</strong> <Input className="inputt" name="phoneNumber" value={profileData.phoneNumber} />
+                        <div className="profile-details">
+                            <Title level={3}>Twoje Dane</Title>
+                            <div className="profile-info">
+                                <div>
+                                    <strong>Imię i Nazwisko:</strong>
+                                    <Input className="input" name="fullName" value={`${profileData.firstName} ${profileData.lastName}`} readOnly />
+                                </div>
+                                <div>
+                                    <strong>Email:</strong>
+                                    <Input className="input" name="email" value={profileData.email} readOnly />
+                                </div>
+                                <div>
+                                    <strong>Numer telefonu:</strong>
+                                    <Input className="input" name="phoneNumber" value={profileData.phoneNumber} readOnly />
+                                </div>
+                            </div>
+                            <div className="edit-button">
+                                <Link to="/edit-profile">
+                                    <Button type="primary">Edytuj dane</Button>
+                                </Link>
+                            </div>
                         </div>
                     </div>
-                    <div className="blue">
-                        <Link to="/error404">
-                            <Button type="primary">Edytuj dane</Button>
-                        </Link>
+                    <div className="profile-products">
+                        <Title level={3}>Twoje Ogłoszenia</Title>
+                        <ProductsList categories={[]} products={products} />
                     </div>
                 </div>
-            </div>
-            <div className="bottom">
-                <p className="title1">Twoje Ogłoszenia</p>
-                <div>
-                    <ProductsList categories={categories} products={products} />
-                </div>
-            </div>
-        </div>
+            </AntContent>
+        </Layout>
     );
 };
 
