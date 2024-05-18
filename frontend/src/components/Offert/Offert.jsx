@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'antd';
+import {Card, Image} from 'antd';
 import './Offert.css';
 
 const Product = ({ product }) => {
@@ -7,7 +7,13 @@ const Product = ({ product }) => {
         <Card className="product-card" hoverable>
             <div className="product-info">
                 <div className="product-image">
-                    <img src={product.image} alt={product.name} />
+                    <Image
+                        width={200}
+                        height={200}
+                        src={product.images.length > 0 ? product.images[0].imageUrl : 'placeholder.jpg'}
+                        alt={product.name}
+                        className="product-image"
+                    />
                 </div>
                 <div className="product-details">
                     <h3>{product.name}</h3>

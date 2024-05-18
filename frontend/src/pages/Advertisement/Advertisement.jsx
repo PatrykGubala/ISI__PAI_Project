@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate} from 'react-router-dom';
-import { Image, Carousel, Button } from 'antd';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button, Spin } from 'antd';
 import Header from '../../components/Header/Header.jsx';
 import AdminAdvertisementDrawer from "../../components/AdminAdvertisementDrawer/AdminAdvertisementDrawer.jsx";
 import axiosInstance from '../Interceptors/axiosInstance';
 import './Advertisement.css';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const Advertisement = () => {
     const { id } = useParams();
@@ -35,56 +37,49 @@ const Advertisement = () => {
     }, [id]);
 
     if (!advertisementData) {
-        return <div>Loading...</div>;
+        return <div className="loading-container"><Spin size="large" /></div>;
     }
 
     return (
-        <div>
+        <div className="advertisement-container">
             <Header />
             <AdminAdvertisementDrawer advertisementData={advertisementData} />
 
             <div className="row-boards">
                 <div className="advertisement-left">
-                    <Carousel autoplay>
-                        {advertisementData.images.map((image) => (
-                            <div key={image.id}>
-                                <Image
-                                    width={600}
-                                    height={400}
+                    <Carousel showThumbs={false}>
+                        {advertisementData.images.map((image, index) => (
+                            <div key={index} className="carousel-image-container">
+                                <img
                                     src={image.imageUrl}
                                     alt={advertisementData.name}
+                                    className="carousel-image"
                                 />
                             </div>
                         ))}
                     </Carousel>
                 </div>
-                <div className="column">
-                    <div className="advertisement-right">
-                        <div className="date">Dodano {advertisementData.date}</div>
-                        <div className="title">{advertisementData.name}</div>
-                        <div className="price">{advertisementData.price} PLN</div>
-                        <Button type="primary" onClick={handlePurchase}>
-                            Kup
-                        </Button>
-                        <Button type="default" onClick={handleShowNumber}>
-                            {showNumber ? phoneNumber : 'Pokaż numer'}
-                        </Button>
-                    </div>
-                    <div className="advertisement-right">
-                        <div className="location-title">LOKALIZACJA</div>
-                        <div className="row">
-                            <div className="pushpin-icon" />
-                            <div className="location">{advertisementData.location}</div>
-                        </div>
+                <div className="column advertisement-right">
+                    <div className="date">Dodano {advertisementData.date}</div>
+                    <div className="title">{advertisementData.name}</div>
+                    <div className="price">{advertisementData.price} PLN</div>
+                    <Button type="primary" onClick={handlePurchase}>
+                        Kup
+                    </Button>
+                    <Button type="default" onClick={handleShowNumber}>
+                        {showNumber ? phoneNumber : 'Pokaż numer'}
+                    </Button>
+                    <div className="location-title">LOKALIZACJA</div>
+                    <div className="row location">
+                        <div className="pushpin-icon" />
+                        <div>{advertisementData.location}</div>
                     </div>
                 </div>
             </div>
-            <div className="advertisement">
-                <div className="advertisement-down">
-                    <div className="description-title">OPIS</div>
-                    <div className="description">
-                        <p>{advertisementData.description}</p>
-                    </div>
+            <div className="advertisement description-container">
+                <div className="description-title">OPIS</div>
+                <div className="description">
+                    <p>{advertisementData.description}</p>
                 </div>
             </div>
         </div>
