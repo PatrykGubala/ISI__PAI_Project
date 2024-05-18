@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
 import { Image, Carousel, Button } from 'antd';
 import Header from '../../components/Header/Header.jsx';
 import AdminAdvertisementDrawer from "../../components/AdminAdvertisementDrawer/AdminAdvertisementDrawer.jsx";
@@ -11,9 +11,14 @@ const Advertisement = () => {
     const [advertisementData, setAdvertisementData] = useState(null);
     const [showNumber, setShowNumber] = useState(false);
     const phoneNumber = '641 570 198';
+    const navigate = useNavigate();
 
     const handleShowNumber = () => {
         setShowNumber(!showNumber);
+    };
+
+    const handlePurchase = () => {
+        navigate(`/purchase/${id}`);
     };
 
     useEffect(() => {
@@ -58,7 +63,9 @@ const Advertisement = () => {
                         <div className="date">Dodano {advertisementData.date}</div>
                         <div className="title">{advertisementData.name}</div>
                         <div className="price">{advertisementData.price} PLN</div>
-                        <Button type="primary">Kup</Button>
+                        <Button type="primary" onClick={handlePurchase}>
+                            Kup
+                        </Button>
                         <Button type="default" onClick={handleShowNumber}>
                             {showNumber ? phoneNumber : 'Pokaż numer'}
                         </Button>
