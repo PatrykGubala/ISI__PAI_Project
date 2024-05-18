@@ -24,12 +24,17 @@ const Header = () => {
         setDrawerOpen(true);
     };
 
+    const isAdmin = () => {
+        const userRole = localStorage.getItem('user_role');
+        return userRole === 'admin';
+    };
+
     const items = isLoggedIn ? [
         { key: '', label: 'Dom', icon: <HomeOutlined /> },
         { key: 'AddAdvertisement', label: 'Dodaj ogłoszenie', icon: <PlusOutlined /> },
         { key: 'Contact', label: 'Kontakt', icon: <PhoneOutlined /> },
         { key: 'Profile', label: 'Twoje konto', icon: <UserOutlined /> },
-        { key: 'Admin', label: 'Admin', icon: <LogoutOutlined />, onClick: handleAdmin },
+        ...(isAdmin() ? [{ key: 'Admin', label: 'Admin', icon: <LogoutOutlined />, onClick: handleAdmin }] : []),
         { key: 'Logout', label: 'Wyloguj', icon: <LogoutOutlined />, onClick: handleLogout }
     ] : [
         { key: '', label: 'Dom', icon: <HomeOutlined /> },
