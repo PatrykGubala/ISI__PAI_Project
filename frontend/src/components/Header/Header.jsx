@@ -33,7 +33,7 @@ const Header = () => {
         { key: '', label: 'Dom', icon: <HomeOutlined /> },
         { key: 'AddAdvertisement', label: 'Dodaj ogłoszenie', icon: <PlusOutlined /> },
         { key: 'Contact', label: 'Kontakt', icon: <PhoneOutlined /> },
-        { key: 'Profile', label: 'Twoje konto', icon: <UserOutlined /> },
+        { key: 'Profil', label: 'Twoje konto', icon: <UserOutlined /> },
         ...(isAdmin() ? [{ key: 'Admin', label: 'Admin', icon: <LogoutOutlined />, onClick: handleAdmin }] : []),
         { key: 'Logout', label: 'Wyloguj', icon: <LogoutOutlined />, onClick: handleLogout }
     ] : [
