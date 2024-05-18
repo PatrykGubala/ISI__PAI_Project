@@ -74,16 +74,18 @@ public class UserController {
     }
 
     @PostMapping("/addProduct")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product, @RequestParam UUID categoryId) {
+    public ResponseEntity<Product> addProduct(@RequestBody Product product, @RequestParam UUID categoryId, @AuthenticationPrincipal User user) {
         Category category = categoryService.getCategoryById(categoryId);
         if (category == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         product.setCategory(category);
+        product.setUser(user);
 
         Product savedProduct = productService.saveProduct(product);
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
+
 
     @PostMapping("/addProductWithImage")
     @Transactional
@@ -92,7 +94,8 @@ public class UserController {
             @RequestParam("description") String description,
             @RequestParam("price") double price,
             @RequestParam("categoryId") UUID categoryId,
-            @RequestPart("images") MultipartFile[] images) {
+            @RequestPart("images") MultipartFile[] images,
+            @AuthenticationPrincipal User user) {
 
         Category category = categoryService.getCategoryById(categoryId);
         if (category == null) {
@@ -104,6 +107,7 @@ public class UserController {
         product.setDescription(description);
         product.setPrice(price);
         product.setCategory(category);
+        product.setUser(user);
 
         List<ProductImage> productImages = new ArrayList<>();
 
@@ -124,10 +128,13 @@ public class UserController {
     }
 
     @PutMapping("/products/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable UUID productId, @RequestBody Product productDetails, @RequestParam("images") MultipartFile[] images) {
+    public ResponseEntity<Product> updateProduct(@PathVariable UUID productId, @RequestBody Product productDetails, @RequestParam("images") MultipartFile[] images, @AuthenticationPrincipal User user) {
         Product existingProduct = productService.getProductById(productId);
         if (existingProduct == null) {
             return ResponseEntity.notFound().build();
+        }
+        if (!existingProduct.getUser().getUserId().equals(user.getUserId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         existingProduct.setName(productDetails.getName());
         existingProduct.setDescription(productDetails.getDescription());
@@ -146,7 +153,16 @@ public class UserController {
     }
 
     @DeleteMapping("/products/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") UUID id) {
+    public ResponseEntity<String> deleteProduct(@PathVariable("id") UUID id, @AuthenticationPrincipal User user) {
+        Product product = productService.getProductById(id);
+        if (product == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (!product.getUser().getUserId().equals(user.getUserId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully");
     }
