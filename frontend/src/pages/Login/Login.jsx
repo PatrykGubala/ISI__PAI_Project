@@ -23,9 +23,13 @@ const Login = () => {
             const response = await axiosInstance.post('/auth/login', userData);
 
             const { access_token, refresh_token} = response.data;
+            const tokenPayload = access_token.split('.')[1];
+            const decodedPayload = JSON.parse(atob(tokenPayload));
+            const userRole = decodedPayload.sub;
             authenticateUser();
             localStorage.setItem('access_token', access_token);
             localStorage.setItem('refresh_token', refresh_token);
+            localStorage.setItem('user_role', userRole);
             localStorage.setItem('username', username);
             navigate('/');
         } catch (error) {

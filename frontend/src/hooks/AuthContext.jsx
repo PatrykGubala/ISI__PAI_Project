@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
         setIsLoggedIn(false);
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_role');
     };
 
     return (
