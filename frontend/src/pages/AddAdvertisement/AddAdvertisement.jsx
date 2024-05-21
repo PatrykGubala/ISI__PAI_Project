@@ -3,6 +3,7 @@ import { Button, Input, Form, message, Select } from 'antd';
 import axiosInstance from '../Interceptors/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import './AddAdvertisement.css';
+import Header from '../../components/Header/Header';
 
 const { Option } = Select;
 
@@ -54,7 +55,9 @@ const AddAdvertisement = () => {
     };
 
     return (
+        
         <div className="add-advertisement-container">
+             <Header />
             <Form
                 form={form}
                 onFinish={handleSubmit}

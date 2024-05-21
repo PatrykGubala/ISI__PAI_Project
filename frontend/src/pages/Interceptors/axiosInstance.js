@@ -1,4 +1,6 @@
 import axios from 'axios';
+import refreshAccessToken from './refreshAccessToken';
+import { AuthContext } from '../../hooks/AuthContext';
 
 const API_BASE_URL = 'http://localhost:8080';
 
@@ -9,30 +11,34 @@ const axiosInstance = axios.create({
     },
 });
 
+
+
 axiosInstance.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+    async (config) => {
+        const accessToken = localStorage.getItem('access_token');
+        // Sprawdzenie, czy token wygasł
+            if (accessToken) {
+                config.headers['Authorization'] = `Bearer ${accessToken}`;
+            }
+            if (!accessToken || accessToken.trim() === '') {
+                console.log('Access token not found');
+                return config;
+            }
+            const decodedToken = JSON.parse(atob(accessToken.split('.')[1]));
+            const isTokenExpired = decodedToken.exp * 1000 < Date.now();
+        // Jeśli token wygasł, odśwież go
+        if (isTokenExpired) {
+            try {
+                await refreshAccessToken();
+                const newAccessToken = localStorage.getItem('access_token');
+                config.headers['Authorization'] = `Bearer ${newAccessToken}`;
+            } catch (error) {
+                console.error('Error refreshing access token:', error.message);  
+            }
         }
         return config;
     },
     (error) => {
-        return Promise.reject(error);
-    }
-);
-
-axiosInstance.interceptors.response.use(
-    (response) => {
-        return response;
-    },
-    (error) => {
-        if (error.response && error.response.status === 401) {
-            console.error('Unauthorized error: ', error.response);
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            window.location.href = '/login';
-        }
         return Promise.reject(error);
     }
 );
