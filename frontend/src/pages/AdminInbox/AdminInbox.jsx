@@ -16,11 +16,10 @@ const AdminInbox = () => {
                 setLoading(false);
             } catch (error) {
                 console.error('Błąd przy pobieraniu wiadomości:', error);
-                message.error('Nie udało się pobrać wiadomości');
+                message.error('Nie udało się pobrać wiadomości!');
                 setLoading(false);
             }
         };
-
         fetchMessages();
     }, []);
 
