@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, theme } from 'antd';
+import { Layout, theme, Pagination } from 'antd';
 import Header from '../../components/Header/Header.jsx';
 import ProductsList from '../../components/ProductsList/ProductsList.jsx';
 import Footer from '../../components/Footer/Footer.jsx';
 import Filter from "../../components/Filter/Filter.jsx";
-import Search from "../../components/Search/Search.jsx"
+import Search from "../../components/Search/Search.jsx";
+import axiosInstance from '../Interceptors/axiosInstance';
 import './Main.css';
 
 const { Content: AntContent } = Layout;
@@ -16,44 +17,52 @@ const Main = () => {
 
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
-    const username = 'user';
-    const password = 'password';
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const pageSize = 5;
+
+
 
     useEffect(() => {
-        const token = btoa(`${username}:${password}`);
-
-        fetch('http://localhost:8080/products?page=0&size=5', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Basic ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('All products:', data.content);
-                setProducts(data.content);
-            })
-            .catch(error => {
+        const fetchData = async () => {
+            try {
+                const response = await axiosInstance.get(`/products?page=${currentPage - 1}&size=${pageSize}`, {
+                });
+                console.log('All products:', response.data.content);
+                setProducts(response.data.content);
+                setTotalProducts(response.data.totalElements);
+            } catch (error) {
                 console.error('Error fetching products:', error);
-            });
-    }, [username, password]);
+            }
+        };
+
+        fetchData();
+    }, [currentPage]);
 
     const handleFilter = (values) => {
         console.log('Filtrowanie z wartościami:', values);
     };
 
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
     return (
         <Layout>
-            <Header/>
+            <Header />
             <AntContent>
-                <Search/>
+                <Search />
                 <Filter handleFilter={handleFilter} />
                 <ProductsList categories={categories} products={products} />
+                <div className="pagination-container">
+                    <Pagination
+                        current={currentPage}
+                        total={totalProducts}
+                        pageSize={pageSize}
+                        onChange={handlePageChange}
+                    />
+                </div>
+
             </AntContent>
             <Footer />
         </Layout>

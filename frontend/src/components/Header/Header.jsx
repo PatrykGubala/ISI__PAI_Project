@@ -32,9 +32,11 @@ const Header = () => {
     const items = isLoggedIn ? [
         { key: '', label: 'Dom', icon: <HomeOutlined /> },
         { key: 'AddAdvertisement', label: 'Dodaj ogłoszenie', icon: <PlusOutlined /> },
+        ...(isAdmin() ? [{ key: 'AddCategory', label: 'Dodaj kategorie', icon: <PlusOutlined />}] : []),
         { key: 'Contact', label: 'Kontakt', icon: <PhoneOutlined /> },
         { key: 'Profil', label: 'Twoje konto', icon: <UserOutlined /> },
         ...(isAdmin() ? [{ key: 'Admin', label: 'Admin', icon: <LogoutOutlined />, onClick: handleAdmin }] : []),
+        ...(isAdmin() ? [{ key: 'AdminInbox', label: 'Wiadomości', icon: <LogoutOutlined /> }] : []),
         { key: 'Logout', label: 'Wyloguj', icon: <LogoutOutlined />, onClick: handleLogout }
     ] : [
         { key: '', label: 'Dom', icon: <HomeOutlined /> },

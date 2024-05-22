@@ -10,8 +10,10 @@ import PrivateRoute from "./hooks/PrivateRoute.jsx";
 import Error404 from "./pages/Error404/Error404.jsx";
 import AddAdvertisement from "./pages/AddAdvertisement/AddAdvertisement.jsx";
 import Profil from "./pages/Profil/Profil.jsx"
+import AddCategory from "./pages/AddCategory/AddCategory.jsx"
 import Purchase from "./pages/Purchase/Purchase.jsx";
-
+import Contact from "./pages/Contact/Contact.jsx";
+import AdminInbox from "./pages/AdminInbox/AdminInbox.jsx";
 const App = () => {
     return (
         <AuthProvider>
@@ -24,8 +26,11 @@ const App = () => {
 
                     <Route element={<PrivateRoute />}>
                         <Route exact path="/AddAdvertisement" element={<AddAdvertisement />} />
+                        <Route exact path="/AddCategory" element={<AddCategory />} />
                         <Route exact path="/Profil" element={<Profil />} />
                         <Route exact path="/purchase/:id" element={<Purchase />} />
+                        <Route exact path="/Contact" element={<Contact />} />
+                        <Route exact path="/AdminInbox" element={<AdminInbox />} />
                         {/*<Route exact path="/payment/:id" element={<Payment />} />*/}
 
                     </Route>
