@@ -2,6 +2,8 @@ package com.example.backend.user;
 
 import com.example.backend.category.Category;
 import com.example.backend.category.CategoryService;
+import com.example.backend.message.Message;
+import com.example.backend.message.MessageService;
 import com.example.backend.product.Product;
 import com.example.backend.product.ProductImage;
 import com.example.backend.product.ProductService;
@@ -30,13 +32,15 @@ public class UserController {
     private final ProductService productService;
     private final CategoryService categoryService;
     private final StorageService storageService;
+    private final MessageService messageService;
 
     @Autowired
-    public UserController(UserService userService, ProductService productService, CategoryService categoryService, StorageService storageService) {
+    public UserController(UserService userService, ProductService productService, CategoryService categoryService, StorageService storageService, MessageService messageService) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
         this.storageService = storageService;
+        this.messageService = messageService;
     }
 
     @GetMapping("/profile")
@@ -83,6 +87,12 @@ public class UserController {
 
         Product savedProduct = productService.saveProduct(product);
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/addMessage")
+    public ResponseEntity<Message> addMessage(@RequestBody Message message) {
+        Message savedMessage = messageService.saveMessage(message);
+        return ResponseEntity.status(201).body(savedMessage);
     }
 
     @PostMapping("/addProductWithImage")

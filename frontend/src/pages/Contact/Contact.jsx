@@ -11,7 +11,7 @@ const Contact = () => {
 
     const handleSubmit = async (formData) => {
         try {
-            await axiosInstance.post('/contact', formData);
+            await axiosInstance.post('/user/addMessage', formData);
             message.success('Wiadomość wysłana pomyślnie');
             form.resetFields();
         } catch (error) {
@@ -29,16 +29,24 @@ const Contact = () => {
                     form={form}
                     onFinish={handleSubmit}
                     initialValues={{
-                        name: '',
+                        firstname: '',
+                        lastName: '',
                         email: '',
-                        subject: '',
-                        message: '',
+                        title: '',
+                        description: '',
                     }}
                 >
                     <Form.Item
                         label="Imię"
-                        name="name"
+                        name="firstname"
                         rules={[{ required: true, message: 'Proszę wprowadzić imię' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label="Nazwisko"
+                        name="lastName" // Zmieniono na "lastName"
+                        rules={[{ required: true, message: 'Proszę wprowadzić nazwisko' }]}
                     >
                         <Input />
                     </Form.Item>
@@ -51,14 +59,14 @@ const Contact = () => {
                     </Form.Item>
                     <Form.Item
                         label="Temat"
-                        name="subject"
+                        name="title"
                         rules={[{ required: true, message: 'Proszę wprowadzić temat' }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
                         label="Wiadomość"
-                        name="message"
+                        name="description"
                         rules={[{ required: true, message: 'Proszę wprowadzić wiadomość' }]}
                     >
                         <TextArea rows={4} />
