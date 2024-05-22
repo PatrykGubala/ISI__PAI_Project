@@ -74,14 +74,14 @@ public class BackendApplication {
 				electronics = categoryRepository.save(electronics);
 				furniture = categoryRepository.save(furniture);
 
-				Product phone = new Product(UUID.randomUUID(), "Smartfon", "Nowy dobry tel", 1999.99, electronics, null);
-				Product laptop = new Product(UUID.randomUUID(), "Laptop", "Gamingowy laptop", 5299.99, electronics, null);
+				Product phone = new Product(UUID.randomUUID(), "Smartfon", "Nowy dobry tel", 1999.99, electronics, null,null);
+				Product laptop = new Product(UUID.randomUUID(), "Laptop", "Gamingowy laptop", 5299.99, electronics, null,null);
 
 				productRepository.save(phone);
 				productRepository.save(laptop);
 
-				Product chair = new Product(UUID.randomUUID(), "Krzesło gamingowe", "My name is PEWDIEPIE", 1999.99, furniture, null);
-				Product desk = new Product(UUID.randomUUID(), "Krzesło biurowe", "krzsł", 2999.99, furniture, null);
+				Product chair = new Product(UUID.randomUUID(), "Krzesło gamingowe", "My name is PEWDIEPIE", 1999.99, furniture, null,null);
+				Product desk = new Product(UUID.randomUUID(), "Krzesło biurowe", "krzsł", 2999.99, furniture, null,null);
 
 				productRepository.save(chair);
 				productRepository.save(desk);
