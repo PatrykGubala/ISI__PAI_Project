@@ -16,9 +16,6 @@ const AddCategory = () => {
 
         try {
             const response = await axiosInstance.post('/admin/addCategory', data, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
             });
             message.success('Kategoria dodana pomyślnie');
             navigate('/');
