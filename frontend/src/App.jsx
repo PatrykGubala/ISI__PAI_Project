@@ -13,7 +13,7 @@ import Profil from "./pages/Profil/Profil.jsx"
 import AddCategory from "./pages/AddCategory/AddCategory.jsx"
 import Purchase from "./pages/Purchase/Purchase.jsx";
 import Contact from "./pages/Contact/Contact.jsx";
-
+import AdminInbox from "./pages/AdminInbox/AdminInbox.jsx";
 const App = () => {
     return (
         <AuthProvider>
@@ -30,6 +30,7 @@ const App = () => {
                         <Route exact path="/Profil" element={<Profil />} />
                         <Route exact path="/purchase/:id" element={<Purchase />} />
                         <Route exact path="/Contact" element={<Contact />} />
+                        <Route exact path="/AdminInbox" element={<AdminInbox />} />
                         {/*<Route exact path="/payment/:id" element={<Payment />} />*/}
 
                     </Route>
