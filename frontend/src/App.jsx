@@ -10,6 +10,7 @@ import PrivateRoute from "./hooks/PrivateRoute.jsx";
 import Error404 from "./pages/Error404/Error404.jsx";
 import AddAdvertisement from "./pages/AddAdvertisement/AddAdvertisement.jsx";
 import Profil from "./pages/Profil/Profil.jsx"
+import AddCategory from "./pages/AddCategory/AddCategory.jsx"
 import Purchase from "./pages/Purchase/Purchase.jsx";
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
 
                     <Route element={<PrivateRoute />}>
                         <Route exact path="/AddAdvertisement" element={<AddAdvertisement />} />
+                        <Route exact path="/AddCategory" element={<AddCategory />} />
                         <Route exact path="/Profil" element={<Profil />} />
                         <Route exact path="/purchase/:id" element={<Purchase />} />
                         {/*<Route exact path="/payment/:id" element={<Payment />} />*/}
