@@ -41,7 +41,7 @@ public class Product {
     private List<ProductImage> images;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Override

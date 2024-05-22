@@ -25,7 +25,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
-@PreAuthorize("hasRole('USER')")
 public class UserController {
 
     private final UserService userService;
@@ -35,7 +34,7 @@ public class UserController {
     private final MessageService messageService;
 
     @Autowired
-    public UserController(UserService userService, ProductService productService, CategoryService categoryService, StorageService storageService) {
+    public UserController(UserService userService, ProductService productService, CategoryService categoryService, StorageService storageService, MessageService messageService) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
@@ -142,9 +141,6 @@ public class UserController {
         Product existingProduct = productService.getProductById(productId);
         if (existingProduct == null) {
             return ResponseEntity.notFound().build();
-        }
-        if (!existingProduct.getUser().getUserId().equals(user.getUserId())) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         if (!existingProduct.getUser().getUserId().equals(user.getUserId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
