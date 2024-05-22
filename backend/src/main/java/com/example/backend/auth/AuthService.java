@@ -15,8 +15,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +61,13 @@ public class AuthService {
                 .build();
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    @Transactional
+    protected void saveUserToken(User user, String jwtToken) {
+        Optional<Token> existingToken = tokenRepository.findByToken(jwtToken);
+        if (existingToken.isPresent()) {
+            return;
+        }
+
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
@@ -69,11 +77,12 @@ public class AuthService {
                 .build();
         tokenRepository.save(token);
     }
-
-    private void revokeAllUserTokens(User user) {
+    @Transactional
+    protected void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
-        if (validUserTokens.isEmpty())
+        if (validUserTokens.isEmpty()) {
             return;
+        }
         validUserTokens.forEach(token -> {
             token.setExpired(true);
             token.setRevoked(true);
@@ -92,9 +101,6 @@ public class AuthService {
         refreshToken = authHeader.substring(7);
         try {
             username = jwtService.extractUsername(refreshToken);
-        } catch (ExpiredJwtException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
@@ -107,7 +113,7 @@ public class AuthService {
                 saveUserToken(user, accessToken);
                 var authResponse = AuthResponse.builder()
                         .accessToken(accessToken)
-                        .refreshToken(refreshToken) // Keep the same refresh token
+                        .refreshToken(refreshToken)
                         .build();
                 response.setStatus(HttpServletResponse.SC_OK);
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);

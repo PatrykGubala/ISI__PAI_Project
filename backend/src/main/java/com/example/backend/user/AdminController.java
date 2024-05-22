@@ -70,7 +70,7 @@ public class AdminController {
 
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") UUID id, @RequestBody User user) {
-        User updatedUser = userService.updateUser(user);
+        User updatedUser = userService.saveUser(user);
         return ResponseEntity.ok(updatedUser);
     }
 

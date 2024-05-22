@@ -37,9 +37,10 @@ public class BackendApplication {
 						.username("user")
 						.firstname("User")
 						.lastname("Userovic")
-						.email("admin@mail.com")
+						.email("user@mail.com")
 						.password("password123")
 						.phoneNumber("123456789")
+						.profileNecessaryFieldsComplete(true)
 						.role(USER)
 						.build();
 				AuthResponse userResponse = service.register(user, null);
@@ -55,9 +56,10 @@ public class BackendApplication {
 						.username("admin")
 						.firstname("Admin")
 						.lastname("Adminovic")
-						.email("manager@mail.com")
+						.email("admin@mail.com")
 						.password("pass")
 						.phoneNumber("123456789")
+						.profileNecessaryFieldsComplete(true)
 						.role(ADMIN)
 						.build();
 				AuthResponse adminResponse = service.register(admin, null);
