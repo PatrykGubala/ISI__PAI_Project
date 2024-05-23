@@ -1,6 +1,5 @@
 import axios from 'axios';
 import refreshAccessToken from './refreshAccessToken';
-import { AuthContext } from '../../hooks/AuthContext';
 
 const API_BASE_URL = 'http://localhost:8080';
 
@@ -11,12 +10,9 @@ const axiosInstance = axios.create({
     },
 });
 
-
-
 axiosInstance.interceptors.request.use(
     async (config) => {
         const accessToken = localStorage.getItem('access_token');
-        // Sprawdzenie, czy token wygasł
             if (accessToken) {
                 config.headers['Authorization'] = `Bearer ${accessToken}`;
             }
@@ -26,7 +22,6 @@ axiosInstance.interceptors.request.use(
             }
             const decodedToken = JSON.parse(atob(accessToken.split('.')[1]));
             const isTokenExpired = decodedToken.exp * 1000 < Date.now();
-        // Jeśli token wygasł, odśwież go
         if (isTokenExpired) {
             try {
                 await refreshAccessToken();
