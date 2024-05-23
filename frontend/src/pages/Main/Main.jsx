@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Layout, theme, Pagination } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header/Header.jsx';
 import ProductsList from '../../components/ProductsList/ProductsList.jsx';
 import Footer from '../../components/Footer/Footer.jsx';
 import Filter from "../../components/Filter/Filter.jsx";
 import Search from "../../components/Search/Search.jsx";
+import { AuthContext } from '../../hooks/AuthContext';
 import axiosInstance from '../Interceptors/axiosInstance';
 import './Main.css';
 
@@ -20,8 +22,21 @@ const Main = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalProducts, setTotalProducts] = useState(0);
     const pageSize = 5;
+    const navigate = useNavigate();
+    const { login: authenticateUser } = useContext(AuthContext);
 
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const accessToken = queryParams.get('access_token');
+        const refreshToken = queryParams.get('refresh_token');
 
+        if (accessToken && refreshToken) {
+            localStorage.setItem('access_token', accessToken);
+            localStorage.setItem('refresh_token', refreshToken);
+            authenticateUser();
+            navigate('/');
+        }
+    }, [navigate, authenticateUser]);
 
     useEffect(() => {
         const fetchData = async () => {

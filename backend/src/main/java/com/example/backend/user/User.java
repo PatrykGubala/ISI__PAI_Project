@@ -20,6 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -46,17 +47,26 @@ public class User implements UserDetails {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column(name = "password")
     private String password;
 
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "profile_necessary_fields_complete", nullable = false)
+    private boolean profileNecessaryFieldsComplete;
+
+    public boolean isProfileNecessaryFieldsComplete() {
+        return username != null && !username.isEmpty() &&
+                email != null && !email.isEmpty();
+    }
+
 
     @Override
     public boolean isAccountNonExpired() {
