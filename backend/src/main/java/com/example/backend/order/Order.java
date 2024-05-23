@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,9 @@ public class Order {
     @Column(nullable = false)
     private String deliveryAddress;
 
+    @Column(nullable = false)
+    private String price;
+
     @Override
     public String toString() {
         return "Order{" +
@@ -47,7 +51,7 @@ public class Order {
                 ", orderItems=" + orderItems +
                 ", paymentMethod='" + paymentMethod + '\'' +
                 ", deliveryAddress='" + deliveryAddress + '\'' +
+                ", price='" + price + '\'' +
                 '}';
     }
 }
-

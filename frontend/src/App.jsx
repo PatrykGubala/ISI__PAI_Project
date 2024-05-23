@@ -14,6 +14,9 @@ import AddCategory from "./pages/AddCategory/AddCategory.jsx"
 import Purchase from "./pages/Purchase/Purchase.jsx";
 import Contact from "./pages/Contact/Contact.jsx";
 import AdminInbox from "./pages/AdminInbox/AdminInbox.jsx";
+import Success from "./pages/Success/Success.jsx";
+import Confirmation from "./pages/Confirmation/Confirmation.jsx";
+import Error from "./pages/Error/Error.jsx"
 const App = () => {
     return (
         <AuthProvider>
@@ -32,6 +35,9 @@ const App = () => {
                         <Route exact path="/Contact" element={<Contact />} />
                         <Route exact path="/AdminInbox" element={<AdminInbox />} />
                         {/*<Route exact path="/payment/:id" element={<Payment />} />*/}
+                        <Route exact path="/Success" element={<Success />} />
+                        <Route exact path="/Confirmation" element={<Confirmation />} />
+                        <Route exact path="/Error" element={<Error />} />
 
                     </Route>
                     <Route exact path="*" element={<Error404 />} />
