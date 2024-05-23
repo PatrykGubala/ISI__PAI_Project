@@ -50,7 +50,6 @@ const Main = () => {
                 console.error('Error fetching products:', error);
             }
         };
-
         fetchData();
     }, [currentPage]);
 
