@@ -4,7 +4,11 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(() => {
-        return localStorage.getItem('access_token') ? true : false;
+        const token = localStorage.getItem('access_token');
+        if (!token) return false;
+
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        return decodedToken.exp * 1000 > Date.now();
     });
 
     const login = () => {
