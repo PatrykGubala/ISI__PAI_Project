@@ -4,6 +4,7 @@ import { Button, Card, Input, Form, Checkbox } from 'antd';
 import Header from '../../components/Header/Header.jsx';
 import axiosInstance from '../Interceptors/axiosInstance';
 import './Purchase.css';
+import PayPalCheckoutButton from "../../components/PayPalCheckoutButton/PayPalCheckoutButton.jsx";
 
 const Purchase = () => {
     const { id } = useParams();
@@ -71,10 +72,6 @@ const Purchase = () => {
 
     const handleCheckboxChange = (e) => {
         setShowInvoiceFields(e.target.checked);
-    };
-
-    const handleCheckout = () => {
-    navigate('/payment')
     };
 
     if (!advertisementData) {
@@ -250,9 +247,10 @@ const Purchase = () => {
                     )}
                     <div className="part-price">Opłata serwisowa: {serviceCost} PLN</div>
                     <div className="total-price">Całkowita kwota: {totalPrice} PLN</div>
-                    <Button type="primary" onClick={handleCheckout}>
-                        Zapłać
-                    </Button>
+                    <PayPalCheckoutButton
+                        amount={totalPrice}
+                        clientID={'ASRGeFLIV4kKWUSHrn5bA4Ozf7hnp9zVzi7TGqxv5Jacwjjv8ltlNBYMeR43MaGbzoEoeihAEPr5R5j0'}
+                    />
                 </div>
             </div>
         </div>
