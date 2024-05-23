@@ -1,48 +1,69 @@
-import React, { useContext } from 'react';
-import {Navigate, Outlet, useNavigate} from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext.jsx';
-import refreshAccessToken from '../pages/Interceptors/refreshAccessToken.js';
+import axios from 'axios';
 
+const API_BASE_URL = 'http://localhost:8080';
 
-const PrivateRoute = () => {
-    const navigate = useNavigate();
-    const { isLoggedIn, logout } = useContext(AuthContext);
-    const access_token = localStorage.getItem('access_token');
-    const refresh_token=localStorage.getItem('refresh_token');
-
-    console.log("isLoggedIn:", isLoggedIn);
-    console.log("Access Token from localStorage:", access_token);
-
-    if (!isLoggedIn || !access_token) {
-        console.log("User is not logged in or access token is missing, redirecting to Login page");
-        return <Navigate to="/Login" replace />;
+const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+        throw new Error('Refresh token not found');
     }
 
-    const decodedToken = JSON.parse(atob(access_token.split('.')[1]));
+    const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {}, {
+        headers: {
+            Authorization: `Bearer ${refreshToken}`
+        }
+    });
 
-    console.log("Decoded Access Token:", decodedToken);
+    const { access_token, refresh_token } = response.data;
+    localStorage.setItem('access_token', access_token);
+    localStorage.setItem('refresh_token', refresh_token);
+    return access_token;
+};
 
-    const isTokenExpired = decodedToken.exp * 1000 < Date.now();
+const PrivateRoute = () => {
+    const { isLoggedIn, login, logout } = useContext(AuthContext);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-    const expirationTimeInSeconds = decodedToken.exp;
-    const expirationDate = new Date(expirationTimeInSeconds * 1000);
-    console.log("Token expiration date:", expirationDate);
+    useEffect(() => {
+        const checkAuthentication = async () => {
+            const accessToken = localStorage.getItem('access_token');
+            if (!accessToken) {
+                logout();
+                navigate('/Login', { replace: true });
+                return;
+            }
 
+            const decodedToken = JSON.parse(atob(accessToken.split('.')[1]));
+            const isTokenExpired = decodedToken.exp * 1000 < Date.now();
 
+            if (isTokenExpired) {
+                try {
+                    await refreshAccessToken();
+                    login();
+                } catch (error) {
+                    console.error('Error refreshing access token:', error.message);
+                    logout();
+                    navigate('/Login', { replace: true });
+                }
+            } else {
+                login();
+            }
 
-    const decodedToken2 = JSON.parse(atob(refresh_token.split('.')[1]));
-    const isTokenExpired2 = decodedToken2.exp * 1000 < Date.now();
-    const expirationTimeInSeconds2 = decodedToken2.exp;
-    const expirationDate2 = new Date(expirationTimeInSeconds2 * 1000);
-    console.log("Refresh Token expiration date of refresh token:", expirationDate2);
+            setLoading(false);
+        };
 
-    if (isTokenExpired2) {
-        console.log("refressh Token has expired .........");
-        logout();
-     }
+        checkAuthentication();
+    }, [login, logout, navigate]);
 
-    console.log("Access Token is valid, allowing access to protected route");
-    return <Outlet />;
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    return isLoggedIn ? <Outlet /> : <Navigate to="/Login" replace />;
 };
 
 export default PrivateRoute;

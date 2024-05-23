@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +24,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
-@PreAuthorize("hasRole('USER')")
 public class UserController {
 
     private final UserService userService;
@@ -63,7 +61,7 @@ public class UserController {
         existingUser.setLastName(user.getLastName());
         existingUser.setEmail(user.getEmail());
         existingUser.setPhoneNumber(user.getPhoneNumber());
-        User updatedUser = userService.updateUser(existingUser);
+        User updatedUser = userService.saveUser(existingUser);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
@@ -78,12 +76,13 @@ public class UserController {
     }
 
     @PostMapping("/addProduct")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product, @RequestParam UUID categoryId) {
+    public ResponseEntity<Product> addProduct(@RequestBody Product product, @RequestParam UUID categoryId, @AuthenticationPrincipal User user) {
         Category category = categoryService.getCategoryById(categoryId);
         if (category == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         product.setCategory(category);
+        product.setUser(user);
 
         Product savedProduct = productService.saveProduct(product);
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
@@ -95,6 +94,7 @@ public class UserController {
         return ResponseEntity.status(201).body(savedMessage);
     }
 
+
     @PostMapping("/addProductWithImage")
     @Transactional
     public ResponseEntity<Product> addProductWithImages(
@@ -102,7 +102,8 @@ public class UserController {
             @RequestParam("description") String description,
             @RequestParam("price") double price,
             @RequestParam("categoryId") UUID categoryId,
-            @RequestPart("images") MultipartFile[] images) {
+            @RequestPart("images") MultipartFile[] images,
+            @AuthenticationPrincipal User user) {
 
         Category category = categoryService.getCategoryById(categoryId);
         if (category == null) {
@@ -114,6 +115,7 @@ public class UserController {
         product.setDescription(description);
         product.setPrice(price);
         product.setCategory(category);
+        product.setUser(user);
 
         List<ProductImage> productImages = new ArrayList<>();
 
@@ -134,10 +136,13 @@ public class UserController {
     }
 
     @PutMapping("/products/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable UUID productId, @RequestBody Product productDetails, @RequestParam("images") MultipartFile[] images) {
+    public ResponseEntity<Product> updateProduct(@PathVariable UUID productId, @RequestBody Product productDetails, @RequestParam("images") MultipartFile[] images, @AuthenticationPrincipal User user) {
         Product existingProduct = productService.getProductById(productId);
         if (existingProduct == null) {
             return ResponseEntity.notFound().build();
+        }
+        if (!existingProduct.getUser().getUserId().equals(user.getUserId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         existingProduct.setName(productDetails.getName());
         existingProduct.setDescription(productDetails.getDescription());
@@ -154,9 +159,16 @@ public class UserController {
 
         return ResponseEntity.ok(existingProduct);
     }
+    public ResponseEntity<String> deleteProduct(@PathVariable("id") UUID id, @AuthenticationPrincipal User user) {
+        Product product = productService.getProductById(id);
+        if (product == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-    @DeleteMapping("/products/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") UUID id) {
+        if (!product.getUser().getUserId().equals(user.getUserId())) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully");
     }

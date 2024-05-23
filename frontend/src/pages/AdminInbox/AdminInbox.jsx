@@ -11,24 +11,39 @@ const AdminInbox = () => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await axiosInstance.get('/admin/contactMessages');
+                const response = await axiosInstance.get('/messages');
                 setMessages(response.data);
                 setLoading(false);
             } catch (error) {
                 console.error('Błąd przy pobieraniu wiadomości:', error);
-                message.error('Nie udało się pobrać wiadomości');
+                message.error('Nie udało się pobrać wiadomości!');
                 setLoading(false);
             }
         };
-
         fetchMessages();
     }, []);
+
+    const handleDelete = async (id) => {
+        try {
+            await axiosInstance.delete(`/messages/${id}`);
+            setMessages((prevMessages) => prevMessages.filter((message) => message.messageId !== id));
+            message.success('Wiadomość usunięta pomyślnie');
+        } catch (error) {
+            console.error('Błąd podczas usuwania wiadomości:', error);
+            message.error('Nie udało się usunąć wiadomości');
+        }
+    };
 
     const columns = [
         {
             title: 'Imię',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'firstname',
+            key: 'firstname',
+        },
+        {
+            title: 'Nazwisko',
+            dataIndex: 'lastName',
+            key: 'lastName',
         },
         {
             title: 'Email',
@@ -37,35 +52,24 @@ const AdminInbox = () => {
         },
         {
             title: 'Temat',
-            dataIndex: 'subject',
-            key: 'subject',
+            dataIndex: 'title',
+            key: 'title',
         },
         {
             title: 'Wiadomość',
-            dataIndex: 'message',
-            key: 'message',
+            dataIndex: 'description',
+            key: 'description',
         },
         {
             title: 'Akcje',
             key: 'actions',
             render: (_, record) => (
-                <Button type="danger" onClick={() => handleDelete(record.id)}>
+                <Button type="danger" onClick={() => handleDelete(record.messageId)}>
                     Usuń
                 </Button>
             ),
         },
     ];
-
-    const handleDelete = async (id) => {
-        try {
-            await axiosInstance.delete(`/admin/contactMessages/${id}`);
-            setMessages((prevMessages) => prevMessages.filter((message) => message.id !== id));
-            message.success('Wiadomość usunięta pomyślnie');
-        } catch (error) {
-            console.error('Błąd podczas usuwania wiadomości:', error);
-            message.error('Nie udało się usunąć wiadomości');
-        }
-    };
 
     return (
         <div className="admin-inbox-container">
@@ -76,7 +80,7 @@ const AdminInbox = () => {
                     columns={columns}
                     dataSource={messages}
                     loading={loading}
-                    rowKey="id"
+                    rowKey="messageId"
                 />
             </div>
         </div>

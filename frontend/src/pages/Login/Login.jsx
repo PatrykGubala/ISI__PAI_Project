@@ -8,7 +8,6 @@ import axiosInstance from '../Interceptors/axiosInstance';
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [userId, setUid] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const { login: authenticateUser } = useContext(AuthContext);
     const navigate = useNavigate();

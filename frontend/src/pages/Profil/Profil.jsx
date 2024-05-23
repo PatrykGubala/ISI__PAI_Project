@@ -18,7 +18,14 @@ const Profil = () => {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await axiosInstance.get('/user/profile');
+                let response;
+
+                 response = await axiosInstance.post('/auth/refresh-token');
+                const access_token = response.data.access_token;
+                const refresh_token = response.data.refresh_token;
+                localStorage.setItem('access_token', access_token);
+                localStorage.setItem('refresh_token', refresh_token);
+                 response = await axiosInstance.get('/user/profile');
                 const userData = response.data;
                 setProfileData(userData);
                 setLoading(false);
@@ -29,7 +36,8 @@ const Profil = () => {
 
         const fetchProductsData = async () => {
             try {
-                const response = await axiosInstance.get('/products?page=0&size=5');
+                let response;
+                response = await axiosInstance.get('/products?page=0&size=5');
                 setProducts(response.data.content);
             } catch (error) {
                 console.error('Error fetching products:', error);
