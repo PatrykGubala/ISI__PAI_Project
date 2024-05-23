@@ -10,8 +10,9 @@ const { Option } = Select;
 const AddAdvertisement = () => {
     const [categories, setCategories] = useState([]);
     const [fileList, setFileList] = useState([]);
-    const [form] = Form.useForm();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [form] = Form.useForm();
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -19,99 +20,81 @@ const AddAdvertisement = () => {
                 const response = await axiosInstance.get('/categories');
                 setCategories(response.data);
             } catch (error) {
-                console.error('Błąd przy pobieraniu kategorii:', error);
+                console.error('Error fetching categories:', error);
+                message.error('Failed to fetch categories');
             }
         };
         fetchCategories();
     }, []);
 
-    const handleFileChange = event => {
-        setFileList([...event.target.files]);
-    };
-
     const handleSubmit = async (formData) => {
-        const data = new FormData();
-        data.append('name', formData.name);
-        data.append('description', formData.description);
-        data.append('price', formData.price);
-        data.append('categoryId', formData.categoryId);
+        setLoading(true);
 
-        fileList.forEach(file => {
-            data.append('images', file);
-        });
+        const queryParameters = `name=${encodeURIComponent(formData.name)}&description=${encodeURIComponent(formData.description)}&price=${formData.price}&categoryId=${formData.categoryId}`;
+        const endpoint = fileList.length > 0
+            ? `/user/addProductWithImage?${queryParameters}`
+            : `/user/addProduct?${queryParameters}`;
+
+        const data = new FormData();
+        if (fileList.length > 0) {
+            fileList.forEach(file => data.append('images', file));
+        }
 
         try {
-            const response = await axiosInstance.post('/user/addProductWithImage', data, {
+            const config = {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': fileList.length > 0 ? 'multipart/form-data' : 'application/json'
                 }
-            });
-            message.success('Ogłoszenie dodane pomyślnie');
-            navigate('/');
+            };
+            const response = await axiosInstance.post(endpoint, fileList.length > 0 ? data : JSON.stringify({
+                name: formData.name,
+                description: formData.description,
+                price: formData.price,
+                categoryId: formData.categoryId
+            }), config);
+
+            if (response.status === 201) {
+                message.success('Advertisement added successfully');
+                form.resetFields();
+                setFileList([]);
+                navigate('/');
+            } else {
+                throw new Error('Unexpected response status: ' + response.status);
+            }
         } catch (error) {
-            console.error('Błąd podczas dodawania:', error);
-            message.error('Nie udało się dodać ogłoszenia');
+            console.error('Error adding advertisement:', error);
+            message.error(error.response?.data?.message || 'Failed to add advertisement');
+            if (error.response?.status === 401) {
+                navigate('/login');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        
         <div className="add-advertisement-container">
-             <Header />
-            <Form
-                form={form}
-                onFinish={handleSubmit}
-                initialValues={{
-                    name: '',
-                    description: '',
-                    price: '',
-                    categoryId: '',
-                }}
-            >
-                <Form.Item
-                    label="Nazwa"
-                    name="name"
-                    rules={[{ required: true, message: 'Proszę wprowadzić nazwę' }]}
-                >
+            <Header />
+            <Form form={form} onFinish={handleSubmit} initialValues={{ name: '', description: '', price: '', categoryId: '' }}>
+                <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please enter the name' }]}>
                     <Input />
                 </Form.Item>
-                <Form.Item
-                    label="Opis"
-                    name="description"
-                    rules={[{ required: true, message: 'Proszę wprowadzić opis' }]}
-                >
+                <Form.Item label="Description" name="description" rules={[{ required: true, message: 'Please enter the description' }]}>
                     <Input.TextArea />
                 </Form.Item>
-                <Form.Item
-                    label="Cena"
-                    name="price"
-                    rules={[{ required: true, message: 'Proszę wprowadzić cenę' }]}
-                >
+                <Form.Item label="Price" name="price" rules={[{ required: true, message: 'Please enter the price' }]}>
                     <Input type="number" />
                 </Form.Item>
-                <Form.Item
-                    label="Kategoria"
-                    name="categoryId"
-                    rules={[{ required: true, message: 'Proszę wybrać kategorię' }]}
-                >
-                    <Select placeholder="Wybierz kategorię">
-                        {categories.map(category => (
-                            <Option key={category.categoryId} value={category.categoryId}>
-                                {category.name}
-                            </Option>
-                        ))}
+                <Form.Item label="Category" name="categoryId" rules={[{ required: true, message: 'Please select a category' }]}>
+                    <Select placeholder="Select a category">
+                        {categories.map(category => <Option key={category.categoryId} value={category.categoryId}>{category.name}</Option>)}
                     </Select>
                 </Form.Item>
-                <Form.Item
-                    label="Zdjęcia"
-                    name="images"
-                >
-                    <Input type="file" multiple onChange={handleFileChange} />
+                <Form.Item label="Images" name="images">
+                    <Input type="file" multiple onChange={(event) => setFileList([...event.target.files])} />
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                        Dodaj ogłoszenie
-                    </Button>
+                    <Button type="primary" htmlType="submit" loading={loading}>Add Advertisement</Button>
                 </Form.Item>
             </Form>
         </div>

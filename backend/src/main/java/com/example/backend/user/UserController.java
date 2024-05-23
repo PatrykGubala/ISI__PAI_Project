@@ -76,28 +76,23 @@ public class UserController {
     }
 
     @PostMapping("/addProduct")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product, @RequestParam UUID categoryId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> addProduct(@RequestBody Product product, @RequestParam UUID categoryId, @AuthenticationPrincipal User user) {
         Category category = categoryService.getCategoryById(categoryId);
         if (category == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
         }
         product.setCategory(category);
         product.setUser(user);
 
         Product savedProduct = productService.saveProduct(product);
-        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Product added successfully");
     }
 
-    @PostMapping("/addMessage")
-    public ResponseEntity<Message> addMessage(@RequestBody Message message) {
-        Message savedMessage = messageService.saveMessage(message);
-        return ResponseEntity.status(201).body(savedMessage);
-    }
 
 
     @PostMapping("/addProductWithImage")
     @Transactional
-    public ResponseEntity<Product> addProductWithImages(
+    public ResponseEntity<?> addProductWithImages(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("price") double price,
@@ -105,36 +100,55 @@ public class UserController {
             @RequestPart("images") MultipartFile[] images,
             @AuthenticationPrincipal User user) {
 
-        Category category = categoryService.getCategoryById(categoryId);
-        if (category == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        Product product = new Product();
-        product.setName(name);
-        product.setDescription(description);
-        product.setPrice(price);
-        product.setCategory(category);
-        product.setUser(user);
+        try {
+            Category category = categoryService.getCategoryById(categoryId);
+            if (category == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
+            }
 
-        List<ProductImage> productImages = new ArrayList<>();
+            Product product = new Product();
+            product.setName(name);
+            product.setDescription(description);
+            product.setPrice(price);
+            product.setCategory(category);
+            product.setUser(user);
 
-        for (MultipartFile file : images) {
-            String filename = storageService.store(file);
-            String url = MvcUriComponentsBuilder.fromMethodName(StorageController.class, "serveFile", filename)
-                    .build().toUri().toString();
-            ProductImage productImage = new ProductImage();
-            productImage.setImageUrl(url);
-            productImage.setProduct(product);
-            productImages.add(productImage);
+            List<ProductImage> productImages = new ArrayList<>();
+
+            for (MultipartFile file : images) {
+                try {
+                    String filename = storageService.store(file);
+                    String url = MvcUriComponentsBuilder.fromMethodName(StorageController.class, "serveFile", filename)
+                            .build().toUri().toString();
+                    ProductImage productImage = new ProductImage();
+                    productImage.setImageUrl(url);
+                    productImage.setProduct(product);
+                    productImages.add(productImage);
+                } catch (Exception e) {
+                    return new ResponseEntity<>("Failed to store image", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+
+            product.setImages(productImages);
+            Product savedProduct = productService.saveProduct(product);
+            if (savedProduct != null) {
+                return ResponseEntity.status(HttpStatus.CREATED).body("Product with images added successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.CREATED).body("Product not added");
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        product.setImages(productImages);
-
-        Product savedProduct = productService.saveProduct(product);
-        return ResponseEntity.ok(savedProduct);
     }
-
+    @PostMapping("/addMessage")
+    public ResponseEntity<Message> addMessage(@RequestBody Message message) {
+        Message savedMessage = messageService.saveMessage(message);
+        return ResponseEntity.status(201).body(savedMessage);
+    }
     @PutMapping("/products/{productId}")
     public ResponseEntity<Product> updateProduct(@PathVariable UUID productId, @RequestBody Product productDetails, @RequestParam("images") MultipartFile[] images, @AuthenticationPrincipal User user) {
         Product existingProduct = productService.getProductById(productId);
@@ -159,6 +173,8 @@ public class UserController {
 
         return ResponseEntity.ok(existingProduct);
     }
+
+    @DeleteMapping("/products/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable("id") UUID id, @AuthenticationPrincipal User user) {
         Product product = productService.getProductById(id);
         if (product == null) {
