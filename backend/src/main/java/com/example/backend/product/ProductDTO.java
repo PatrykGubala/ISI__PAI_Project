@@ -1,6 +1,7 @@
 package com.example.backend.product;
 
 import com.example.backend.category.Category;
+import com.example.backend.subcategory.Subcategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class ProductDTO {
     private String description;
     private double price;
     private Category category;
+    private Subcategory subcategory;
     private List<ProductImageDTO> images;
 
 }

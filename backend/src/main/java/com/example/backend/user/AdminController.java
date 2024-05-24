@@ -4,6 +4,8 @@ import com.example.backend.category.Category;
 import com.example.backend.product.Product;
 import com.example.backend.category.CategoryService;
 import com.example.backend.product.ProductService;
+import com.example.backend.subcategory.Subcategory;
+import com.example.backend.subcategory.SubcategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +24,14 @@ public class AdminController {
     private final UserService userService;
     private final CategoryService categoryService;
     private final ProductService productService;
+    private final SubcategoryService subcategoryService;
 
     @Autowired
-    public AdminController(UserService userService, CategoryService categoryService, ProductService productService) {
+    public AdminController(UserService userService, CategoryService categoryService, ProductService productService, SubcategoryService subcategoryService) {
         this.userService = userService;
         this.categoryService = categoryService;
         this.productService = productService;
+        this.subcategoryService = subcategoryService;
     }
     @PostMapping("/addCategory")
     public ResponseEntity<Category> addCategory(@RequestBody Category category) {
@@ -53,6 +57,33 @@ public class AdminController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         categoryService.deleteCategory(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/addSubcategory")
+    public ResponseEntity<Subcategory> addSubcategory(@RequestBody Subcategory subcategory) {
+        Subcategory savedSubcategory = subcategoryService.saveSubcategory(subcategory);
+        return new ResponseEntity<>(savedSubcategory, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/subcategories/{id}")
+    public ResponseEntity<Subcategory> updateSubcategory(@PathVariable("id") UUID id, @RequestBody Subcategory subcategory) {
+        Subcategory existingSubcategory = subcategoryService.getSubcategoryById(id);
+        if (existingSubcategory == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        subcategory.setSubcategoryId(id);
+        Subcategory updatedSubcategory = subcategoryService.saveSubcategory(subcategory);
+        return new ResponseEntity<>(updatedSubcategory, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/subcategories/{id}")
+    public ResponseEntity<Void> deleteSubcategory(@PathVariable("id") UUID id) {
+        Subcategory subcategory = subcategoryService.getSubcategoryById(id);
+        if (subcategory == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        subcategoryService.deleteSubcategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

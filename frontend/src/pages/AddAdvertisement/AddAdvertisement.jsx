@@ -9,6 +9,7 @@ const { Option } = Select;
 
 const AddAdvertisement = () => {
     const [categories, setCategories] = useState([]);
+    const [subcategories, setSubcategories] = useState([]);
     const [fileList, setFileList] = useState([]);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -25,12 +26,22 @@ const AddAdvertisement = () => {
             }
         };
         fetchCategories();
+        const fetchSubcategories = async () => {
+            try {
+                const response = await axiosInstance.get('/subcategories');
+                setSubcategories(response.data);
+            } catch (error) {
+                console.error('Error fetching subcategories:', error);
+                message.error('Failed to fetch subcategories');
+            }
+        };
+        fetchSubcategories();
     }, []);
 
     const handleSubmit = async (formData) => {
         setLoading(true);
 
-        const queryParameters = `name=${encodeURIComponent(formData.name)}&description=${encodeURIComponent(formData.description)}&price=${formData.price}&categoryId=${formData.categoryId}`;
+        const queryParameters = `name=${encodeURIComponent(formData.name)}&description=${encodeURIComponent(formData.description)}&price=${formData.price}&categoryId=${formData.categoryId}&subcategoryId=${formData.subcategoryId}`;
         const endpoint = fileList.length > 0
             ? `/user/addProductWithImage?${queryParameters}`
             : `/user/addProduct?${queryParameters}`;
@@ -50,7 +61,8 @@ const AddAdvertisement = () => {
                 name: formData.name,
                 description: formData.description,
                 price: formData.price,
-                categoryId: formData.categoryId
+                categoryId: formData.categoryId,
+                subcategoryId: formData.subcategoryId
             }), config);
 
             if (response.status === 201) {
@@ -75,7 +87,7 @@ const AddAdvertisement = () => {
     return (
         <div className="add-advertisement-container">
             <Header />
-            <Form form={form} onFinish={handleSubmit} initialValues={{ name: '', description: '', price: '', categoryId: '' }}>
+            <Form form={form} onFinish={handleSubmit} initialValues={{ name: '', description: '', price: '', categoryId: '',subcategoryId: '' }}>
                 <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please enter the name' }]}>
                     <Input />
                 </Form.Item>
@@ -88,6 +100,11 @@ const AddAdvertisement = () => {
                 <Form.Item label="Category" name="categoryId" rules={[{ required: true, message: 'Please select a category' }]}>
                     <Select placeholder="Select a category">
                         {categories.map(category => <Option key={category.categoryId} value={category.categoryId}>{category.name}</Option>)}
+                    </Select>
+                </Form.Item>
+                <Form.Item label="Subcategory" name="subcategoryId" rules={[{ required: true, message: 'Please select a subcategory' }]}>
+                    <Select placeholder="Select a subcategory">
+                        {subcategories.map(subcategory => <Option key={subcategory.subcategoryId} value={subcategory.subcategoryId}>{subcategory.name}</Option>)}
                     </Select>
                 </Form.Item>
                 <Form.Item label="Images" name="images">
