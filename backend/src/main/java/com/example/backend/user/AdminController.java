@@ -1,5 +1,7 @@
 package com.example.backend.user;
 
+import com.example.backend.quality.Quality;
+import com.example.backend.quality.QualityService;
 import com.example.backend.category.Category;
 import com.example.backend.product.Product;
 import com.example.backend.category.CategoryService;
@@ -25,13 +27,15 @@ public class AdminController {
     private final CategoryService categoryService;
     private final ProductService productService;
     private final SubcategoryService subcategoryService;
+    private final QualityService qualityService;
 
     @Autowired
-    public AdminController(UserService userService, CategoryService categoryService, ProductService productService, SubcategoryService subcategoryService) {
+    public AdminController(UserService userService, CategoryService categoryService, ProductService productService, SubcategoryService subcategoryService, QualityService qualityService) {
         this.userService = userService;
         this.categoryService = categoryService;
         this.productService = productService;
         this.subcategoryService = subcategoryService;
+        this.qualityService = qualityService;
     }
     @PostMapping("/addCategory")
     public ResponseEntity<Category> addCategory(@RequestBody Category category) {
@@ -86,6 +90,33 @@ public class AdminController {
         subcategoryService.deleteSubcategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+    @PostMapping("/addQuality")
+    public ResponseEntity<Quality> addQuality(@RequestBody Quality quality) {
+        Quality savedQuality = qualityService.saveQuality(quality);
+        return new ResponseEntity<>(savedQuality, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/qualities/{id}")
+    public ResponseEntity<Quality> updateQuality(@PathVariable("id") UUID id, @RequestBody Quality quality) {
+        Quality existingQuality = qualityService.getQualityById(id);
+        if (existingQuality == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        quality.setQualityId(id);
+        Quality updatedQuality = qualityService.saveQuality(quality);
+        return new ResponseEntity<>(updatedQuality, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/qualities/{id}")
+    public ResponseEntity<Void> deleteQuality(@PathVariable("id") UUID id) {
+        Quality quality = qualityService.getQualityById(id);
+        if (quality == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        qualityService.deleteQuality(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getAllUsers() {

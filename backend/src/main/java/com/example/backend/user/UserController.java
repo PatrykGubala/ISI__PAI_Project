@@ -1,5 +1,7 @@
 package com.example.backend.user;
 
+import com.example.backend.quality.Quality;
+import com.example.backend.quality.QualityService;
 import com.example.backend.category.Category;
 import com.example.backend.subcategory.Subcategory;
 import com.example.backend.category.CategoryService;
@@ -34,15 +36,16 @@ public class UserController {
     private final StorageService storageService;
     private final MessageService messageService;
     private final SubcategoryService subcategoryService;
-
+    private final QualityService qualityService;
     @Autowired
-    public UserController(UserService userService, ProductService productService, CategoryService categoryService, StorageService storageService, MessageService messageService, SubcategoryService subcategoryService) {
+    public UserController(UserService userService, ProductService productService, CategoryService categoryService, StorageService storageService, MessageService messageService, SubcategoryService subcategoryService, QualityService qualityService) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
         this.storageService = storageService;
         this.messageService = messageService;
         this.subcategoryService = subcategoryService;
+        this.qualityService = qualityService;
     }
 
     @GetMapping("/profile")
@@ -80,17 +83,22 @@ public class UserController {
     }
 
     @PostMapping("/addProduct")
-    public ResponseEntity<?> addProduct(@RequestBody Product product, @RequestParam UUID categoryId,@RequestParam UUID subcategoryId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> addProduct(@RequestBody Product product, @RequestParam UUID categoryId,@RequestParam UUID subcategoryId,@RequestParam UUID qualityId, @AuthenticationPrincipal User user) {
         Category category = categoryService.getCategoryById(categoryId);
         Subcategory subcategory = subcategoryService.getSubcategoryById(subcategoryId);
+        Quality quality = qualityService.getQualityById(qualityId);
         if (category == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
         }
         if(subcategory == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subcategory not found");
         }
+        if(quality == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quality not found");
+        }
         product.setCategory(category);
         product.setSubcategory(subcategory);
+        product.setQuality(quality);
         product.setUser(user);
 
         Product savedProduct = productService.saveProduct(product);
@@ -106,6 +114,7 @@ public class UserController {
             @RequestParam("description") String description,
             @RequestParam("price") double price,
             @RequestParam("categoryId") UUID categoryId,
+            @RequestParam("qualityId") UUID qualityId,
             @RequestParam("subcategoryId") UUID subcategoryId,
             @RequestPart("images") MultipartFile[] images,
             @AuthenticationPrincipal User user) {
@@ -117,10 +126,14 @@ public class UserController {
         try {
             Category category = categoryService.getCategoryById(categoryId);
             Subcategory subcategory = subcategoryService.getSubcategoryById(subcategoryId);
+            Quality quality = qualityService.getQualityById(qualityId);
             if (category == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
             }
             if (subcategory == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subcategory not found");
+            }
+            if (quality == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subcategory not found");
             }
             Product product = new Product();
@@ -129,6 +142,7 @@ public class UserController {
             product.setPrice(price);
             product.setCategory(category);
             product.setSubcategory(subcategory);
+            product.setQuality(quality);
             product.setUser(user);
 
             List<ProductImage> productImages = new ArrayList<>();
