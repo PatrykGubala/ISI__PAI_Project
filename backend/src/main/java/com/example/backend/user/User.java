@@ -44,10 +44,10 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "first_name")

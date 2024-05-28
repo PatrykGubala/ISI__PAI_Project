@@ -55,6 +55,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                         .username(username)
                         .firstName(firstName)
                         .lastName(lastName)
+                        .password("*")
                         .profileNecessaryFieldsComplete(false)
                         .role(Role.USER)
                         .build();

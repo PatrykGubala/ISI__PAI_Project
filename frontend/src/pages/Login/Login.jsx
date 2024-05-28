@@ -71,7 +71,7 @@ const Login = () => {
                     <img
                         src='https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_"G"_logo.svg'
                         alt="Google logo" width="20" height="20"/>
-                    Login with Google
+                    Zaloguj z użyciem Google
                 </button>
             </div>
         </div>

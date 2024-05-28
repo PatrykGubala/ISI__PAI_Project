@@ -32,7 +32,7 @@ public class UserFileUploadController {
 
         User user = userService.getUserById(userId);
         if (user != null) {
-            user.setImageUrl(url);
+            user.setProfileImageUrl(url);
             userService.saveUser(user);
             redirectAttributes.addFlashAttribute("message",
                     "You successfully uploaded " + file.getOriginalFilename() + "!");

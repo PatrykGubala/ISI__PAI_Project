@@ -76,16 +76,16 @@ const AddAdvertisement = () => {
         <div className="add-advertisement-container">
             <Header />
             <Form form={form} onFinish={handleSubmit} initialValues={{ name: '', description: '', price: '', categoryId: '' }}>
-                <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please enter the name' }]}>
+                <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Proszę wprowadzić nazwę' }]}>
                     <Input />
                 </Form.Item>
-                <Form.Item label="Description" name="description" rules={[{ required: true, message: 'Please enter the description' }]}>
+                <Form.Item label="Description" name="description" rules={[{ required: true, message: 'Proszę wprowadzić opis' }]}>
                     <Input.TextArea />
                 </Form.Item>
-                <Form.Item label="Price" name="price" rules={[{ required: true, message: 'Please enter the price' }]}>
+                <Form.Item label="Price" name="price" rules={[{ required: true, message: 'Proszę wprowadzić cenę' }]}>
                     <Input type="number" />
                 </Form.Item>
-                <Form.Item label="Category" name="categoryId" rules={[{ required: true, message: 'Please select a category' }]}>
+                <Form.Item label="Category" name="categoryId" rules={[{ required: true, message: 'Proszę wybrać kategorię' }]}>
                     <Select placeholder="Select a category">
                         {categories.map(category => <Option key={category.categoryId} value={category.categoryId}>{category.name}</Option>)}
                     </Select>
