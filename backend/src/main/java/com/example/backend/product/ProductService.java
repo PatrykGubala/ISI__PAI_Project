@@ -14,4 +14,5 @@ public interface ProductService {
     Product updateProduct(Product product);
     void deleteProduct(UUID id);
     Page<Product> findProducts(Specification<Product> spec, Pageable pageable);
+    List<Product> getProductsByUserId(UUID userId);
 }

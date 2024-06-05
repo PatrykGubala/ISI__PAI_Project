@@ -83,7 +83,11 @@ public class UserController {
     }
 
     @PostMapping("/addProduct")
-    public ResponseEntity<?> addProduct(@RequestBody Product product, @RequestParam UUID categoryId,@RequestParam UUID subcategoryId,@RequestParam UUID qualityId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> addProduct(@RequestBody Product product,
+                                        @RequestParam UUID categoryId,
+                                        @RequestParam UUID subcategoryId,
+                                        @RequestParam UUID qualityId,
+                                        @AuthenticationPrincipal User user) {
         Category category = categoryService.getCategoryById(categoryId);
         Subcategory subcategory = subcategoryService.getSubcategoryById(subcategoryId);
         Quality quality = qualityService.getQualityById(qualityId);
@@ -216,4 +220,14 @@ public class UserController {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully");
     }
+
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getUserProducts(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        List<Product> products = productService.getProductsByUserId(user.getUserId());
+        return ResponseEntity.ok(products);
+    }
+
 }
