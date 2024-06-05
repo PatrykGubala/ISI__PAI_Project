@@ -6,7 +6,13 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
 
+}
 .profile-header {
     text-align: center;
     margin-bottom: 2rem;
@@ -61,6 +67,10 @@
 .profile-products {
     margin-top: 2rem;
 }
+.profile-tabs {
+    margin-top: 40px;
+
+
 
 .loading {
     display: flex;
@@ -68,3 +78,17 @@
     align-items: center;
     height: 100vh;
 }
+.history-card {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+
+.history-info {
+    display: flex;
+    align-items: center;
+}
+
+

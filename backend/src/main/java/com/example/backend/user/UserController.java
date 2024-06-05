@@ -216,4 +216,14 @@ public class UserController {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully");
     }
+
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getUserProducts(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        List<Product> products = productService.getProductsByUserId(user.getUserId());
+        return ResponseEntity.ok(products);
+    }
+
 }
