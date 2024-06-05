@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Typography, Image, Input, Button, Spin, Card, Tabs, Pagination } from 'antd';
 import axiosInstance from '../Interceptors/axiosInstance';
 import Header from '../../components/Header/Header';
-import ProductsList from '../../components/ProductsList/ProductsList';
+import ProfileProductsList from '../../components/ProfileProductsList/ProfileProductsList';
 import { Link } from 'react-router-dom';
 import './Profil.css';
 
@@ -42,9 +42,11 @@ const Profil = () => {
 
     const fetchProductsData = async (page) => {
         try {
-            const response = await axiosInstance.get(`/user/products?page=${page - 1}&size=${pageSize}`);
+            const response = await axiosInstance.get(`/user/products?page=${currentPage - 1}&size=${pageSize}`);
             setProducts(response.data);
-            setTotalProducts(response.data.length);
+            //setProducts(response.data.content);
+            setTotalProducts(response.data.totalElements);
+
         } catch (error) {
             console.error('Error fetching products:', error);
         }
@@ -56,6 +58,16 @@ const Profil = () => {
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
+    };
+
+    const deleteOffer = async (offerId) => {
+        try {
+            await axiosInstance.delete(`/user/products/${offerId}`);
+            setProducts(products.filter(product => product.id !== offerId));
+            console.log('Oferta została usunięta');
+        } catch (error) {
+            console.error('Błąd podczas usuwania oferty:', error);
+        }
     };
 
     if (loading) {
@@ -72,7 +84,7 @@ const Profil = () => {
             label: 'Twoje ogłoszenia',
             children: (
                 <div>
-                    <ProductsList categories={[]} products={products} />
+                    <ProfileProductsList categories={[]} products={products} onDelete={deleteOffer} />
                     <div className="pagination-container">
                         <Pagination
                             current={currentPage}
@@ -146,6 +158,7 @@ const Profil = () => {
                     </div>
                     <div className="profile-tabs">
                         <Tabs defaultActiveKey="1" items={items}/>
+
                     </div>
                 </div>
             </AntContent>

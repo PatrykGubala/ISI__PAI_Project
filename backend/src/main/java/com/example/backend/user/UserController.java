@@ -83,7 +83,11 @@ public class UserController {
     }
 
     @PostMapping("/addProduct")
-    public ResponseEntity<?> addProduct(@RequestBody Product product, @RequestParam UUID categoryId,@RequestParam UUID subcategoryId,@RequestParam UUID qualityId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> addProduct(@RequestBody Product product,
+                                        @RequestParam UUID categoryId,
+                                        @RequestParam UUID subcategoryId,
+                                        @RequestParam UUID qualityId,
+                                        @AuthenticationPrincipal User user) {
         Category category = categoryService.getCategoryById(categoryId);
         Subcategory subcategory = subcategoryService.getSubcategoryById(subcategoryId);
         Quality quality = qualityService.getQualityById(qualityId);
