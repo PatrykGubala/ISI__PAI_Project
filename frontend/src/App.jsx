@@ -10,13 +10,14 @@ import PrivateRoute from "./hooks/PrivateRoute.jsx";
 import Error404 from "./pages/Error404/Error404.jsx";
 import AddAdvertisement from "./pages/AddAdvertisement/AddAdvertisement.jsx";
 import Profil from "./pages/Profil/Profil.jsx"
-import AddCategory from "./pages/AddCategory/AddCategory.jsx"
+import ManageCategory from "./pages/ManageCategory/ManageCategory.jsx"
 import Purchase from "./pages/Purchase/Purchase.jsx";
 import Contact from "./pages/Contact/Contact.jsx";
 import AdminInbox from "./pages/AdminInbox/AdminInbox.jsx";
 import Success from "./pages/Success/Success.jsx";
 import Confirmation from "./pages/Confirmation/Confirmation.jsx";
 import Error from "./pages/Error/Error.jsx"
+import AdminPay from "./pages/AdminPay/AdminPay.jsx"
 const App = () => {
     return (
         <AuthProvider>
@@ -29,7 +30,7 @@ const App = () => {
 
                     <Route element={<PrivateRoute />}>
                         <Route exact path="/AddAdvertisement" element={<AddAdvertisement />} />
-                        <Route exact path="/AddCategory" element={<AddCategory />} />
+                        <Route exact path="/ManageCategory" element={<ManageCategory />} />
                         <Route exact path="/Profil" element={<Profil />} />
                         <Route exact path="/purchase/:id" element={<Purchase />} />
                         <Route exact path="/Contact" element={<Contact />} />
@@ -38,6 +39,7 @@ const App = () => {
                         <Route exact path="/Success" element={<Success />} />
                         <Route exact path="/Confirmation" element={<Confirmation />} />
                         <Route exact path="/Error" element={<Error />} />
+                        <Route exact path="/AdminPay" element={<AdminPay />} />
 
                     </Route>
                     <Route exact path="*" element={<Error404 />} />

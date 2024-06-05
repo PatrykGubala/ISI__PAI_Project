@@ -32,6 +32,8 @@ public class ProductController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "category", required = false) UUID categoryId,
+            @RequestParam(value = "subcategory", required = false) UUID subcategoryId,
+            @RequestParam(value = "quality", required = false) UUID qualityId,
             @RequestParam(value = "minPrice", required = false) Double minPrice,
             @RequestParam(value = "maxPrice", required = false) Double maxPrice) {
 
@@ -43,6 +45,12 @@ public class ProductController {
         }
         if (categoryId != null) {
             spec = spec.and(new ProductSpecification(new SearchCriteria("category.id", categoryId, SearchOperation.EQUALITY)));
+        }
+        if (qualityId != null) {
+            spec = spec.and(new ProductSpecification(new SearchCriteria("quality.id", qualityId, SearchOperation.EQUALITY)));
+        }
+        if (subcategoryId != null) {
+            spec = spec.and(new ProductSpecification(new SearchCriteria("subcategory.id", subcategoryId, SearchOperation.EQUALITY)));
         }
         if (minPrice != null) {
             spec = spec.and(new ProductSpecification(new SearchCriteria("price", minPrice, SearchOperation.GREATER_THAN)));
@@ -72,7 +80,8 @@ public class ProductController {
         productDTO.setDescription(product.getDescription());
         productDTO.setPrice(product.getPrice());
         productDTO.setCategory(product.getCategory());
-
+        productDTO.setSubcategory(product.getSubcategory());
+        productDTO.setQuality(product.getQuality());
         List<ProductImageDTO> productImageDTOs = new ArrayList<>();
         for (ProductImage productImage : product.getImages()) {
             ProductImageDTO productImageDTO = new ProductImageDTO();
