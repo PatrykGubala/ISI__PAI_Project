@@ -1,14 +1,13 @@
 package com.example.backend.order;
 
+import com.example.backend.product.Product;
 import com.example.backend.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -30,8 +29,9 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(nullable = false)
     private String paymentMethod;
@@ -48,7 +48,7 @@ public class Order {
                 "id=" + id +
                 ", orderDate=" + orderDate +
                 ", user=" + user +
-                ", orderItems=" + orderItems +
+                ", product=" + product +
                 ", paymentMethod='" + paymentMethod + '\'' +
                 ", deliveryAddress='" + deliveryAddress + '\'' +
                 ", price='" + price + '\'' +
