@@ -7,7 +7,7 @@ import com.example.backend.category.Category;
 import com.example.backend.category.CategoryField;
 import com.example.backend.category.CategoryRepository;
 import com.example.backend.category.FieldType;
-import com.example.backend.order.OrderItemRepository;
+import com.example.backend.order.Order;
 import com.example.backend.order.OrderRepository;
 import com.example.backend.product.Product;
 import com.example.backend.product.ProductAttribute;
@@ -19,6 +19,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,8 +39,7 @@ public class BackendApplication {
 			UserRepository userRepository,
 			CategoryRepository categoryRepository,
 			ProductRepository productRepository,
-			OrderRepository orderRepository,
-			OrderItemRepository orderItemRepository) {
+			OrderRepository orderRepository) {
 
 		return args -> {
 
@@ -164,6 +164,19 @@ public class BackendApplication {
 			} else {
 				System.out.println("Categories already exist.");
 			}
+
+			User user = userRepository.findByUsername("user").orElseThrow(() -> new RuntimeException("User not found"));
+			Product product = productRepository.findAll().stream().findFirst().orElseThrow(() -> new RuntimeException("No product found"));
+
+			Order order = new Order();
+			order.setOrderDate(new Date());
+			order.setUser(user);
+			order.setProduct(product);
+			order.setPaymentMethod("TE");
+			order.setDeliveryAddress("ST");
+			order.setPrice("123");
+			orderRepository.save(order);
+			System.out.println("Sample order with product added.");
 		};
 	}
 }

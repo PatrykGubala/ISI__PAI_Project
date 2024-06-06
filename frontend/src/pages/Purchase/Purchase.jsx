@@ -78,6 +78,24 @@ const Purchase = () => {
         navigate('/');
     };
 
+    const createOrder = async () => {
+        try {
+            const orderRequest = {
+                userId: userData.userId,
+                productId: id,
+                paymentMethod: 'Transfer',
+                deliveryAddress: `${userData.street}, ${userData.city}, ${userData.postalCode}`,
+                price: totalPrice.toString()
+            };
+
+            const response = await axiosInstance.post('/orders', orderRequest);
+            console.log('Order created:', response.data);
+
+            handleNavigation();
+        } catch (error) {
+            console.error('Error creating order:', error);
+        }
+    };
 
     if (!advertisementData) {
         return <div>Loading...</div>;
@@ -256,7 +274,7 @@ const Purchase = () => {
                         amount={totalPrice}
                         clientID={'ASRGeFLIV4kKWUSHrn5bA4Ozf7hnp9zVzi7TGqxv5Jacwjjv8ltlNBYMeR43MaGbzoEoeihAEPr5R5j0'}
                     />
-                    <Button type="primary" onClick={handleNavigation}>
+                    <Button type="primary" onClick={createOrder}>
                         Zapłać przelewem
                     </Button>
                 </div>

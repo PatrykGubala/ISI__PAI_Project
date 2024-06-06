@@ -2,6 +2,9 @@ package com.example.backend.user;
 
 import com.example.backend.category.CategoryDTO;
 import com.example.backend.category.CategoryRepository;
+import com.example.backend.order.Order;
+import com.example.backend.order.OrderRequest;
+import com.example.backend.order.OrderService;
 import com.example.backend.product.*;
 import com.example.backend.category.CategoryService;
 import com.example.backend.message.Message;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,15 +35,23 @@ public class UserController {
     private final CategoryRepository categoryRepository;
     private final StorageService storageService;
     private final MessageService messageService;
+    private final OrderService orderService;
+    private final ProductRepository productRepository;
+
+
 
     @Autowired
-    public UserController(UserService userService, ProductService productService, CategoryService categoryService, StorageService storageService, MessageService messageService, CategoryRepository categoryRepository) {
+    public UserController(UserService userService,ProductRepository productRepository, ProductService productService, CategoryService categoryService, StorageService storageService, MessageService messageService, CategoryRepository categoryRepository, OrderService orderService) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
         this.storageService = storageService;
         this.messageService = messageService;
         this.categoryRepository = categoryRepository;
+        this.orderService = orderService;
+        this.productRepository = productRepository;
+
+
 
     }
 
@@ -185,6 +197,18 @@ public class UserController {
         }
         List<Product> products = productService.getProductsByUserId(user.getUserId());
         return ResponseEntity.ok(products);
+    }
+
+    @PostMapping("/order")
+    public ResponseEntity<Order> createOrder(
+            @RequestBody OrderRequest orderRequest,
+            @AuthenticationPrincipal User user) {
+        if (user == null || !user.getUserId().equals(orderRequest.getUserId())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        Order createdOrder = orderService.createOrder(orderRequest);
+        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
 
 }
