@@ -4,20 +4,22 @@ import com.example.backend.auth.AuthResponse;
 import com.example.backend.auth.AuthService;
 import com.example.backend.auth.RegisterRequest;
 import com.example.backend.category.Category;
+import com.example.backend.category.CategoryField;
 import com.example.backend.category.CategoryRepository;
+import com.example.backend.category.FieldType;
 import com.example.backend.order.OrderItemRepository;
 import com.example.backend.order.OrderRepository;
 import com.example.backend.product.Product;
+import com.example.backend.product.ProductAttribute;
 import com.example.backend.product.ProductRepository;
-import com.example.backend.subcategory.Subcategory;
-import com.example.backend.subcategory.SubcategoryRepository;
 import com.example.backend.user.UserRepository;
+import com.example.backend.user.User;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static com.example.backend.user.Role.ADMIN;
@@ -35,7 +37,6 @@ public class BackendApplication {
 			AuthService authService,
 			UserRepository userRepository,
 			CategoryRepository categoryRepository,
-			SubcategoryRepository subcategoryRepository,
 			ProductRepository productRepository,
 			OrderRepository orderRepository,
 			OrderItemRepository orderItemRepository) {
@@ -78,48 +79,91 @@ public class BackendApplication {
 						existingUser -> System.out.println("Admin already exists."));
 			}
 
-/*			if (categoryRepository.findAll().isEmpty() || subcategoryRepository.findAll().isEmpty()) {
-				if (categoryRepository.findAll().isEmpty()) {
-					Category electronics = new Category(UUID.randomUUID(), "Elektronika", "No rzeczy elektorniczne");
-					Category furniture = new Category(UUID.randomUUID(), "Meble", "Meble i wgl");
+			if (categoryRepository.findAll().isEmpty()) {
+				Category motorization = new Category();
+				motorization.setCategoryId(UUID.randomUUID());
+				motorization.setName("Motorization");
+				motorization.setDescription("All motor vehicles");
+				motorization.setFields(List.of(
+						new CategoryField("Mileage", FieldType.RANGE, true, 0, 200000, 0, 200000),
+						new CategoryField("Condition", FieldType.ENUM, true, List.of("NEW", "USED"), List.of("NEW", "USED"))
+				));
 
-					electronics = categoryRepository.save(electronics);
-					furniture = categoryRepository.save(furniture);
+				motorization = categoryRepository.save(motorization);
 
-					List<Product> products = List.of(
-							new Product(UUID.randomUUID(), "Smartfon", "Nowy dobry tel", 1999.99, electronics, null, Collections.emptyList()),
-							new Product(UUID.randomUUID(), "Laptop", "Gamingowy laptop", 5299.99, electronics, null, Collections.emptyList()),
-							new Product(UUID.randomUUID(), "Krzesło gamingowe", "My name is PEWDIEPIE", 1999.99, furniture, null, Collections.emptyList()),
-							new Product(UUID.randomUUID(), "Biurko", "Krzesło biurowe", 2999.99, furniture, null, Collections.emptyList())
-					);
+				Category cars = new Category();
+				cars.setCategoryId(UUID.randomUUID());
+				cars.setName("Cars");
+				cars.setDescription("Four-wheeled vehicles");
+				cars.setParentCategory(motorization);
+				cars.setFields(List.of(
+						new CategoryField("Brand", FieldType.ENUM, true, List.of("Toyota", "Honda"), List.of("Toyota", "Honda")),
+						new CategoryField("Mileage", FieldType.RANGE, true, 0, 200000, 0, 200000),
+						new CategoryField("Condition", FieldType.ENUM, true, List.of("NEW", "USED"), List.of("NEW", "USED"))
+				));
 
-					productRepository.saveAll(products);
-					System.out.println("Categories and products added.");
-				} else {
-					System.out.println("Categories already exist.");
-				}
+				Category motorcycles = new Category();
+				motorcycles.setCategoryId(UUID.randomUUID());
+				motorcycles.setName("Motorcycles");
+				motorcycles.setDescription("Two-wheeled vehicles");
+				motorcycles.setParentCategory(motorization);
+				motorcycles.setFields(List.of(
+						new CategoryField("Brand", FieldType.ENUM, true, List.of("Yamaha", "Kawasaki"), List.of("Yamaha", "Kawasaki")),
+						new CategoryField("Mileage", FieldType.RANGE, true, 0, 200000, 0, 200000),
+						new CategoryField("Condition", FieldType.ENUM, true, List.of("NEW", "USED"), List.of("NEW", "USED"))
+				));
 
-				if (subcategoryRepository.findAll().isEmpty()) {
-					Subcategory subcat1 = new Subcategory(UUID.randomUUID(), "subcat1", "No rzeczy elektorniczne");
-					Subcategory subcat2 = new Subcategory(UUID.randomUUID(), "subcat2", "Meble i wgl");
+				cars = categoryRepository.save(cars);
+				motorcycles = categoryRepository.save(motorcycles);
 
-					subcat1 = subcategoryRepository.save(subcat1);
-					subcat2 = subcategoryRepository.save(subcat2);
+				motorization.setSubcategories(List.of(cars, motorcycles));
+				categoryRepository.save(motorization);
+				System.out.println("Motorization category with Cars and Motorcycles subcategories added.");
 
-					List<Product> products = List.of(
-							new Product(UUID.randomUUID(), "Smartfon", "Nowy dobry tel", 1999.99, electronics, subcat1, Collections.emptyList()),
-							new Product(UUID.randomUUID(), "Laptop", "Gamingowy laptop", 5299.99, electronics, subcat1, Collections.emptyList()),
-							new Product(UUID.randomUUID(), "Krzesło gamingowe", "My name is PEWDIEPIE", 1999.99, furniture, subcat2, Collections.emptyList()),
-							new Product(UUID.randomUUID(), "Biurko", "Krzesło biurowe", 2999.99, furniture, subcat2, Collections.emptyList())
-					);
+				User user = userRepository.findByUsername("user").orElseThrow(() -> new RuntimeException("User not found"));
 
-					productRepository.saveAll(products);
-					System.out.println("Subcategories and products added.");
-				} else {
-					System.out.println("Subcategories already exist.");
-				}
-			}*/
+				Product toyotaCorolla = new Product(UUID.randomUUID(), "Toyota Corolla", "A reliable car", 15000.00, cars, null, user, null);
+				Product hondaCivic = new Product(UUID.randomUUID(), "Honda Civic", "A sporty car", 18000.00, cars, null, user, null);
+				Product yamahaYZFR3 = new Product(UUID.randomUUID(), "Yamaha YZF-R3", "A sporty motorcycle", 6000.00, motorcycles, null, user, null);
+				Product kawasakiNinja400 = new Product(UUID.randomUUID(), "Kawasaki Ninja 400", "A powerful motorcycle", 7000.00, motorcycles, null, user, null);
 
+				toyotaCorolla.setAttributes(List.of(
+						new ProductAttribute("Brand", "Toyota", toyotaCorolla),
+						new ProductAttribute("Model", "Corolla", toyotaCorolla),
+						new ProductAttribute("Year", "2015", toyotaCorolla),
+						new ProductAttribute("Mileage", "50000", toyotaCorolla),
+						new ProductAttribute("Condition", "Used", toyotaCorolla)
+				));
+
+				hondaCivic.setAttributes(List.of(
+						new ProductAttribute("Brand", "Honda", hondaCivic),
+						new ProductAttribute("Model", "Civic", hondaCivic),
+						new ProductAttribute("Year", "2018", hondaCivic),
+						new ProductAttribute("Mileage", "30000", hondaCivic),
+						new ProductAttribute("Condition", "Used", hondaCivic)
+				));
+
+				yamahaYZFR3.setAttributes(List.of(
+						new ProductAttribute("Brand", "Yamaha", yamahaYZFR3),
+						new ProductAttribute("Model", "YZF-R3", yamahaYZFR3),
+						new ProductAttribute("Year", "2019", yamahaYZFR3),
+						new ProductAttribute("Mileage", "10000", yamahaYZFR3),
+						new ProductAttribute("Condition", "Used", yamahaYZFR3)
+				));
+
+				kawasakiNinja400.setAttributes(List.of(
+						new ProductAttribute("Brand", "Kawasaki", kawasakiNinja400),
+						new ProductAttribute("Model", "Ninja 400", kawasakiNinja400),
+						new ProductAttribute("Year", "2020", kawasakiNinja400),
+						new ProductAttribute("Mileage", "5000", kawasakiNinja400),
+						new ProductAttribute("Condition", "Used", kawasakiNinja400)
+				));
+
+				productRepository.saveAll(List.of(toyotaCorolla, hondaCivic, yamahaYZFR3, kawasakiNinja400));
+				System.out.println("Products added to Cars and Motorcycles categories.");
+			} else {
+				System.out.println("Categories already exist.");
+			}
 		};
 	}
 }

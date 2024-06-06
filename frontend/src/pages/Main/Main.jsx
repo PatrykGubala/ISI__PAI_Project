@@ -26,24 +26,10 @@ const Main = () => {
     const { login: authenticateUser } = useContext(AuthContext);
 
     useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const accessToken = queryParams.get('access_token');
-        const refreshToken = queryParams.get('refresh_token');
-
-        if (accessToken && refreshToken) {
-            localStorage.setItem('access_token', accessToken);
-            localStorage.setItem('refresh_token', refreshToken);
-            authenticateUser();
-            navigate('/');
-        }
-    }, [navigate, authenticateUser]);
-
-    useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = async (filters = {}) => {
             try {
-                const response = await axiosInstance.get(`/products?page=${currentPage - 1}&size=${pageSize}`, {
-                });
-                console.log('All products:', response.data.content);
+                const queryString = new URLSearchParams({ ...filters, page: currentPage - 1, size: pageSize }).toString();
+                const response = await axiosInstance.get(`/products?${queryString}`);
                 setProducts(response.data.content);
                 setTotalProducts(response.data.totalElements);
             } catch (error) {
@@ -53,8 +39,28 @@ const Main = () => {
         fetchData();
     }, [currentPage]);
 
-    const handleFilter = (values) => {
-        console.log('Filtrowanie z wartościami:', values);
+    const handleFilter = async (values) => {
+        const filters = {};
+
+        if (values.category) filters.category = values.category;
+        if (values.priceFrom) filters.minPrice = values.priceFrom;
+        if (values.priceTo) filters.maxPrice = values.priceTo;
+
+        Object.keys(values).forEach(key => {
+            if (key.startsWith('attributes')) {
+                filters[key] = values[key];
+            }
+        });
+
+        try {
+            const queryString = new URLSearchParams({ ...filters, page: 0, size: pageSize }).toString();
+            const response = await axiosInstance.get(`/products?${queryString}`);
+            setProducts(response.data.content);
+            setTotalProducts(response.data.totalElements);
+            setCurrentPage(1);
+        } catch (error) {
+            console.error('Error fetching filtered products:', error);
+        }
     };
 
     const handlePageChange = (page) => {
@@ -76,7 +82,6 @@ const Main = () => {
                         onChange={handlePageChange}
                     />
                 </div>
-
             </AntContent>
             <Footer />
         </Layout>

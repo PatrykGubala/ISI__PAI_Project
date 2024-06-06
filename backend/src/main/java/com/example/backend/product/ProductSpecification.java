@@ -22,14 +22,26 @@ public class ProductSpecification implements Specification<Product> {
                     if (keys.length == 2 && "category".equals(keys[0]) && "id".equals(keys[1])) {
                         Join<Product, Category> categoryJoin = root.join("category");
                         yield builder.equal(categoryJoin.get("id"), criteria.getValue());
+                    } else if (keys.length == 2 && "attributes".equals(keys[0])) {
+                        Join<Product, ProductAttribute> attributeJoin = root.join("attributes");
+                        Predicate namePredicate = builder.equal(attributeJoin.get("name"), keys[1]);
+                        Predicate valuePredicate;
+                        if (criteria.getValue() instanceof String) {
+                            valuePredicate = builder.equal(attributeJoin.get("stringValue"), criteria.getValue());
+                        } else if (criteria.getValue() instanceof Double) {
+                            valuePredicate = builder.equal(attributeJoin.get("doubleValue"), criteria.getValue());
+                        } else {
+                            throw new IllegalArgumentException("Unsupported value type: " + criteria.getValue().getClass());
+                        }
+                        yield builder.and(namePredicate, valuePredicate);
                     }
                 }
                 yield builder.equal(root.get(criteria.getKey()), criteria.getValue());
-            }            case NEGATION -> builder.notEqual(root.get(criteria.getKey()), criteria.getValue());
+            }
+            case NEGATION -> builder.notEqual(root.get(criteria.getKey()), criteria.getValue());
             case GREATER_THAN -> builder.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());
             case LESS_THAN -> builder.lessThan(root.get(criteria.getKey()), criteria.getValue().toString());
             case LIKE -> builder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
-            default -> null;
         };
     }
 }
