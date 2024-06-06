@@ -85,7 +85,6 @@ public class BackendApplication {
 				motorization.setName("Motorization");
 				motorization.setDescription("All motor vehicles");
 				motorization.setFields(List.of(
-						new CategoryField("Brand", FieldType.ENUM, true, List.of("Toyota", "Honda", "Yamaha", "Kawasaki"), List.of("Toyota", "Honda", "Yamaha", "Kawasaki")),
 						new CategoryField("Mileage", FieldType.RANGE, true, 0, 200000, 0, 200000),
 						new CategoryField("Condition", FieldType.ENUM, true, List.of("NEW", "USED"), List.of("NEW", "USED"))
 				));
@@ -97,14 +96,22 @@ public class BackendApplication {
 				cars.setName("Cars");
 				cars.setDescription("Four-wheeled vehicles");
 				cars.setParentCategory(motorization);
-				cars.setFields(motorization.getFields());
+				cars.setFields(List.of(
+						new CategoryField("Brand", FieldType.ENUM, true, List.of("Toyota", "Honda"), List.of("Toyota", "Honda")),
+						new CategoryField("Mileage", FieldType.RANGE, true, 0, 200000, 0, 200000),
+						new CategoryField("Condition", FieldType.ENUM, true, List.of("NEW", "USED"), List.of("NEW", "USED"))
+				));
 
 				Category motorcycles = new Category();
 				motorcycles.setCategoryId(UUID.randomUUID());
 				motorcycles.setName("Motorcycles");
 				motorcycles.setDescription("Two-wheeled vehicles");
 				motorcycles.setParentCategory(motorization);
-				motorcycles.setFields(motorization.getFields());
+				motorcycles.setFields(List.of(
+						new CategoryField("Brand", FieldType.ENUM, true, List.of("Yamaha", "Kawasaki"), List.of("Yamaha", "Kawasaki")),
+						new CategoryField("Mileage", FieldType.RANGE, true, 0, 200000, 0, 200000),
+						new CategoryField("Condition", FieldType.ENUM, true, List.of("NEW", "USED"), List.of("NEW", "USED"))
+				));
 
 				cars = categoryRepository.save(cars);
 				motorcycles = categoryRepository.save(motorcycles);
@@ -117,7 +124,7 @@ public class BackendApplication {
 
 				Product toyotaCorolla = new Product(UUID.randomUUID(), "Toyota Corolla", "A reliable car", 15000.00, cars, null, user, null);
 				Product hondaCivic = new Product(UUID.randomUUID(), "Honda Civic", "A sporty car", 18000.00, cars, null, user, null);
-				Product yamahaYZFR3 = new Product(UUID.randomUUID(), "Yamaha YZF-R3", "A sporty motorcycle", 6000.00, motorcycles, null,user, null);
+				Product yamahaYZFR3 = new Product(UUID.randomUUID(), "Yamaha YZF-R3", "A sporty motorcycle", 6000.00, motorcycles, null, user, null);
 				Product kawasakiNinja400 = new Product(UUID.randomUUID(), "Kawasaki Ninja 400", "A powerful motorcycle", 7000.00, motorcycles, null, user, null);
 
 				toyotaCorolla.setAttributes(List.of(
