@@ -74,6 +74,11 @@ const Purchase = () => {
         setShowInvoiceFields(e.target.checked);
     };
 
+    const handleNavigation = () => {
+        navigate('/');
+    };
+
+
     if (!advertisementData) {
         return <div>Loading...</div>;
     }
@@ -251,6 +256,9 @@ const Purchase = () => {
                         amount={totalPrice}
                         clientID={'ASRGeFLIV4kKWUSHrn5bA4Ozf7hnp9zVzi7TGqxv5Jacwjjv8ltlNBYMeR43MaGbzoEoeihAEPr5R5j0'}
                     />
+                    <Button type="primary" onClick={handleNavigation}>
+                        Zapłać przelewem
+                    </Button>
                 </div>
             </div>
         </div>

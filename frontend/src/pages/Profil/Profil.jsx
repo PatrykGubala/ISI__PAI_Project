@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Image, Input, Button, Spin } from 'antd';
+import { Layout, Typography, Image, Input, Button, Spin, Card, Tabs, Pagination } from 'antd';
 import axiosInstance from '../Interceptors/axiosInstance';
 import Header from '../../components/Header/Header';
-import ProductsList from '../../components/ProductsList/ProductsList';
+import ProfileProductsList from '../../components/ProfileProductsList/ProfileProductsList';
 import { Link } from 'react-router-dom';
 import './Profil.css';
 
@@ -14,39 +14,61 @@ const Profil = () => {
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
     const username = localStorage.getItem('username');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const pageSize = 5;
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
                 let response;
-
-                 response = await axiosInstance.post('/auth/refresh-token');
+                response = await axiosInstance.post('/auth/refresh-token');
                 const access_token = response.data.access_token;
                 const refresh_token = response.data.refresh_token;
                 localStorage.setItem('access_token', access_token);
                 localStorage.setItem('refresh_token', refresh_token);
-                 response = await axiosInstance.get('/user/profile');
+                response = await axiosInstance.get('/user/profile');
                 const userData = response.data;
                 setProfileData(userData);
+
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
         };
 
-        const fetchProductsData = async () => {
-            try {
-                let response;
-                response = await axiosInstance.get('/products?page=0&size=5');
-                setProducts(response.data.content);
-            } catch (error) {
-                console.error('Error fetching products:', error);
-            }
-        };
-
         fetchProfileData();
-        fetchProductsData();
     }, [username]);
+
+    const fetchProductsData = async (page) => {
+        try {
+            const response = await axiosInstance.get(`/user/products?page=${currentPage - 1}&size=${pageSize}`);
+            setProducts(response.data);
+            //setProducts(response.data.content);
+            setTotalProducts(response.data.totalElements);
+
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchProductsData(currentPage);
+    }, [currentPage]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const deleteOffer = async (offerId) => {
+        try {
+            await axiosInstance.delete(`/user/products/${offerId}`);
+            setProducts(products.filter(product => product.id !== offerId));
+            console.log('Oferta została usunięta');
+        } catch (error) {
+            console.error('Błąd podczas usuwania oferty:', error);
+        }
+    };
 
     if (loading) {
         return (
@@ -55,6 +77,42 @@ const Profil = () => {
             </div>
         );
     }
+
+    const items = [
+        {
+            key: '1',
+            label: 'Twoje ogłoszenia',
+            children: (
+                <div>
+                    <ProfileProductsList categories={[]} products={products} onDelete={deleteOffer} />
+                    <div className="pagination-container">
+                        <Pagination
+                            current={currentPage}
+                            total={totalProducts}
+                            pageSize={pageSize}
+                            onChange={handlePageChange}
+                        />
+                    </div>
+                </div>
+            ),
+        },
+        {
+            key: '2',
+            label: 'Historia zakupów',
+            children: (
+                <Card className="history-card" hoverable>
+                    <div className="history-details">
+                        <h3>Historia</h3>
+                    </div>
+                </Card>
+            ),
+        },
+        {
+            key: '3',
+            label: 'Płatności',
+            children: 'Content of Tab Pane 3',
+        },
+    ];
 
     return (
         <Layout>
@@ -78,15 +136,17 @@ const Profil = () => {
                             <div className="profile-info">
                                 <div>
                                     <strong>Imię i Nazwisko:</strong>
-                                    <Input className="input" name="fullName" value={`${profileData.firstName} ${profileData.lastName}`} readOnly />
+                                    <Input className="input" name="fullName"
+                                           value={`${profileData.firstName} ${profileData.lastName}`} readOnly/>
                                 </div>
                                 <div>
                                     <strong>Email:</strong>
-                                    <Input className="input" name="email" value={profileData.email} readOnly />
+                                    <Input className="input" name="email" value={profileData.email} readOnly/>
                                 </div>
                                 <div>
                                     <strong>Numer telefonu:</strong>
-                                    <Input className="input" name="phoneNumber" value={profileData.phoneNumber} readOnly />
+                                    <Input className="input" name="phoneNumber" value={profileData.phoneNumber}
+                                           readOnly/>
                                 </div>
                             </div>
                             <div className="edit-button">
@@ -96,9 +156,9 @@ const Profil = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="profile-products">
-                        <Title level={3}>Twoje Ogłoszenia</Title>
-                        <ProductsList categories={[]} products={products} />
+                    <div className="profile-tabs">
+                        <Tabs defaultActiveKey="1" items={items}/>
+
                     </div>
                 </div>
             </AntContent>

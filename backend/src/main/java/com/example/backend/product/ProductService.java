@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
-    ProductDTO getProductById(UUID id);
-    ProductDTO saveProduct(ProductDTO productDTO);
-    ProductDTO updateProduct(ProductDTO productDTO);
+    List<Product> getAllProducts();
+    Product getProductById(UUID id);
+    Product saveProduct(Product product);
+    Product updateProduct(Product product);
     void deleteProduct(UUID id);
     Page<ProductDTO> findProducts(Specification<Product> spec, Pageable pageable);
+    List<Product> getProductsByUserId(UUID userId);
 }

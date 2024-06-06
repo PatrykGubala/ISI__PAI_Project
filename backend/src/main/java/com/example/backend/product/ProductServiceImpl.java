@@ -55,4 +55,8 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> products = productRepository.findAll(spec, pageable);
         return products.map(ProductDTO::convertToProductDTO);
     }
+    @Override
+    public List<Product> getProductsByUserId(UUID userId) {
+        return productRepository.findByUserUserId(userId);
+    }
 }
