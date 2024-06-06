@@ -50,8 +50,7 @@ public class CategoryField {
     }
     public Class<?> getValueType() {
         return switch (fieldType) {
-            case STRING, ENUM -> String.class;
-            case INTEGER -> Integer.class;
+            case ENUM -> String.class;
             case RANGE -> Double.class;
         };
     }

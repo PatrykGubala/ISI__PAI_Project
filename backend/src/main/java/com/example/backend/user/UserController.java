@@ -80,7 +80,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
         }
         productDTO.setCategory(categoryDTO);
-        productDTO.setUser(user);
+        productDTO.setUser(UserDTO.convertToDTO(user));
 
         ProductDTO savedProduct = productService.saveProduct(productDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
@@ -110,7 +110,7 @@ public class UserController {
             productDTO.setDescription(description);
             productDTO.setPrice(price);
             productDTO.setCategory(categoryDTO);
-            productDTO.setUser(user);
+            productDTO.setUser(UserDTO.convertToDTO(user));
 
             List<ProductImageDTO> productImageDTOs = new ArrayList<>();
 
@@ -149,7 +149,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         productDTO.setId(productId);
-        productDTO.setUser(user);
+        productDTO.setUser(UserDTO.convertToDTO(user));
 
         List<ProductImageDTO> productImageDTOs = new ArrayList<>();
         for (MultipartFile file : images) {

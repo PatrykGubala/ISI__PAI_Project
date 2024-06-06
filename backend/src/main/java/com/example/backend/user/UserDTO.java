@@ -29,4 +29,16 @@ public class UserDTO{
         dto.setRole(user.getRole());
         return dto;
     }
+
+    public static User convertToEntity(UserDTO userDTO) {
+        User user = new User();
+        user.setUserId(userDTO.getUserId());
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setRole(userDTO.getRole());
+        return user;
+    }
 }

@@ -13,6 +13,7 @@ import com.example.backend.product.Product;
 import com.example.backend.product.ProductAttribute;
 import com.example.backend.product.ProductRepository;
 import com.example.backend.user.UserRepository;
+import com.example.backend.user.User;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -78,7 +79,6 @@ public class BackendApplication {
 						existingUser -> System.out.println("Admin already exists."));
 			}
 
-
 			if (categoryRepository.findAll().isEmpty()) {
 				Category motorization = new Category();
 				motorization.setCategoryId(UUID.randomUUID());
@@ -113,10 +113,12 @@ public class BackendApplication {
 				categoryRepository.save(motorization);
 				System.out.println("Motorization category with Cars and Motorcycles subcategories added.");
 
-				Product toyotaCorolla = new Product(UUID.randomUUID(), "Toyota Corolla", "A reliable car", 15000.00, cars, null, null,null);
-				Product hondaCivic = new Product(UUID.randomUUID(), "Honda Civic", "A sporty car", 18000.00, cars, null, null, null);
-				Product yamahaYZFR3 = new Product(UUID.randomUUID(), "Yamaha YZF-R3", "A sporty motorcycle", 6000.00, motorcycles, null, null, null);
-				Product kawasakiNinja400 = new Product(UUID.randomUUID(), "Kawasaki Ninja 400", "A powerful motorcycle", 7000.00, motorcycles, null, null, null);
+				User user = userRepository.findByUsername("user").orElseThrow(() -> new RuntimeException("User not found"));
+
+				Product toyotaCorolla = new Product(UUID.randomUUID(), "Toyota Corolla", "A reliable car", 15000.00, cars, null, user, null);
+				Product hondaCivic = new Product(UUID.randomUUID(), "Honda Civic", "A sporty car", 18000.00, cars, null, user, null);
+				Product yamahaYZFR3 = new Product(UUID.randomUUID(), "Yamaha YZF-R3", "A sporty motorcycle", 6000.00, motorcycles, null,user, null);
+				Product kawasakiNinja400 = new Product(UUID.randomUUID(), "Kawasaki Ninja 400", "A powerful motorcycle", 7000.00, motorcycles, null, user, null);
 
 				toyotaCorolla.setAttributes(List.of(
 						new ProductAttribute("Brand", "Toyota", toyotaCorolla),
@@ -156,7 +158,5 @@ public class BackendApplication {
 				System.out.println("Categories already exist.");
 			}
 		};
-
-
 	}
 }

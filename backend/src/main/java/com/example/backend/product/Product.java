@@ -2,6 +2,7 @@ package com.example.backend.product;
 
 import com.example.backend.category.Category;
 import com.example.backend.user.User;
+import com.example.backend.user.UserDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

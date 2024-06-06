@@ -33,4 +33,13 @@ public class CategoryController {
         }
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
+
+    @GetMapping("/{id}/fields")
+    public ResponseEntity<List<CategoryField>> getCategoryFields(@PathVariable("id") UUID id) {
+        List<CategoryField> fields = categoryService.getCategoryFields(id);
+        if (fields == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(fields, HttpStatus.OK);
+    }
 }

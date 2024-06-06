@@ -24,16 +24,11 @@
 .row {
     display: flex;
     flex-wrap: wrap;
+    gap: 10px;
 }
 
-.col {
-    flex-basis: calc(33.33% - 10px);
-    margin-right: 10px;
-}
-
-.colPrice {
-    flex-basis: calc(16% - 10px);
-    margin-right: 10px;
+.full-width {
+    flex: 1 1 calc(33.33% - 10px);
 }
 
 .custom-datepicker {

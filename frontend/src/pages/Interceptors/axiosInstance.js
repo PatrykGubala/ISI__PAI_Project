@@ -9,7 +9,6 @@ const axiosInstance = axios.create({
     },
 });
 
-// Handling request token refresh if needed
 axiosInstance.interceptors.request.use(async config => {
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
@@ -43,7 +42,6 @@ axiosInstance.interceptors.request.use(async config => {
     return config;
 }, error => Promise.reject(error));
 
-// Handling unauthorized responses globally
 axiosInstance.interceptors.response.use(response => response, async error => {
     if (error.response && error.response.status === 401 && !error.config._retry) {
         error.config._retry = true;
@@ -64,7 +62,7 @@ axiosInstance.interceptors.response.use(response => response, async error => {
         } catch (refreshError) {
             console.error('Token refresh failed:', refreshError);
             localStorage.clear();
-            window.location = '/login'; // Redirect to login
+            window.location = '/login';
             return Promise.reject(refreshError);
         }
     }

@@ -2,7 +2,7 @@ package com.example.backend.product;
 
 import com.example.backend.category.CategoryDTO;
 import com.example.backend.category.CategoryRepository;
-import com.example.backend.user.User;
+import com.example.backend.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ public class ProductDTO {
     private String name;
     private String description;
     private double price;
-    private User user;
+    private UserDTO user;
     private CategoryDTO category;
     private List<ProductImageDTO> images;
     private List<ProductAttributeDTO> productAttributes;
@@ -31,7 +31,7 @@ public class ProductDTO {
         productDTO.setDescription(product.getDescription());
         productDTO.setPrice(product.getPrice());
         productDTO.setCategory(CategoryDTO.convertToDTO(product.getCategory()));
-        productDTO.setUser(product.getUser());
+        productDTO.setUser(UserDTO.convertToDTO(product.getUser()));
 
         List<ProductImageDTO> productImageDTOs = product.getImages().stream()
                 .map(image -> new ProductImageDTO(image.getId(), image.getImageUrl()))
@@ -53,7 +53,7 @@ public class ProductDTO {
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setCategory(CategoryDTO.convertToEntity(productDTO.getCategory(), categoryRepository));
-        product.setUser(productDTO.getUser());
+        product.setUser(UserDTO.convertToEntity(productDTO.getUser()));
 
         List<ProductImage> productImages = productDTO.getImages().stream()
                 .map(imageDTO -> new ProductImage(imageDTO.getId(), imageDTO.getImageUrl(), product))

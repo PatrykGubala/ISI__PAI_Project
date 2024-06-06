@@ -66,21 +66,32 @@ public class AuthService {
     }
 
 
+
     @Transactional
     protected void saveUserToken(User user, String jwtToken) {
         Optional<Token> existingToken = tokenRepository.findByToken(jwtToken);
-        if (existingToken.isPresent()) {
-            return;
-        }
 
-        var token = Token.builder()
-                .user(user)
-                .token(jwtToken)
-                .tokenType(TokenType.BEARER)
-                .expired(false)
-                .revoked(false)
-                .build();
-        tokenRepository.save(token);
+        if (existingToken.isPresent()) {
+            Token token = existingToken.get();
+            token.setExpired(false);
+            token.setRevoked(false);
+            tokenRepository.save(token);
+        } else {
+            tokenRepository.findByToken(jwtToken).ifPresent(token -> {
+                token.setExpired(true);
+                token.setRevoked(true);
+                tokenRepository.save(token);
+            });
+
+            Token newToken = Token.builder()
+                    .user(user)
+                    .token(jwtToken)
+                    .tokenType(TokenType.BEARER)
+                    .expired(false)
+                    .revoked(false)
+                    .build();
+            tokenRepository.save(newToken);
+        }
     }
     @Transactional
     protected void revokeAllUserTokens(User user) {

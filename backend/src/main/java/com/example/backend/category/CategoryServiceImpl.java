@@ -36,7 +36,10 @@ public class CategoryServiceImpl implements CategoryService {
         Category savedCategory = categoryRepository.save(category);
         return CategoryDTO.convertToDTO(savedCategory);
     }
-
+    @Override
+    public List<CategoryField> getCategoryFields(UUID id) {
+        return categoryRepository.findById(id).map(Category::getFields).orElse(null);
+    }
     @Override
     public void deleteCategory(UUID id) {
         categoryRepository.deleteById(id);

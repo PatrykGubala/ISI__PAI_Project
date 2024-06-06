@@ -26,13 +26,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(ProductDTO::convertToProductDTO)
-                .toList();
-    }
-
-    @Override
     public ProductDTO getProductById(UUID id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
         return optionalProduct.map(ProductDTO::convertToProductDTO).orElse(null);

@@ -25,7 +25,14 @@ public class ProductSpecification implements Specification<Product> {
                     } else if (keys.length == 2 && "attributes".equals(keys[0])) {
                         Join<Product, ProductAttribute> attributeJoin = root.join("attributes");
                         Predicate namePredicate = builder.equal(attributeJoin.get("name"), keys[1]);
-                        Predicate valuePredicate = builder.equal(attributeJoin.get("value"), criteria.getValue().toString());
+                        Predicate valuePredicate;
+                        if (criteria.getValue() instanceof String) {
+                            valuePredicate = builder.equal(attributeJoin.get("stringValue"), criteria.getValue());
+                        } else if (criteria.getValue() instanceof Double) {
+                            valuePredicate = builder.equal(attributeJoin.get("doubleValue"), criteria.getValue());
+                        } else {
+                            throw new IllegalArgumentException("Unsupported value type: " + criteria.getValue().getClass());
+                        }
                         yield builder.and(namePredicate, valuePredicate);
                     }
                 }

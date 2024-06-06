@@ -8,4 +8,5 @@ public interface CategoryService {
     CategoryDTO getCategoryById(UUID id);
     CategoryDTO saveCategory(CategoryCreateDTO categoryDTO);
     void deleteCategory(UUID id);
+    List<CategoryField> getCategoryFields(UUID id);
 }
