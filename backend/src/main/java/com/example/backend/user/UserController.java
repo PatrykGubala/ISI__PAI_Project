@@ -1,18 +1,13 @@
 package com.example.backend.user;
 
-import com.example.backend.quality.Quality;
-import com.example.backend.quality.QualityService;
-import com.example.backend.category.Category;
-import com.example.backend.subcategory.Subcategory;
+import com.example.backend.category.CategoryDTO;
+import com.example.backend.category.CategoryRepository;
+import com.example.backend.product.*;
 import com.example.backend.category.CategoryService;
 import com.example.backend.message.Message;
 import com.example.backend.message.MessageService;
-import com.example.backend.product.Product;
-import com.example.backend.product.ProductImage;
-import com.example.backend.product.ProductService;
 import com.example.backend.storage.StorageController;
 import com.example.backend.storage.StorageService;
-import com.example.backend.subcategory.SubcategoryService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,29 +28,25 @@ public class UserController {
     private final UserService userService;
     private final ProductService productService;
     private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
     private final StorageService storageService;
     private final MessageService messageService;
-    private final SubcategoryService subcategoryService;
-    private final QualityService qualityService;
+
     @Autowired
-    public UserController(UserService userService, ProductService productService, CategoryService categoryService, StorageService storageService, MessageService messageService, SubcategoryService subcategoryService, QualityService qualityService) {
+    public UserController(UserService userService, ProductService productService, CategoryService categoryService, StorageService storageService, MessageService messageService, CategoryRepository categoryRepository) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
         this.storageService = storageService;
         this.messageService = messageService;
-        this.subcategoryService = subcategoryService;
-        this.qualityService = qualityService;
+        this.categoryRepository = categoryRepository;
+
     }
 
     @GetMapping("/profile")
     public ResponseEntity<UserDTO> getUserProfile(@AuthenticationPrincipal User user) {
-        UserDTO userDTO = userService.convertToDTO(user);
-        if (userDTO != null) {
-            return ResponseEntity.ok(userDTO);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        UserDTO userDTO = UserDTO.convertToDTO(user);
+        return ResponseEntity.ok(userDTO);
     }
 
     @PutMapping("/{id}")
@@ -83,29 +74,17 @@ public class UserController {
     }
 
     @PostMapping("/addProduct")
-    public ResponseEntity<?> addProduct(@RequestBody Product product, @RequestParam UUID categoryId,@RequestParam UUID subcategoryId,@RequestParam UUID qualityId, @AuthenticationPrincipal User user) {
-        Category category = categoryService.getCategoryById(categoryId);
-        Subcategory subcategory = subcategoryService.getSubcategoryById(subcategoryId);
-        Quality quality = qualityService.getQualityById(qualityId);
-        if (category == null) {
+    public ResponseEntity<?> addProduct(@RequestBody ProductDTO productDTO, @RequestParam UUID categoryId, @AuthenticationPrincipal User user) {
+        CategoryDTO categoryDTO = categoryService.getCategoryById(categoryId);
+        if (categoryDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
         }
-        if(subcategory == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subcategory not found");
-        }
-        if(quality == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quality not found");
-        }
-        product.setCategory(category);
-        product.setSubcategory(subcategory);
-        product.setQuality(quality);
-        product.setUser(user);
+        productDTO.setCategory(categoryDTO);
+        productDTO.setUser(user);
 
-        Product savedProduct = productService.saveProduct(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Product added successfully");
+        ProductDTO savedProduct = productService.saveProduct(productDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
-
-
 
     @PostMapping("/addProductWithImage")
     @Transactional
@@ -114,8 +93,6 @@ public class UserController {
             @RequestParam("description") String description,
             @RequestParam("price") double price,
             @RequestParam("categoryId") UUID categoryId,
-            @RequestParam("qualityId") UUID qualityId,
-            @RequestParam("subcategoryId") UUID subcategoryId,
             @RequestPart("images") MultipartFile[] images,
             @AuthenticationPrincipal User user) {
 
@@ -124,50 +101,35 @@ public class UserController {
         }
 
         try {
-            Category category = categoryService.getCategoryById(categoryId);
-            Subcategory subcategory = subcategoryService.getSubcategoryById(subcategoryId);
-            Quality quality = qualityService.getQualityById(qualityId);
-            if (category == null) {
+            CategoryDTO categoryDTO = categoryService.getCategoryById(categoryId);
+            if (categoryDTO == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
             }
-            if (subcategory == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subcategory not found");
-            }
-            if (quality == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Subcategory not found");
-            }
-            Product product = new Product();
-            product.setName(name);
-            product.setDescription(description);
-            product.setPrice(price);
-            product.setCategory(category);
-            product.setSubcategory(subcategory);
-            product.setQuality(quality);
-            product.setUser(user);
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setName(name);
+            productDTO.setDescription(description);
+            productDTO.setPrice(price);
+            productDTO.setCategory(categoryDTO);
+            productDTO.setUser(user);
 
-            List<ProductImage> productImages = new ArrayList<>();
+            List<ProductImageDTO> productImageDTOs = new ArrayList<>();
 
             for (MultipartFile file : images) {
                 try {
                     String filename = storageService.store(file);
                     String url = MvcUriComponentsBuilder.fromMethodName(StorageController.class, "serveFile", filename)
                             .build().toUri().toString();
-                    ProductImage productImage = new ProductImage();
-                    productImage.setImageUrl(url);
-                    productImage.setProduct(product);
-                    productImages.add(productImage);
+                    ProductImageDTO productImageDTO = new ProductImageDTO();
+                    productImageDTO.setImageUrl(url);
+                    productImageDTOs.add(productImageDTO);
                 } catch (Exception e) {
                     return new ResponseEntity<>("Failed to store image", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
 
-            product.setImages(productImages);
-            Product savedProduct = productService.saveProduct(product);
-            if (savedProduct != null) {
-                return ResponseEntity.status(HttpStatus.CREATED).body("Product with images added successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.CREATED).body("Product not added");
-            }
+            productDTO.setImages(productImageDTOs);
+            ProductDTO savedProduct = productService.saveProduct(productDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -178,38 +140,37 @@ public class UserController {
         return ResponseEntity.status(201).body(savedMessage);
     }
     @PutMapping("/products/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable UUID productId, @RequestBody Product productDetails, @RequestParam("images") MultipartFile[] images, @AuthenticationPrincipal User user) {
-        Product existingProduct = productService.getProductById(productId);
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable UUID productId, @RequestBody ProductDTO productDTO, @RequestParam("images") MultipartFile[] images, @AuthenticationPrincipal User user) {
+        ProductDTO existingProduct = productService.getProductById(productId);
         if (existingProduct == null) {
             return ResponseEntity.notFound().build();
         }
         if (!existingProduct.getUser().getUserId().equals(user.getUserId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        existingProduct.setName(productDetails.getName());
-        existingProduct.setDescription(productDetails.getDescription());
-        existingProduct.setPrice(productDetails.getPrice());
+        productDTO.setId(productId);
+        productDTO.setUser(user);
 
-        List<ProductImage> productImages = new ArrayList<>();
+        List<ProductImageDTO> productImageDTOs = new ArrayList<>();
         for (MultipartFile file : images) {
             String filename = storageService.store(file);
             String url = MvcUriComponentsBuilder.fromMethodName(StorageController.class, "serveFile", filename).build().toUri().toString();
-            productImages.add(new ProductImage(null, url, existingProduct));
+            productImageDTOs.add(new ProductImageDTO(null, url));
         }
-        existingProduct.setImages(productImages);
-        productService.saveProduct(existingProduct);
+        productDTO.setImages(productImageDTOs);
 
-        return ResponseEntity.ok(existingProduct);
+        ProductDTO updatedProduct = productService.updateProduct(productDTO);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable("id") UUID id, @AuthenticationPrincipal User user) {
-        Product product = productService.getProductById(id);
-        if (product == null) {
+        ProductDTO productDTO = productService.getProductById(id);
+        if (productDTO == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        if (!product.getUser().getUserId().equals(user.getUserId())) {
+        if (!productDTO.getUser().getUserId().equals(user.getUserId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 

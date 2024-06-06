@@ -1,28 +1,19 @@
-
 .ant-form {
     margin-top: 20px;
-
-
 }
-
 
 .ant-form-item-label {
     font-weight: bold;
-
-
 }
 
-
-
 .ant-input,
-.ant-select-selection {
+.ant-select-selection,
+.custom-dropdown-btn {
     width: 100%;
 }
 
 .ant-form-item-control {
 }
-
-
 
 .filter-container {
     background-color: #ffffff;
@@ -33,7 +24,6 @@
 .row {
     display: flex;
     flex-wrap: wrap;
-
 }
 
 .col {
@@ -44,10 +34,16 @@
 .colPrice {
     flex-basis: calc(16% - 10px);
     margin-right: 10px;
-
 }
 
-
 .custom-datepicker {
+    width: 100%;
+}
+
+.custom-dropdown {
+    width: 100%;
+}
+
+.custom-dropdown-btn {
     width: 100%;
 }

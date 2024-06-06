@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {Form, Input, Select, Button, message} from 'antd';
+import { Form, Input, Button, message, Menu, Dropdown } from 'antd';
 import './Filter.css';
 import axiosInstance from '../../pages/Interceptors/axiosInstance.js';
 
-const { Option } = Select;
+const { SubMenu } = Menu;
 
 const Filter = ({ handleFilter }) => {
     const [form] = Form.useForm();
     const [categories, setCategories] = useState([]);
-    const [subcategories, setSubcategories] = useState([]);
-    const [qualities, setQualities] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState('Wybierz kategorie');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -22,31 +21,36 @@ const Filter = ({ handleFilter }) => {
                 message.error('Failed to fetch categories');
             }
         };
-
-        const fetchSubcategories = async () => {
-            try {
-                const response = await axiosInstance.get('/subcategories');
-                setSubcategories(response.data);
-            } catch (error) {
-                console.error('Error fetching subcategories:', error);
-                message.error('Failed to fetch subcategories');
-            }
-        };
-
-        const fetchQualities = async () => {
-            try {
-                const response = await axiosInstance.get('/qualities');
-                setQualities(response.data);
-            } catch (error) {
-                console.error('Error fetching qualities:', error);
-                message.error('Failed to fetch qualities');
-            }
-        };
-
         fetchCategories();
-        fetchSubcategories();
-        fetchQualities();
     }, []);
+
+    const buildMenu = (categories, parentId = null) => {
+        return categories
+            .filter(category => category.parentCategoryId === parentId)
+            .map(category => {
+                const subCategories = categories.filter(subCat => subCat.parentCategoryId === category.categoryId);
+                if (subCategories.length > 0) {
+                    return (
+                        <SubMenu key={category.categoryId} title={category.name}>
+                            {buildMenu(categories, category.categoryId)}
+                        </SubMenu>
+                    );
+                }
+                return <Menu.Item key={category.categoryId}>{category.name}</Menu.Item>;
+            });
+    };
+
+    const handleMenuClick = ({ key }) => {
+        const selectedCategory = categories.find(category => category.categoryId === key);
+        setSelectedCategory(selectedCategory.name);
+        form.setFieldsValue({ category: selectedCategory.name });
+    };
+
+    const menu = (
+        <Menu onClick={handleMenuClick}>
+            {buildMenu(categories)}
+        </Menu>
+    );
 
     const onFinish = (values) => {
         handleFilter(values);
@@ -62,33 +66,23 @@ const Filter = ({ handleFilter }) => {
                 <div className="row">
                     <div className="col">
                         <Form.Item label="Kategoria" name="category">
-                            <Select placeholder="Wybierz kategorie">
-                                {categories.map(category => (
-                                    <Option key={category._id} value={category.name}>{category.name}</Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                    </div>
-
-                    <div className="col">
-                        <Form.Item label="Podkategoria" name="subcategory">
-                            <Select placeholder="Wybierz podkategorie">
-                                {subcategories.map(subcategory => (
-                                    <Option key={subcategory._id} value={subcategory.name}>{subcategory.name}</Option>
-                                ))}
-                            </Select>
+                            <Dropdown overlay={menu} trigger={['click']} className="custom-dropdown">
+                                <Button className="custom-dropdown-btn">
+                                    {selectedCategory}
+                                </Button>
+                            </Dropdown>
                         </Form.Item>
                     </div>
 
                     <div className="colPrice">
                         <Form.Item label="Cena od" name="priceFrom">
-                            <Input placeholder="Od"/>
+                            <Input placeholder="Od" />
                         </Form.Item>
                     </div>
 
                     <div className="colPrice">
                         <Form.Item label="Cena do" name="priceTo">
-                            <Input placeholder="Do"/>
+                            <Input placeholder="Do" />
                         </Form.Item>
                     </div>
                 </div>
@@ -96,17 +90,7 @@ const Filter = ({ handleFilter }) => {
                 <div className="row">
                     <div className="col">
                         <Form.Item label="Miejscowość" name="location">
-                            <Input placeholder="Wpisz miejscowość"/>
-                        </Form.Item>
-                    </div>
-
-                    <div className="col">
-                        <Form.Item label="Stan" name="quality">
-                            <Select placeholder="Wybierz stan">
-                                {qualities.map(quality => (
-                                    <Option key={quality._id} value={quality.name}>{quality.name}</Option>
-                                ))}
-                            </Select>
+                            <Input placeholder="Wpisz miejscowość" />
                         </Form.Item>
                     </div>
                 </div>
@@ -119,6 +103,6 @@ const Filter = ({ handleFilter }) => {
             </Form>
         </div>
     );
-}
+};
 
 export default Filter;

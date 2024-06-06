@@ -2,10 +2,10 @@ package com.example.backend.category;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -18,22 +18,23 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryDTO> getAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(CategoryDTO::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Category getCategoryById(UUID id) {
+    public CategoryDTO getCategoryById(UUID id) {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
-        return optionalCategory.orElse(null);
+        return optionalCategory.map(CategoryDTO::convertToDTO).orElse(null);
     }
 
     @Override
-    public Category saveCategory(Category category) {
-        return categoryRepository.save(category);
-    }
-    public Category updateCategory(Category category) {
-        return categoryRepository.save(category);
+    public CategoryDTO saveCategory(CategoryCreateDTO categoryCreateDTO) {
+        Category category = CategoryCreateDTO.convertToEntity(categoryCreateDTO, categoryRepository);
+        Category savedCategory = categoryRepository.save(category);
+        return CategoryDTO.convertToDTO(savedCategory);
     }
 
     @Override

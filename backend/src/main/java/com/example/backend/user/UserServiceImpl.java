@@ -73,7 +73,6 @@ public class UserServiceImpl implements UserService {
                 .map(this::convertToDTO).
                 toList();
     }
-    @Override
     public UserDTO convertToDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setUserId(user.getUserId());

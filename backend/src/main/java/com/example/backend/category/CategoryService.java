@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CategoryService {
-    List<Category> getAllCategories();
-    Category getCategoryById(UUID id);
-    Category saveCategory(Category category);
-    Category updateCategory(Category category);
+    List<CategoryDTO> getAllCategories();
+    CategoryDTO getCategoryById(UUID id);
+    CategoryDTO saveCategory(CategoryCreateDTO categoryDTO);
     void deleteCategory(UUID id);
 }

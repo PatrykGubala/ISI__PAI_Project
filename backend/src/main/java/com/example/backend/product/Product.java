@@ -1,8 +1,6 @@
 package com.example.backend.product;
 
 import com.example.backend.category.Category;
-import com.example.backend.subcategory.Subcategory;
-import com.example.backend.quality.Quality;
 import com.example.backend.user.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -38,13 +36,6 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "subcategory_id", nullable = false)
-    private Subcategory subcategory;
-
-    @ManyToOne
-    @JoinColumn(name = "quality_id", nullable = false)
-    private Quality quality;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
@@ -54,6 +45,9 @@ public class Product {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductAttribute> attributes;
+
     @Override
     public String toString() {
         return "Product{" +
@@ -62,8 +56,6 @@ public class Product {
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", category=" + category +
-                ", subcategory=" + subcategory +
-                ", quality=" + quality +
                 '}';
     }
 }
