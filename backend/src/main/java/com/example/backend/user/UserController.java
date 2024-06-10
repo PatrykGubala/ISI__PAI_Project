@@ -82,8 +82,12 @@ public class UserController {
         productDTO.setCategory(categoryDTO);
         productDTO.setUser(UserDTO.convertToDTO(user));
 
-        ProductDTO savedProduct = productService.saveProduct(productDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+        try {
+            ProductDTO savedProduct = productService.saveProduct(productDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save product");
+        }
     }
 
     @PostMapping("/addProductWithImage")
@@ -134,6 +138,9 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+
     @PostMapping("/addMessage")
     public ResponseEntity<Message> addMessage(@RequestBody Message message) {
         Message savedMessage = messageService.saveMessage(message);

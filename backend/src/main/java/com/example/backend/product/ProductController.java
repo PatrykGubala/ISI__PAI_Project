@@ -1,8 +1,6 @@
 package com.example.backend.product;
 
-import com.example.backend.category.Category;
-import com.example.backend.category.CategoryField;
-import com.example.backend.category.CategoryRepository;
+import com.example.backend.category.*;
 import com.example.backend.search.SearchCriteria;
 import com.example.backend.search.SearchOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +12,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 import java.util.UUID;
 
-import static com.example.backend.category.FieldType.ENUM;
-import static com.example.backend.category.FieldType.RANGE;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     @Autowired
-    public ProductController(ProductService productService,CategoryRepository categoryRepository ) {
+    public ProductController(ProductService productService,CategoryService categoryService ) {
         this.productService = productService;
-        this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
     }
 
     @GetMapping
@@ -49,7 +47,8 @@ public class ProductController {
             spec = spec.and(new ProductSpecification(new SearchCriteria("name", name, SearchOperation.LIKE)));
         }
         if (categoryId != null) {
-            spec = spec.and(new ProductSpecification(new SearchCriteria("category.id", categoryId, SearchOperation.EQUALITY)));
+            Set<UUID> allRelevantCategoryIds = categoryService.findAllCategoryIdsIncludingSubcategories(categoryId);
+            spec = spec.and(new ProductSpecification(new SearchCriteria("category.id", allRelevantCategoryIds, SearchOperation.IN)));
         }
         if (minPrice != null) {
             spec = spec.and(new ProductSpecification(new SearchCriteria("price", minPrice, SearchOperation.GREATER_THAN)));
@@ -59,8 +58,7 @@ public class ProductController {
         }
 
         if (categoryId != null) {
-            Category category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+            CategoryDTO category = categoryService.getCategoryById(categoryId);
             for (String key : attributes.keySet()) {
                 if (!"page".equals(key) && !"size".equals(key) && !"name".equals(key) && !"category".equals(key) && !"minPrice".equals(key) && !"maxPrice".equals(key)) {
                     String value = attributes.getFirst(key);

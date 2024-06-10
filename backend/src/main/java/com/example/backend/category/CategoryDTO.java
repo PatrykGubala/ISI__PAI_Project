@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDTO {
-    private UUID categoryId;
+    private UUID id;
     private String name;
     private String description;
     private UUID parentCategoryId;
@@ -30,6 +30,6 @@ public class CategoryDTO {
         Category parentCategory = categoryDTO.getParentCategoryId() != null ? categoryRepository.findById(categoryDTO.getParentCategoryId()).orElse(null) : null;
         List<Category> subcategories = categoryDTO.getSubcategoryIds() != null ?
                 categoryDTO.getSubcategoryIds().stream().map(categoryRepository::findById).map(opt -> opt.orElse(null)).collect(Collectors.toList()) : null;
-        return new Category(categoryDTO.getCategoryId(), categoryDTO.getName(), categoryDTO.getDescription(), parentCategory, subcategories, categoryDTO.getFields());
+        return new Category(categoryDTO.getId(), categoryDTO.getName(), categoryDTO.getDescription(), parentCategory, subcategories, categoryDTO.getFields());
     }
 }

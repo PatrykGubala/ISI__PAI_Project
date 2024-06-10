@@ -5,6 +5,9 @@ import com.example.backend.search.SearchCriteria;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Set;
+import java.util.UUID;
+
 public class ProductSpecification implements Specification<Product> {
 
     private final SearchCriteria criteria;
@@ -37,6 +40,24 @@ public class ProductSpecification implements Specification<Product> {
                     }
                 }
                 yield builder.equal(root.get(criteria.getKey()), criteria.getValue());
+            }
+            case IN -> {
+                if (criteria.getKey().contains(".")) {
+                    String[] keys = criteria.getKey().split("\\.");
+                    if (keys.length == 2 && "category".equals(keys[0]) && "id".equals(keys[1])) {
+                        Join<Product, Category> categoryJoin = root.join("category");
+                        CriteriaBuilder.In<UUID> inClause = builder.in(categoryJoin.get("id"));
+                        ((Set<UUID>) criteria.getValue()).forEach(inClause::value);
+                        yield builder.and(inClause);
+                    }
+                    else{
+                        throw new IllegalArgumentException("Unsupported key structure for IN operation: " + criteria.getKey());
+                    }
+                } else {
+                    CriteriaBuilder.In<Object> inClause = builder.in(root.get(criteria.getKey()));
+                    ((Set<?>) criteria.getValue()).forEach(inClause::value);
+                    yield builder.and(inClause);
+                }
             }
             case NEGATION -> builder.notEqual(root.get(criteria.getKey()), criteria.getValue());
             case GREATER_THAN -> builder.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());

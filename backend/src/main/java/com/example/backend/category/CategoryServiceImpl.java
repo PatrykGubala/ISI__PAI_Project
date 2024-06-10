@@ -1,10 +1,10 @@
 package com.example.backend.category;
 
+import com.example.backend.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,8 +26,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO getCategoryById(UUID id) {
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
-        return optionalCategory.map(CategoryDTO::convertToDTO).orElse(null);
+        return categoryRepository.findById(id)
+                .map(CategoryDTO::convertToDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Category with ID " + id + " not found"));
     }
 
     @Override
@@ -44,4 +45,21 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(UUID id) {
         categoryRepository.deleteById(id);
     }
+
+    @Override
+    public Set<UUID> findAllCategoryIdsIncludingSubcategories(UUID categoryId) {
+        Category rootCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
+        Set<UUID> categoryIds = new HashSet<>();
+        categoryIds.add(rootCategory.getCategoryId());
+        Queue<Category> categoriesQueue = new LinkedList<>(rootCategory.getSubcategories());
+
+        while (!categoriesQueue.isEmpty()) {
+            Category currentCategory = categoriesQueue.poll();
+            categoryIds.add(currentCategory.getCategoryId());
+            categoriesQueue.addAll(currentCategory.getSubcategories());
+        }
+        return categoryIds;
+    }
+
 }

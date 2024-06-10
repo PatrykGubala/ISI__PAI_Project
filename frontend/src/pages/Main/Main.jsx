@@ -42,7 +42,7 @@ const Main = () => {
     const handleFilter = async (values) => {
         const filters = {};
 
-        if (values.category) filters.category = values.category;
+        if (values.categoryId) filters.category = values.categoryId;
         if (values.priceFrom) filters.minPrice = values.priceFrom;
         if (values.priceTo) filters.maxPrice = values.priceTo;
 
@@ -53,6 +53,7 @@ const Main = () => {
         });
 
         try {
+            const pageSize = 10;
             const queryString = new URLSearchParams({ ...filters, page: 0, size: pageSize }).toString();
             const response = await axiosInstance.get(`/products?${queryString}`);
             setProducts(response.data.content);
