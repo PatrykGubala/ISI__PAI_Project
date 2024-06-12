@@ -20,11 +20,11 @@ public class ProductAttribute {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(nullable = false)
+    @Column
     private String name;
 
     @Column(name = "value_converted_to_string")
@@ -55,6 +55,18 @@ public class ProductAttribute {
         this.name = name;
         this.doubleValue = doubleValue;
         this.product = product;
+    }
+    public void updateValues(ProductAttributeDTO dto) {
+        this.name = dto.getName();
+        if (dto.getValue() instanceof String) {
+            this.stringValue = (String) dto.getValue();
+        } else if (dto.getValue() instanceof Integer) {
+            this.integerValue = (Integer) dto.getValue();
+        } else if (dto.getValue() instanceof Double) {
+            this.doubleValue = (Double) dto.getValue();
+        } else {
+            throw new IllegalArgumentException("Unsupported value type: " + dto.getValue().getClass());
+        }
     }
 
     public void setValue(Object value) {

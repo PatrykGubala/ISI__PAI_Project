@@ -22,6 +22,7 @@ public class ProductDTO {
     private double price;
     private UserDTO user;
     private CategoryDTO category;
+    private UUID categoryId;
     private List<ProductImageDTO> images = new ArrayList<>();
     private List<ProductAttributeDTO> productAttributes = new ArrayList<>();
 

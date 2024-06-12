@@ -8,6 +8,7 @@ import com.example.backend.message.Message;
 import com.example.backend.message.MessageService;
 import com.example.backend.storage.StorageController;
 import com.example.backend.storage.StorageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -74,29 +74,33 @@ public class UserController {
     }
 
     @PostMapping("/addProduct")
-    public ResponseEntity<?> addProduct(@RequestBody ProductDTO productDTO, @RequestParam UUID categoryId, @AuthenticationPrincipal User user) {
-        CategoryDTO categoryDTO = categoryService.getCategoryById(categoryId);
+    public ResponseEntity<?> addProduct(@RequestBody ProductDTO productDTO, @AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        CategoryDTO categoryDTO = categoryService.getCategoryById(productDTO.getCategoryId());
         if (categoryDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
         }
+
         productDTO.setCategory(categoryDTO);
         productDTO.setUser(UserDTO.convertToDTO(user));
-
         try {
             ProductDTO savedProduct = productService.saveProduct(productDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save product");
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save product: " + e.getMessage());
         }
     }
+
+
 
     @PostMapping("/addProductWithImage")
     @Transactional
     public ResponseEntity<?> addProductWithImages(
-            @RequestParam("name") String name,
-            @RequestParam("description") String description,
-            @RequestParam("price") double price,
-            @RequestParam("categoryId") UUID categoryId,
+            @RequestPart("product") String productJson,
             @RequestPart("images") MultipartFile[] images,
             @AuthenticationPrincipal User user) {
 
@@ -104,30 +108,35 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProductDTO productDTO;
+
         try {
-            CategoryDTO categoryDTO = categoryService.getCategoryById(categoryId);
-            if (categoryDTO == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
-            }
-            ProductDTO productDTO = new ProductDTO();
-            productDTO.setName(name);
-            productDTO.setDescription(description);
-            productDTO.setPrice(price);
-            productDTO.setCategory(categoryDTO);
-            productDTO.setUser(UserDTO.convertToDTO(user));
+            productDTO = objectMapper.readValue(productJson, ProductDTO.class);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid product data");
+        }
 
+        if (productDTO.getCategoryId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Category ID is missing");
+        }
+
+        CategoryDTO categoryDTO = categoryService.getCategoryById(productDTO.getCategoryId());
+        if (categoryDTO == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
+        }
+
+        productDTO.setCategory(categoryDTO);
+        productDTO.setUser(UserDTO.convertToDTO(user));
+
+        try {
             List<ProductImageDTO> productImageDTOs = new ArrayList<>();
-
             for (MultipartFile file : images) {
-                try {
+                if (!file.isEmpty()) {
                     String filename = storageService.store(file);
                     String url = MvcUriComponentsBuilder.fromMethodName(StorageController.class, "serveFile", filename)
                             .build().toUri().toString();
-                    ProductImageDTO productImageDTO = new ProductImageDTO();
-                    productImageDTO.setImageUrl(url);
-                    productImageDTOs.add(productImageDTO);
-                } catch (Exception e) {
-                    return new ResponseEntity<>("Failed to store image", HttpStatus.INTERNAL_SERVER_ERROR);
+                    productImageDTOs.add(new ProductImageDTO(null, url));
                 }
             }
 
@@ -135,7 +144,7 @@ public class UserController {
             ProductDTO savedProduct = productService.saveProduct(productDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to process request: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
