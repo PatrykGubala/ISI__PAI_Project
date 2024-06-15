@@ -3,6 +3,7 @@ package com.example.backend.category;
 import com.example.backend.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,9 +33,28 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDTO saveCategory(CategoryCreateDTO categoryCreateDTO) {
-        Category category = CategoryCreateDTO.convertToEntity(categoryCreateDTO, categoryRepository);
+        Category parentCategory = null;
+
+        // Load the parent category if it is specified
+        if (categoryCreateDTO.getParentCategoryId() != null) {
+            parentCategory = categoryRepository.findById(categoryCreateDTO.getParentCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Parent Category not found with ID: " + categoryCreateDTO.getParentCategoryId()));
+        }
+
+        // Create the new category
+        Category category = new Category(UUID.randomUUID(), categoryCreateDTO.getName(), categoryCreateDTO.getDescription(), parentCategory, new ArrayList<>(), categoryCreateDTO.getFields());
+
+        // Save the category
         Category savedCategory = categoryRepository.save(category);
+
+        // If there is a parent category, add the new category to its subcategories
+        if (parentCategory != null) {
+            parentCategory.getSubcategories().add(savedCategory);
+            categoryRepository.save(parentCategory);
+        }
+
         return CategoryDTO.convertToDTO(savedCategory);
     }
     @Override
