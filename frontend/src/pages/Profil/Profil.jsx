@@ -42,11 +42,9 @@ const Profil = () => {
 
     const fetchProductsData = async (page) => {
         try {
-            const response = await axiosInstance.get(`/user/products?page=${currentPage - 1}&size=${pageSize}`);
-            setProducts(response.data);
-            //setProducts(response.data.content);
+            const response = await axiosInstance.get(`/user/products?page=${page - 1}&size=${pageSize}`);
+            setProducts(response.data.content);
             setTotalProducts(response.data.totalElements);
-
         } catch (error) {
             console.error('Error fetching products:', error);
         }
@@ -137,16 +135,15 @@ const Profil = () => {
                                 <div>
                                     <strong>Imię i Nazwisko:</strong>
                                     <Input className="input" name="fullName"
-                                           value={`${profileData.firstName} ${profileData.lastName}`} readOnly/>
+                                           value={`${profileData.firstName} ${profileData.lastName}`} readOnly />
                                 </div>
                                 <div>
                                     <strong>Email:</strong>
-                                    <Input className="input" name="email" value={profileData.email} readOnly/>
+                                    <Input className="input" name="email" value={profileData.email} readOnly />
                                 </div>
                                 <div>
                                     <strong>Numer telefonu:</strong>
-                                    <Input className="input" name="phoneNumber" value={profileData.phoneNumber}
-                                           readOnly/>
+                                    <Input className="input" name="phoneNumber" value={profileData.phoneNumber} readOnly />
                                 </div>
                             </div>
                             <div className="edit-button">
@@ -157,8 +154,7 @@ const Profil = () => {
                         </div>
                     </div>
                     <div className="profile-tabs">
-                        <Tabs defaultActiveKey="1" items={items}/>
-
+                        <Tabs defaultActiveKey="1" items={items} />
                     </div>
                 </div>
             </AntContent>

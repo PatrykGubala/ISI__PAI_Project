@@ -10,6 +10,7 @@ const Filter = ({ handleFilter }) => {
     const [form] = Form.useForm();
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('Wybierz kategorie');
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [categoryFields, setCategoryFields] = useState([]);
     const [breadcrumb, setBreadcrumb] = useState([]);
 
@@ -30,37 +31,49 @@ const Filter = ({ handleFilter }) => {
         return categories
             .filter(category => category.parentCategoryId === parentId)
             .map(category => {
-                const subCategories = categories.filter(subCat => subCat.parentCategoryId === category.categoryId);
+                const subCategories = categories.filter(subCat => subCat.parentCategoryId === category.id);
                 if (subCategories.length > 0) {
                     return (
-                        <SubMenu key={category.categoryId} title={category.name} onTitleClick={() => handleMenuClick({ key: category.categoryId })}>
-                            {buildMenu(categories, category.categoryId)}
+                        <SubMenu key={category.id} title={category.name} onTitleClick={() => handleMenuClick({ key: category.id })}>
+                            {buildMenu(categories, category.id)}
                         </SubMenu>
                     );
                 }
-                return <Menu.Item key={category.categoryId}>{category.name}</Menu.Item>;
+                return (
+                    <Menu.Item key={category.id} onClick={() => handleMenuClick({ key: category.id })}>
+                        {category.name}
+                    </Menu.Item>
+                );
             });
     };
 
-    const handleMenuClick = async ({ key }) => {
-        const selectedCategory = categories.find(category => category.categoryId === key);
-        setSelectedCategory(selectedCategory.name);
-        form.setFieldsValue({ category: selectedCategory.name });
-
-        setBreadcrumb(prev => [...prev, selectedCategory.name]);
-
-        try {
-            const response = await axiosInstance.get(`/categories/${key}/fields`);
-            setCategoryFields(response.data);
-        } catch (error) {
-            console.error('Error fetching category fields:', error);
-            message.error('Failed to fetch category fields');
+    const findCategoryPath = (categoryId, categories) => {
+        let path = [];
+        let currentCategory = categories.find(category => category.id === categoryId);
+        while (currentCategory) {
+            path.unshift(currentCategory);
+            currentCategory = categories.find(category => category.id === currentCategory.parentCategoryId);
         }
+        return path;
     };
 
-    const handleBreadcrumbClick = (index) => {
-        const newBreadcrumb = breadcrumb.slice(0, index + 1);
-        setBreadcrumb(newBreadcrumb);
+    const handleMenuClick = async ({ key }) => {
+        const categoryPath = findCategoryPath(key, categories);
+        if (categoryPath.length) {
+            const selectedCategory = categoryPath[categoryPath.length - 1];
+            setSelectedCategory(selectedCategory.name);
+            setSelectedCategoryId(selectedCategory.id);
+            setBreadcrumb(categoryPath);
+            form.setFieldsValue({ category: selectedCategory.name });
+
+            try {
+                const response = await axiosInstance.get(`/categories/${key}/fields`);
+                setCategoryFields(response.data);
+            } catch (error) {
+                console.error('Error fetching category fields:', error);
+                message.error('Failed to fetch category fields');
+            }
+        }
     };
 
     const menu = (
@@ -71,18 +84,6 @@ const Filter = ({ handleFilter }) => {
 
     const renderField = (field) => {
         switch (field.fieldType) {
-            case 'STRING':
-                return (
-                    <Form.Item key={field.name} label={field.name} name={field.name} className="full-width">
-                        <Input placeholder={`Wpisz ${field.name}`} />
-                    </Form.Item>
-                );
-            case 'INTEGER':
-                return (
-                    <Form.Item key={field.name} label={field.name} name={field.name} className="full-width">
-                        <Input type="number" placeholder={`Wpisz ${field.name}`} />
-                    </Form.Item>
-                );
             case 'RANGE':
                 return (
                     <Form.Item key={field.name} label={field.name} name={field.name} className="full-width">
@@ -110,7 +111,7 @@ const Filter = ({ handleFilter }) => {
     };
 
     const onFinish = (values) => {
-        handleFilter(values);
+        handleFilter({ ...values, categoryId: selectedCategoryId });
     };
 
     return (
@@ -121,7 +122,7 @@ const Filter = ({ handleFilter }) => {
                 onFinish={onFinish}
             >
                 <div className="row">
-                    <Form.Item label="Kategoria" name="category" className="full-width">
+                    <Form.Item label="Kategoria" name="categoryId" className="full-width">
                         <Dropdown overlay={menu} trigger={['click']} className="custom-dropdown">
                             <Button className="custom-dropdown-btn">
                                 {selectedCategory}
@@ -150,7 +151,7 @@ const Filter = ({ handleFilter }) => {
                 <div className="breadcrumb">
                     {breadcrumb.map((crumb, index) => (
                         <span key={index} onClick={() => handleBreadcrumbClick(index)}>
-                            {crumb} {index < breadcrumb.length - 1 && '>'}
+                            {crumb.name} {index < breadcrumb.length - 1 ? ' > ' : ''}
                         </span>
                     ))}
                 </div>

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,8 +22,9 @@ public class ProductDTO {
     private double price;
     private UserDTO user;
     private CategoryDTO category;
-    private List<ProductImageDTO> images;
-    private List<ProductAttributeDTO> productAttributes;
+    private UUID categoryId;
+    private List<ProductImageDTO> images = new ArrayList<>();
+    private List<ProductAttributeDTO> productAttributes = new ArrayList<>();
 
     public static ProductDTO convertToProductDTO(Product product) {
         ProductDTO productDTO = new ProductDTO();
@@ -55,16 +57,21 @@ public class ProductDTO {
         product.setCategory(CategoryDTO.convertToEntity(productDTO.getCategory(), categoryRepository));
         product.setUser(UserDTO.convertToEntity(productDTO.getUser()));
 
-        List<ProductImage> productImages = productDTO.getImages().stream()
-                .map(imageDTO -> new ProductImage(imageDTO.getId(), imageDTO.getImageUrl(), product))
-                .collect(Collectors.toList());
-        product.setImages(productImages);
+        if (productDTO.getImages() != null) {
+            List<ProductImage> productImages = productDTO.getImages().stream()
+                    .map(imageDTO -> new ProductImage(imageDTO.getId(), imageDTO.getImageUrl(), product))
+                    .collect(Collectors.toList());
+            product.setImages(productImages);
+        }
 
-        List<ProductAttribute> productAttributes = productDTO.getProductAttributes().stream()
-                .map(attributeDTO -> ProductAttributeDTO.convertToEntity(attributeDTO, product))
-                .collect(Collectors.toList());
-        product.setAttributes(productAttributes);
+        if (productDTO.getProductAttributes() != null) {
+            List<ProductAttribute> productAttributes = productDTO.getProductAttributes().stream()
+                    .map(attributeDTO -> ProductAttributeDTO.convertToEntity(attributeDTO, product))
+                    .collect(Collectors.toList());
+            product.setAttributes(productAttributes);
+        }
 
         return product;
     }
+
 }

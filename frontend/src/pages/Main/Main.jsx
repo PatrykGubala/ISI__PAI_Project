@@ -24,7 +24,18 @@ const Main = () => {
     const pageSize = 5;
     const navigate = useNavigate();
     const { login: authenticateUser } = useContext(AuthContext);
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const accessToken = queryParams.get('access_token');
+        const refreshToken = queryParams.get('refresh_token');
 
+        if (accessToken && refreshToken) {
+            localStorage.setItem('access_token', accessToken);
+            localStorage.setItem('refresh_token', refreshToken);
+            authenticateUser();
+            navigate('/');
+        }
+    }, [navigate, authenticateUser]);
     useEffect(() => {
         const fetchData = async (filters = {}) => {
             try {
@@ -42,7 +53,7 @@ const Main = () => {
     const handleFilter = async (values) => {
         const filters = {};
 
-        if (values.category) filters.category = values.category;
+        if (values.categoryId) filters.category = values.categoryId;
         if (values.priceFrom) filters.minPrice = values.priceFrom;
         if (values.priceTo) filters.maxPrice = values.priceTo;
 
@@ -53,6 +64,7 @@ const Main = () => {
         });
 
         try {
+            const pageSize = 10;
             const queryString = new URLSearchParams({ ...filters, page: 0, size: pageSize }).toString();
             const response = await axiosInstance.get(`/products?${queryString}`);
             setProducts(response.data.content);

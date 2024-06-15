@@ -122,44 +122,9 @@ public class BackendApplication {
 
 				User user = userRepository.findByUsername("user").orElseThrow(() -> new RuntimeException("User not found"));
 
-				Product toyotaCorolla = new Product(UUID.randomUUID(), "Toyota Corolla", "A reliable car", 15000.00, cars, null, user, null);
-				Product hondaCivic = new Product(UUID.randomUUID(), "Honda Civic", "A sporty car", 18000.00, cars, null, user, null);
-				Product yamahaYZFR3 = new Product(UUID.randomUUID(), "Yamaha YZF-R3", "A sporty motorcycle", 6000.00, motorcycles, null, user, null);
-				Product kawasakiNinja400 = new Product(UUID.randomUUID(), "Kawasaki Ninja 400", "A powerful motorcycle", 7000.00, motorcycles, null, user, null);
+				List<Product> products = createProducts(user, cars, motorcycles);
 
-				toyotaCorolla.setAttributes(List.of(
-						new ProductAttribute("Brand", "Toyota", toyotaCorolla),
-						new ProductAttribute("Model", "Corolla", toyotaCorolla),
-						new ProductAttribute("Year", "2015", toyotaCorolla),
-						new ProductAttribute("Mileage", "50000", toyotaCorolla),
-						new ProductAttribute("Condition", "Used", toyotaCorolla)
-				));
-
-				hondaCivic.setAttributes(List.of(
-						new ProductAttribute("Brand", "Honda", hondaCivic),
-						new ProductAttribute("Model", "Civic", hondaCivic),
-						new ProductAttribute("Year", "2018", hondaCivic),
-						new ProductAttribute("Mileage", "30000", hondaCivic),
-						new ProductAttribute("Condition", "Used", hondaCivic)
-				));
-
-				yamahaYZFR3.setAttributes(List.of(
-						new ProductAttribute("Brand", "Yamaha", yamahaYZFR3),
-						new ProductAttribute("Model", "YZF-R3", yamahaYZFR3),
-						new ProductAttribute("Year", "2019", yamahaYZFR3),
-						new ProductAttribute("Mileage", "10000", yamahaYZFR3),
-						new ProductAttribute("Condition", "Used", yamahaYZFR3)
-				));
-
-				kawasakiNinja400.setAttributes(List.of(
-						new ProductAttribute("Brand", "Kawasaki", kawasakiNinja400),
-						new ProductAttribute("Model", "Ninja 400", kawasakiNinja400),
-						new ProductAttribute("Year", "2020", kawasakiNinja400),
-						new ProductAttribute("Mileage", "5000", kawasakiNinja400),
-						new ProductAttribute("Condition", "Used", kawasakiNinja400)
-				));
-
-				productRepository.saveAll(List.of(toyotaCorolla, hondaCivic, yamahaYZFR3, kawasakiNinja400));
+				productRepository.saveAll(products);
 				System.out.println("Products added to Cars and Motorcycles categories.");
 			} else {
 				System.out.println("Categories already exist.");
@@ -178,5 +143,42 @@ public class BackendApplication {
 			orderRepository.save(order);
 			System.out.println("Sample order with product added.");
 		};
+	}
+
+
+	private List<Product> createProducts(User user, Category cars, Category motorcycles) {
+		Product toyotaCorolla = new Product(UUID.randomUUID(), "Toyota Corolla", "A reliable car", 15000.00, cars, null, user, null);
+		Product hondaCivic = new Product(UUID.randomUUID(), "Honda Civic", "A sporty car", 18000.00, cars, null, user, null);
+		Product kawasakiNinja400 = new Product(UUID.randomUUID(), "Kawasaki Ninja 400", "A powerful motorcycle", 7000.00, motorcycles, null, user, null);
+
+		setProductAttributes(toyotaCorolla, List.of(
+				new ProductAttribute("Brand", "Toyota", toyotaCorolla),
+				new ProductAttribute("Model", "Corolla", toyotaCorolla),
+				new ProductAttribute("Year", "2015", toyotaCorolla),
+				new ProductAttribute("Mileage", "50000", toyotaCorolla),
+				new ProductAttribute("Condition", "Used", toyotaCorolla)
+		));
+		setProductAttributes(hondaCivic, List.of(
+				new ProductAttribute("Brand", "Honda", hondaCivic),
+				new ProductAttribute("Model", "Civic", hondaCivic),
+				new ProductAttribute("Year", "2018", hondaCivic),
+				new ProductAttribute("Mileage", "30000", hondaCivic),
+				new ProductAttribute("Condition", "Used", hondaCivic)
+		));
+
+		setProductAttributes(kawasakiNinja400, List.of(
+				new ProductAttribute("Brand", "Kawasaki", kawasakiNinja400),
+				new ProductAttribute("Model", "Ninja 400", kawasakiNinja400),
+				new ProductAttribute("Year", "2020", kawasakiNinja400),
+				new ProductAttribute("Mileage", "5000", kawasakiNinja400),
+				new ProductAttribute("Condition", "Used", kawasakiNinja400)
+		));
+
+		return List.of(toyotaCorolla, hondaCivic, kawasakiNinja400);
+	}
+
+	private void setProductAttributes(Product product, List<ProductAttribute> attributes) {
+		product.setAttributes(attributes);
+		attributes.forEach(attr -> attr.setProduct(product));
 	}
 }

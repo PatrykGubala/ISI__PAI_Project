@@ -2,8 +2,12 @@ package com.example.backend.product;
 
 import com.example.backend.category.Category;
 import com.example.backend.search.SearchCriteria;
+import com.example.backend.user.User;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.Set;
+import java.util.UUID;
 
 public class ProductSpecification implements Specification<Product> {
 
@@ -34,9 +38,30 @@ public class ProductSpecification implements Specification<Product> {
                             throw new IllegalArgumentException("Unsupported value type: " + criteria.getValue().getClass());
                         }
                         yield builder.and(namePredicate, valuePredicate);
+                    }else if (keys.length == 2 && "user".equals(keys[0]) && "userId".equals(keys[1])) {
+                        Join<Product, User> userJoin = root.join("user");
+                        yield builder.equal(userJoin.get("userId"), criteria.getValue());
                     }
                 }
                 yield builder.equal(root.get(criteria.getKey()), criteria.getValue());
+            }
+            case IN -> {
+                if (criteria.getKey().contains(".")) {
+                    String[] keys = criteria.getKey().split("\\.");
+                    if (keys.length == 2 && "category".equals(keys[0]) && "id".equals(keys[1])) {
+                        Join<Product, Category> categoryJoin = root.join("category");
+                        CriteriaBuilder.In<UUID> inClause = builder.in(categoryJoin.get("id"));
+                        ((Set<UUID>) criteria.getValue()).forEach(inClause::value);
+                        yield builder.and(inClause);
+                    }
+                    else{
+                        throw new IllegalArgumentException("Unsupported key structure for IN operation: " + criteria.getKey());
+                    }
+                } else {
+                    CriteriaBuilder.In<Object> inClause = builder.in(root.get(criteria.getKey()));
+                    ((Set<?>) criteria.getValue()).forEach(inClause::value);
+                    yield builder.and(inClause);
+                }
             }
             case NEGATION -> builder.notEqual(root.get(criteria.getKey()), criteria.getValue());
             case GREATER_THAN -> builder.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());

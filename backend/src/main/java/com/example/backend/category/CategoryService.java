@@ -1,6 +1,7 @@
 package com.example.backend.category;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface CategoryService {
@@ -9,4 +10,6 @@ public interface CategoryService {
     CategoryDTO saveCategory(CategoryCreateDTO categoryDTO);
     void deleteCategory(UUID id);
     List<CategoryField> getCategoryFields(UUID id);
-}
+    Set<UUID> findAllCategoryIdsIncludingSubcategories(UUID categoryId);
+
+    }
