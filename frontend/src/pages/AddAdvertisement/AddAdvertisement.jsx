@@ -103,6 +103,19 @@ const AddAdvertisement = () => {
     const handleSubmit = async (formData) => {
         setLoading(true);
 
+
+        const queryParameters = `name=${encodeURIComponent(formData.name)}&description=${encodeURIComponent(formData.description)}&price=${formData.price}&categoryId=${selectedCategoryId}`;
+
+        const endpoint = fileList.length > 0
+            ? `/user/addProductWithImage`
+            : `/user/addProduct`;
+
+        const data = new FormData();
+        if (fileList.length > 0) {
+            fileList.forEach(file => data.append('images', file));
+        }
+
+
         const productDetails = {
             name: formData.name,
             description: formData.description,
@@ -113,11 +126,15 @@ const AddAdvertisement = () => {
                 value: formData[field.name]
             }))
         };
-
+        data.append('name', formData.name);
+        data.append('description', formData.description);
+        data.append('price', formData.price);
+        data.append('categoryId', selectedCategoryId);
+        data.append('productAttributes', JSON.stringify(productDetails.productAttributes));
         try {
-            const response = await axiosInstance.post('/user/addProduct', productDetails, {
+            const response = await axiosInstance.post(endpoint, fileList.length > 0 ? data : productDetails, {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': fileList.length > 0 ? 'multipart/form-data' : 'application/json'
                 }
             });
 

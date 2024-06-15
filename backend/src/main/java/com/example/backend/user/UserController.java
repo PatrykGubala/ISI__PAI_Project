@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -95,56 +94,73 @@ public class UserController {
         }
     }
 
-
-
     @PostMapping("/addProductWithImage")
     @Transactional
     public ResponseEntity<?> addProductWithImages(
-            @RequestPart("product") String productJson,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("price") double price,
+            @RequestParam("categoryId") UUID categoryId,
             @RequestPart("images") MultipartFile[] images,
+            @RequestParam("productAttributes") String productAttributesJson,
             @AuthenticationPrincipal User user) {
 
+        System.out.println("addProductWithImages - Start");
+
         if (user == null) {
+            System.out.println("addProductWithImages - User is not authenticated");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        ProductDTO productDTO;
-
         try {
-            productDTO = objectMapper.readValue(productJson, ProductDTO.class);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid product data");
-        }
+            System.out.println("addProductWithImages - Fetching category");
+            CategoryDTO categoryDTO = categoryService.getCategoryById(categoryId);
+            if (categoryDTO == null) {
+                System.out.println("addProductWithImages - Category not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
+            }
 
-        if (productDTO.getCategoryId() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Category ID is missing");
-        }
+            System.out.println("addProductWithImages - Creating productDTO");
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setName(name);
+            productDTO.setDescription(description);
+            productDTO.setPrice(price);
+            productDTO.setCategory(categoryDTO);
+            productDTO.setUser(UserDTO.convertToDTO(user));
 
-        CategoryDTO categoryDTO = categoryService.getCategoryById(productDTO.getCategoryId());
-        if (categoryDTO == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
-        }
-
-        productDTO.setCategory(categoryDTO);
-        productDTO.setUser(UserDTO.convertToDTO(user));
-
-        try {
             List<ProductImageDTO> productImageDTOs = new ArrayList<>();
+
+            System.out.println("addProductWithImages - Processing images");
             for (MultipartFile file : images) {
-                if (!file.isEmpty()) {
+                try {
                     String filename = storageService.store(file);
                     String url = MvcUriComponentsBuilder.fromMethodName(StorageController.class, "serveFile", filename)
                             .build().toUri().toString();
-                    productImageDTOs.add(new ProductImageDTO(null, url));
+                    ProductImageDTO productImageDTO = new ProductImageDTO();
+                    productImageDTO.setImageUrl(url);
+                    productImageDTOs.add(productImageDTO);
+                    System.out.println("addProductWithImages - Stored image: " + url);
+                } catch (Exception e) {
+                    System.out.println("addProductWithImages - Failed to store image: " + e.getMessage());
+                    return new ResponseEntity<>("Failed to store image", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
 
             productDTO.setImages(productImageDTOs);
+
+            System.out.println("addProductWithImages - Processing product attributes");
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<ProductAttributeDTO> productAttributes = Arrays.asList(objectMapper.readValue(productAttributesJson, ProductAttributeDTO[].class));
+            productDTO.setProductAttributes(productAttributes);
+
+            System.out.println("addProductWithImages - Saving product");
             ProductDTO savedProduct = productService.saveProduct(productDTO);
+            System.out.println("addProductWithImages - Product saved successfully: " + savedProduct.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to process request: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            System.out.println("addProductWithImages - Error: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
