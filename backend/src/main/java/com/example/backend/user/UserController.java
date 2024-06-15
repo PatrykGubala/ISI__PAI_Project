@@ -1,19 +1,27 @@
 package com.example.backend.user;
 
 import com.example.backend.category.CategoryDTO;
+import com.example.backend.category.CategoryField;
 import com.example.backend.category.CategoryRepository;
 import com.example.backend.product.*;
 import com.example.backend.category.CategoryService;
 import com.example.backend.message.Message;
 import com.example.backend.message.MessageService;
+import com.example.backend.search.SearchCriteria;
+import com.example.backend.search.SearchOperation;
 import com.example.backend.storage.StorageController;
 import com.example.backend.storage.StorageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
@@ -211,12 +219,62 @@ public class UserController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getUserProducts(@AuthenticationPrincipal User user) {
+    public ResponseEntity<Page<ProductDTO>> getUserProducts(
+            @AuthenticationPrincipal User user,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "category", required = false) UUID categoryId,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam MultiValueMap<String, String> attributes) {
+
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        List<Product> products = productService.getProductsByUserId(user.getUserId());
-        return ResponseEntity.ok(products);
+
+        UserDTO userDTO = UserDTO.convertToDTO(user);
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Product> spec = Specification.where(null);
+
+
+        spec = spec.and(new ProductSpecification(new SearchCriteria("user.userId", userDTO.getUserId(), SearchOperation.EQUALITY)));
+
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and(new ProductSpecification(new SearchCriteria("name", name, SearchOperation.LIKE)));
+        }
+        if (categoryId != null) {
+            Set<UUID> allRelevantCategoryIds = categoryService.findAllCategoryIdsIncludingSubcategories(categoryId);
+            spec = spec.and(new ProductSpecification(new SearchCriteria("category.id", allRelevantCategoryIds, SearchOperation.IN)));
+        }
+        if (minPrice != null) {
+            spec = spec.and(new ProductSpecification(new SearchCriteria("price", minPrice, SearchOperation.GREATER_THAN)));
+        }
+        if (maxPrice != null) {
+            spec = spec.and(new ProductSpecification(new SearchCriteria("price", maxPrice, SearchOperation.LESS_THAN)));
+        }
+
+        if (categoryId != null) {
+            CategoryDTO category = categoryService.getCategoryById(categoryId);
+            for (String key : attributes.keySet()) {
+                if (!"page".equals(key) && !"size".equals(key) && !"name".equals(key) && !"category".equals(key) && !"minPrice".equals(key) && !"maxPrice".equals(key)) {
+                    String value = attributes.getFirst(key);
+                    CategoryField field = category.getFields().stream()
+                            .filter(f -> f.getName().equals(key))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalArgumentException("Field not found"));
+
+                    Object attributeValue = switch (field.getFieldType()) {
+                        case ENUM -> value;
+                        case RANGE -> Double.valueOf(value);
+                    };
+                    spec = spec.and(new ProductSpecification(new SearchCriteria("attributes." + key, attributeValue, SearchOperation.EQUALITY)));
+                }
+            }
+        }
+
+        Page<ProductDTO> products = productService.findProducts(spec, pageable);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
 }

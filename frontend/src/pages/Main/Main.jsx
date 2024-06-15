@@ -24,7 +24,18 @@ const Main = () => {
     const pageSize = 5;
     const navigate = useNavigate();
     const { login: authenticateUser } = useContext(AuthContext);
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const accessToken = queryParams.get('access_token');
+        const refreshToken = queryParams.get('refresh_token');
 
+        if (accessToken && refreshToken) {
+            localStorage.setItem('access_token', accessToken);
+            localStorage.setItem('refresh_token', refreshToken);
+            authenticateUser();
+            navigate('/');
+        }
+    }, [navigate, authenticateUser]);
     useEffect(() => {
         const fetchData = async (filters = {}) => {
             try {

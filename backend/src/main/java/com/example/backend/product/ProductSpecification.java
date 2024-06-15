@@ -2,6 +2,7 @@ package com.example.backend.product;
 
 import com.example.backend.category.Category;
 import com.example.backend.search.SearchCriteria;
+import com.example.backend.user.User;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -37,6 +38,9 @@ public class ProductSpecification implements Specification<Product> {
                             throw new IllegalArgumentException("Unsupported value type: " + criteria.getValue().getClass());
                         }
                         yield builder.and(namePredicate, valuePredicate);
+                    }else if (keys.length == 2 && "user".equals(keys[0]) && "userId".equals(keys[1])) {
+                        Join<Product, User> userJoin = root.join("user");
+                        yield builder.equal(userJoin.get("userId"), criteria.getValue());
                     }
                 }
                 yield builder.equal(root.get(criteria.getKey()), criteria.getValue());
