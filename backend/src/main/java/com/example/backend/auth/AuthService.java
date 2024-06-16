@@ -11,6 +11,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -69,19 +70,8 @@ public class AuthService {
 
     @Transactional
     protected void saveUserToken(User user, String jwtToken) {
-        Optional<Token> existingToken = tokenRepository.findByToken(jwtToken);
-
-        if (existingToken.isPresent()) {
-            Token token = existingToken.get();
-            token.setExpired(false);
-            token.setRevoked(false);
-            tokenRepository.save(token);
-        } else {
-            tokenRepository.findByToken(jwtToken).ifPresent(token -> {
-                token.setExpired(true);
-                token.setRevoked(true);
-                tokenRepository.save(token);
-            });
+        try {
+            revokeAllUserTokens(user);
 
             Token newToken = Token.builder()
                     .user(user)
@@ -91,6 +81,8 @@ public class AuthService {
                     .revoked(false)
                     .build();
             tokenRepository.save(newToken);
+        } catch (DataIntegrityViolationException e) {
+            System.err.println("Duplicate token entry detected, handling accordingly.");
         }
     }
     @Transactional
@@ -126,6 +118,7 @@ public class AuthService {
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
+                revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 var authResponse = AuthResponse.builder()
                         .accessToken(accessToken)
