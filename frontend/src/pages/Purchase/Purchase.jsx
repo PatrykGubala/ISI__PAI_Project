@@ -282,6 +282,7 @@ const Purchase = () => {
                             price: totalPrice.toString(),
                             status: 'PAID'
                         }}
+                        productId={id}
                     />
                     <Button type="primary" onClick={createOrder}>
                         Zapłać przelewem

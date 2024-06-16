@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const PayPalCheckoutButton = ({ amount, clientID, orderRequest }) => {
+
+const PayPalCheckoutButton = ({ amount, clientID, orderRequest, productId }) => {
     const [orderID, setOrderID] = useState(null);
+    const navigate = useNavigate();
 
-    const createOrderBackend = async () => {
+
+    const createOrderBackend = async (updatedOrderRequest) => {
         try {
-            const response = await axios.post('http://localhost:8080/orders', orderRequest);
+            const response = await axios.post('http://localhost:8080/orders', updatedOrderRequest);
             console.log('Order created:', response.data);
+
+
         } catch (error) {
             console.error('Error creating order:', error.message);
         }
@@ -37,8 +43,12 @@ const PayPalCheckoutButton = ({ amount, clientID, orderRequest }) => {
                         };
 
                         await createOrderBackend(updatedOrderRequest);
+                        navigate("/success");
+
                     } catch (error) {
                         console.error('Error approving payment:', error.message);
+                        navigate("/cancel");
+
                     }
                 }}
             />
