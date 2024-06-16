@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const SuccessPage = () => {
+const Cancel = () => {
     return (
         <div>
-            <h2>Payment Successful!</h2>
-            <p>Thank you for your purchase.</p>
+            <h2>Payment Cancelled</h2>
+            <p>Your payment has been cancelled.</p>
             <Link to="/">Back to Home</Link>
         </div>
     );
 };
 
-export default SuccessPage;
+export default Cancel;

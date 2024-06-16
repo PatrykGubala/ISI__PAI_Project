@@ -18,6 +18,7 @@ import Success from "./pages/Success/Success.jsx";
 import Confirmation from "./pages/Confirmation/Confirmation.jsx";
 import Error from "./pages/Error/Error.jsx"
 import AdminPay from "./pages/AdminPay/AdminPay.jsx"
+import Cancel from "./pages/Cancel/Cancel.jsx";
 const App = () => {
     return (
         <AuthProvider>
@@ -40,6 +41,7 @@ const App = () => {
                         <Route exact path="/Confirmation" element={<Confirmation />} />
                         <Route exact path="/Error" element={<Error />} />
                         <Route exact path="/AdminPay" element={<AdminPay />} />
+                        <Route exact path="/Cancel" element={<Cancel />} />
 
                     </Route>
                     <Route exact path="*" element={<Error404 />} />
