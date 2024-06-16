@@ -274,6 +274,14 @@ const Purchase = () => {
                     <PayPalCheckoutButton
                         amount={totalPrice}
                         clientID={'ASRGeFLIV4kKWUSHrn5bA4Ozf7hnp9zVzi7TGqxv5Jacwjjv8ltlNBYMeR43MaGbzoEoeihAEPr5R5j0'}
+                        orderRequest={{
+                            userId: userData.userId,
+                            productId: id,
+                            paymentMethod: 'PayPal',
+                            deliveryAddress: `${userData.street}, ${userData.city}, ${userData.postalCode}`,
+                            price: totalPrice.toString(),
+                            status: 'PAID'
+                        }}
                     />
                     <Button type="primary" onClick={createOrder}>
                         Zapłać przelewem
