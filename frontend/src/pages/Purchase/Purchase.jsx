@@ -85,7 +85,8 @@ const Purchase = () => {
                 productId: id,
                 paymentMethod: 'Transfer',
                 deliveryAddress: `${userData.street}, ${userData.city}, ${userData.postalCode}`,
-                price: totalPrice.toString()
+                price: totalPrice.toString(),
+                status: 'UNPAID'
             };
 
             const response = await axiosInstance.post('/orders', orderRequest);

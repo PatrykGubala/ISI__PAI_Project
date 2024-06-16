@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Typography, Spin, Table } from 'antd';
+import { Layout, Typography, Spin, Table, Button, message } from 'antd';
 import axiosInstance from '../Interceptors/axiosInstance';
 import Header from '../../components/Header/Header';
+import './AdminPay.css';
 
 const { Content: AntContent } = Layout;
 const { Title } = Typography;
@@ -14,9 +15,7 @@ const AdminPay = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                let response;
-
-                response = await axiosInstance.get('/orders');
+                const response = await axiosInstance.get('/orders');
                 setOrders(response.data);
                 setLoading(false);
             } catch (error) {
@@ -27,13 +26,20 @@ const AdminPay = () => {
         fetchOrders();
     }, [username]);
 
-    if (loading) {
-        return (
-            <div className="loading">
-                <Spin size="large" />
-            </div>
-        );
-    }
+    const updateOrderStatus = async (orderId, status) => {
+        try {
+            await axiosInstance.patch(`/orders/${orderId}?status=${status}`);
+            message.success('Order status updated successfully');
+            setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                    order.id === orderId ? { ...order, status } : order
+                )
+            );
+        } catch (error) {
+            console.error('Error updating order status:', error);
+            message.error('Failed to update order status');
+        }
+    };
 
     const columns = [
         {
@@ -47,17 +53,32 @@ const AdminPay = () => {
             key: 'orderDate',
         },
         {
-            title: 'User',
-            dataIndex: ['user', 'username'],
-            key: 'user',
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
         },
         {
-            title: 'Product',
-            dataIndex: ['product', 'name'],
-            key: 'product',
+            title: 'Action',
+            key: 'action',
+            render: (_, record) => (
+                <Button
+                    type="primary"
+                    onClick={() => updateOrderStatus(record.id, 'PAID')}
+                    disabled={record.status === 'PAID'}
+                >
+                    Mark as PAID
+                </Button>
+            ),
         },
-
     ];
+
+    if (loading) {
+        return (
+            <div className="loading">
+                <Spin size="large" />
+            </div>
+        );
+    }
 
     return (
         <Layout>

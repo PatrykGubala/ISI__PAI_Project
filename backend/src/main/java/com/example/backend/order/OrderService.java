@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -44,5 +45,13 @@ public class OrderService {
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    public Order updateOrderStatus(UUID id, Order.Status status) {
+        Optional<Order> orderOptional = orderRepository.findById(id);
+            Order order = orderOptional.get();
+            order.setStatus(status);
+            return orderRepository.save(order);
+
     }
 }
