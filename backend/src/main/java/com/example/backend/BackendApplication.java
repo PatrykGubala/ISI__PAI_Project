@@ -140,6 +140,7 @@ public class BackendApplication {
 			order.setPaymentMethod("TE");
 			order.setDeliveryAddress("ST");
 			order.setPrice("123");
+			order.setStatus(Order.Status.UNPAID);
 			orderRepository.save(order);
 			System.out.println("Sample order with product added.");
 		};
