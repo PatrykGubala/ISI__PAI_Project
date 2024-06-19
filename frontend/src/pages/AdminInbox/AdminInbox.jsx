@@ -36,29 +36,14 @@ const AdminInbox = () => {
 
     const columns = [
         {
-            title: 'Imię',
-            dataIndex: 'firstname',
-            key: 'firstname',
-        },
-        {
-            title: 'Nazwisko',
-            dataIndex: 'lastName',
-            key: 'lastName',
-        },
-        {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-        },
-        {
-            title: 'Temat',
-            dataIndex: 'title',
-            key: 'title',
-        },
-        {
-            title: 'Wiadomość',
-            dataIndex: 'description',
-            key: 'description',
+            render: (text) => (
+                <div className="column-email">
+                    {text}
+                </div>
+            ),
         },
         {
             title: 'Akcje',
@@ -79,8 +64,18 @@ const AdminInbox = () => {
                 <Table
                     columns={columns}
                     dataSource={messages}
-                    loading={loading}
                     rowKey="messageId"
+                    expandable={{
+                        expandedRowRender: record => (
+                            <div>
+                                <p><strong>Imię:</strong> {record.firstname}</p>
+                                <p><strong>Nazwisko:</strong> {record.lastName}</p>
+                                <p><strong>Temat:</strong> {record.title}</p>
+                                <p className="column-description"><strong>Wiadomość:</strong> {record.description}</p>
+                            </div>
+                        ),
+                    }}
+                    loading={loading}
                 />
             </div>
         </div>

@@ -4,6 +4,7 @@
     align-items: center;
     padding: 2rem;
     background-color: #f0f2f5;
+    margin: 50px auto;
 }
 
 .loading-container {
@@ -122,3 +123,112 @@
     flex-direction: column;
 }
 
+@media (max-width: 1024px) {
+    .advertisement-container {
+        padding: 1rem;
+    }
+
+    .row-boards {
+        flex-wrap: wrap;
+    }
+
+    .advertisement-left {
+        flex: 100%;
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+
+    .carousel-image-container {
+        height: 300px;
+    }
+
+    .advertisement-right {
+        flex: 100%;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .description-container {
+        padding: 1.5rem;
+    }
+
+    .advertisement-right button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .row-boards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .advertisement-left,
+    .advertisement-right {
+        width: 100%;
+    }
+
+    .carousel-image-container {
+        height: 250px;
+    }
+
+    .title {
+        font-size: 1.8rem;
+    }
+
+    .price {
+        font-size: 1.8rem;
+    }
+
+    .location-title {
+        font-size: 1rem;
+    }
+
+    .description-title {
+        font-size: 1.8rem;
+    }
+
+    .description {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .advertisement-container {
+        padding: 0.5rem;
+    }
+
+    .advertisement-left,
+    .advertisement-right {
+        padding: 1rem;
+    }
+
+    .carousel-image-container {
+        height: 200px;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .price {
+        font-size: 1.5rem;
+    }
+
+    .location-title {
+        font-size: 1rem;
+    }
+
+    .description-title {
+        font-size: 1.5rem;
+    }
+
+    .description {
+        font-size: 0.8rem;
+    }
+
+    .advertisement-right button {
+        width: 100%;
+    }
+}

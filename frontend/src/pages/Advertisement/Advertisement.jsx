@@ -77,7 +77,7 @@ const Advertisement = () => {
                 </div>
             </div>
             <div className="advertisement description-container">
-                <div className="description-title">OPIS</div>
+                <div className="description-title">OPIS PRODUKTU</div>
                 <div className="description">
                     <p>{advertisementData.description}</p>
                 </div>
