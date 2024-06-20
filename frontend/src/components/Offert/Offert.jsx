@@ -8,8 +8,8 @@ const Product = ({ product }) => {
             <div className="product-info">
                 <div className="product-image">
                     <Image
-                        width={200}
-                        height={200}
+                        width={150}
+                        height={150}
                         src={product.images.length > 0 ? product.images[0].imageUrl : 'placeholder.jpg'}
                         alt={product.name}
                         className="product-image"

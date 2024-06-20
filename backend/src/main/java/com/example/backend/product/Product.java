@@ -3,6 +3,7 @@ package com.example.backend.product;
 import com.example.backend.category.Category;
 import com.example.backend.user.User;
 import com.example.backend.user.UserDTO;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,10 +44,12 @@ public class Product {
     private List<ProductImage> images;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<ProductAttribute> attributes;
 
 

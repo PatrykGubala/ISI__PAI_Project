@@ -8,6 +8,7 @@ public class OrderRequest {
     private String paymentMethod;
     private String deliveryAddress;
     private String price;
+    private Order.Status status;
 
     public UUID getUserId() {
         return userId;
@@ -47,5 +48,13 @@ public class OrderRequest {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public Order.Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Order.Status status) {
+        this.status = status;
     }
 }

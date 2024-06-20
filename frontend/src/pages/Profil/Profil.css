@@ -1,18 +1,19 @@
 .profile-page {
     max-width: 1200px;
-    margin: 0 auto;
     padding: 2rem;
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 50px auto;
 }
+
 .pagination-container {
     display: flex;
     justify-content: center;
     margin-top: 20px;
     margin-bottom: 20px;
-
 }
+
 .profile-header {
     text-align: center;
     margin-bottom: 2rem;
@@ -67,9 +68,9 @@
 .profile-products {
     margin-top: 2rem;
 }
+
 .profile-tabs {
     margin-top: 40px;
-
 }
 
 .loading {
@@ -78,6 +79,7 @@
     align-items: center;
     height: 100vh;
 }
+
 .history-card {
     display: flex;
     align-items: center;
@@ -85,10 +87,83 @@
     margin-bottom: 16px;
 }
 
-
 .history-info {
     display: flex;
     align-items: center;
 }
 
+@media (max-width: 1200px) {
+    .profile-page {
+        max-width: 100%;
+        padding: 1.5rem;
+    }
 
+    .profile-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profile-image {
+        margin-bottom: 1rem;
+    }
+
+    .profile-details {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .profile-page {
+        padding: 1rem;
+    }
+
+    .profile-content {
+        gap: 1rem;
+    }
+
+    .profile-info strong {
+        width: 120px;
+    }
+
+    .edit-button {
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-page {
+        padding: 0.5rem;
+    }
+
+    .profile-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profile-info strong {
+        width: 100px;
+    }
+
+    .input {
+        padding: 0.3rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-page {
+        padding: 0.25rem;
+    }
+
+    .profile-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profile-info strong {
+        width: 80px;
+    }
+
+    .profile-details {
+        padding: 0.5rem;
+    }
+}

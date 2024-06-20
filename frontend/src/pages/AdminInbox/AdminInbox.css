@@ -1,8 +1,10 @@
+
 .admin-inbox-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    background-color: #f5f5f5;
+    margin: 50px auto;
 }
 
 .admin-inbox-content {
@@ -20,17 +22,62 @@
     color: #333;
 }
 
-.ant-table {
-    margin-top: 20px;
+.column-email {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.column-description {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .ant-btn-danger {
     background-color: #ff4d4f;
     border-color: #ff4d4f;
     border-radius: 4px;
+    color: #fff;
 }
 
 .ant-btn-danger:hover {
     background-color: #ff7875;
     border-color: #ff7875;
+    color: #fff;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .admin-inbox-content {
+        padding: 15px;
+        max-width: 90%;
+    }
+
+    .admin-inbox-content h2 {
+        margin-bottom: 15px;
+    }
+
+    .ant-btn-danger {
+        border-radius: 3px;
+    }
+
+    .column-email {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-inbox-content {
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    .admin-inbox-content h2 {
+        margin-bottom: 10px;
+    }
+
+    .ant-btn-danger {
+        border-radius: 2px;
+    }
 }

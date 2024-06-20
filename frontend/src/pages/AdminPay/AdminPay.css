@@ -1,0 +1,99 @@
+.orders-page {
+    margin: 50px auto;
+    max-width: 1200px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.orders-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+.ant-table {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+    white-space: nowrap;
+}
+
+
+.ant-btn {
+    min-width: 100px;
+}
+
+
+@media (max-width: 1200px) {
+    .orders-page {
+        max-width: 100%;
+        margin: 50px auto;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 992px) {
+    .orders-header {
+        font-size: 18px;
+    }
+
+    .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+        font-size: 14px;
+    }
+
+    .ant-btn {
+        min-width: 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .orders-page {
+        padding: 10px 5px;
+    }
+
+    .orders-header {
+        font-size: 16px;
+    }
+
+    .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+        font-size: 12px;
+    }
+
+    .ant-btn {
+        font-size: 12px;
+        min-width: 70px;
+        padding: 4px 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .orders-page {
+        padding: 5px 2px;
+    }
+
+    .orders-header {
+        font-size: 14px;
+    }
+
+    .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+        font-size: 10px;
+    }
+
+    .ant-btn {
+        font-size: 10px;
+        min-width: 60px;
+        padding: 2px 6px;
+    }
+}
