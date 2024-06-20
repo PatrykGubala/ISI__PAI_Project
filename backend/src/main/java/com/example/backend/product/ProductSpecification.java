@@ -94,6 +94,15 @@ public class ProductSpecification implements Specification<Product> {
             }
             case LESS_THAN -> builder.lessThan(root.get(criteria.getKey()), criteria.getValue().toString());
             case LIKE -> builder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
+            case BETWEEN -> {
+                if (criteria.getKey().equals("price")) {
+                    double[] range = (double[]) criteria.getValue();
+                    yield builder.between(root.get("price"), range[0], range[1]);
+                } else {
+                    throw new IllegalArgumentException("Unsupported key for BETWEEN operation: " + criteria.getKey());
+                }
+            }
+
         };
     }
 }

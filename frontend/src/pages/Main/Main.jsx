@@ -5,7 +5,6 @@ import Header from '../../components/Header/Header.jsx';
 import ProductsList from '../../components/ProductsList/ProductsList.jsx';
 import Footer from '../../components/Footer/Footer.jsx';
 import Filter from "../../components/Filter/Filter.jsx";
-import Search from "../../components/Search/Search.jsx";
 import { AuthContext } from '../../hooks/AuthContext';
 import axiosInstance from '../Interceptors/axiosInstance';
 import './Main.css';
@@ -37,17 +36,18 @@ const Main = () => {
         }
     }, [navigate, authenticateUser]);
 
+    const fetchData = async (filters = {}, page = currentPage) => {
+        try {
+            const queryString = new URLSearchParams({ ...filters, page: page - 1, size: pageSize }).toString();
+            const response = await axiosInstance.get(`/products?${queryString}`);
+            setProducts(response.data.content);
+            setTotalProducts(response.data.totalElements);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async (filters = {}) => {
-            try {
-                const queryString = new URLSearchParams({ ...filters, page: currentPage - 1, size: pageSize }).toString();
-                const response = await axiosInstance.get(`/products?${queryString}`);
-                setProducts(response.data.content);
-                setTotalProducts(response.data.totalElements);
-            } catch (error) {
-                console.error('Error fetching products:', error);
-            }
-        };
         fetchData();
     }, [currentPage]);
 
@@ -55,9 +55,9 @@ const Main = () => {
         const filters = {};
 
         if (values.category) filters.category = values.category;
-        if (values.priceFrom) filters.minPrice = values.priceFrom;
-        if (values.priceTo) filters.maxPrice = values.priceTo;
-
+        if (values.priceRange) filters.priceRange = values.priceRange;
+        delete values.priceFrom;
+        delete values.priceTo;
         Object.keys(values).forEach(key => {
             if (key.startsWith('attributes.')) {
                 filters[key.substring(11)] = values[key];
@@ -65,16 +65,15 @@ const Main = () => {
                 filters[key] = values[key];
             }
         });
+
         Object.keys(filters).forEach(key => {
             if (filters[key] === undefined || filters[key] === 'undefined') {
                 delete filters[key];
             }
         });
+
         try {
-            const queryString = new URLSearchParams({ ...filters, page: 0, size: pageSize }).toString();
-            const response = await axiosInstance.get(`/products?${queryString}`);
-            setProducts(response.data.content);
-            setTotalProducts(response.data.totalElements);
+            await fetchData(filters, 1);
             setCurrentPage(1);
         } catch (error) {
             console.error('Error fetching filtered products:', error);

@@ -36,8 +36,7 @@ public class ProductController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "category", required = false) UUID categoryId,
-            @RequestParam(value = "minPrice", required = false) Double minPrice,
-            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "priceRange", required = false) double[] priceRange,
             @RequestParam MultiValueMap<String, String> attributes) {
 
         Pageable pageable = PageRequest.of(page, size);
@@ -50,18 +49,14 @@ public class ProductController {
             Set<UUID> allRelevantCategoryIds = categoryService.findAllCategoryIdsIncludingSubcategories(categoryId);
             spec = spec.and(new ProductSpecification(new SearchCriteria("category.id", allRelevantCategoryIds, SearchOperation.IN)));
         }
-        if (minPrice != null) {
-            spec = spec.and(new ProductSpecification(new SearchCriteria("price", minPrice, SearchOperation.GREATER_THAN)));
+        if (priceRange != null && priceRange.length == 2) {
+            spec = spec.and(new ProductSpecification(new SearchCriteria("price", priceRange, SearchOperation.BETWEEN)));
         }
-        if (maxPrice != null) {
-            spec = spec.and(new ProductSpecification(new SearchCriteria("price", maxPrice, SearchOperation.LESS_THAN)));
-        }
-
         if (categoryId != null) {
             CategoryDTO category = categoryService.getCategoryById(categoryId);
             System.out.println("Category Fields: " + category.getFields());
             for (String key : attributes.keySet()) {
-                if (!"page".equals(key) && !"size".equals(key) && !"name".equals(key) && !"category".equals(key) && !"minPrice".equals(key) && !"maxPrice".equals(key)) {
+                if (!"page".equals(key) && !"size".equals(key) && !"name".equals(key) && !"category".equals(key) && !"priceRange".equals(key)) {
                     try {
                         String baseKey = key.replaceFirst("(Min|Max)$", "");
                         CategoryField field = category.getFields().stream()

@@ -236,8 +236,7 @@ public class UserController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "category", required = false) UUID categoryId,
-            @RequestParam(value = "minPrice", required = false) Double minPrice,
-            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "priceRange", required = false) double[] priceRange,
             @RequestParam MultiValueMap<String, String> attributes) {
 
         if (user == null) {
@@ -257,12 +256,6 @@ public class UserController {
         if (categoryId != null) {
             Set<UUID> allRelevantCategoryIds = categoryService.findAllCategoryIdsIncludingSubcategories(categoryId);
             spec = spec.and(new ProductSpecification(new SearchCriteria("category.id", allRelevantCategoryIds, SearchOperation.IN)));
-        }
-        if (minPrice != null) {
-            spec = spec.and(new ProductSpecification(new SearchCriteria("price", minPrice, SearchOperation.GREATER_THAN)));
-        }
-        if (maxPrice != null) {
-            spec = spec.and(new ProductSpecification(new SearchCriteria("price", maxPrice, SearchOperation.LESS_THAN)));
         }
 
         if (categoryId != null) {

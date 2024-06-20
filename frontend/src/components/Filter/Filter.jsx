@@ -121,14 +121,19 @@ const Filter = ({ handleFilter }) => {
         const filters = {};
         Object.keys(values).forEach(key => {
             if (fieldTypes[key] === 'RANGE' && Array.isArray(values[key])) {
-                filters[`${key}Min`] = values[key][0];
-                filters[`${key}Max`] = values[key][1];
+                filters[`${key}`] = values[key];
             } else if (fieldTypes[key] === 'ENUM' && values[key] && values[key].length > 0) {
                 filters[key] = values[key];
             } else if (fieldTypes[key] !== 'ENUM') {
                 filters[key] = values[key];
             }
         });
+
+        if (values.priceFrom && values.priceTo) {
+            filters.priceRange = [parseFloat(values.priceFrom), parseFloat(values.priceTo)];
+
+        }
+
         handleFilter({ ...filters, category: selectedCategoryId });
     };
 

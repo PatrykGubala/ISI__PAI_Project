@@ -9,5 +9,6 @@ public enum SearchOperation {
     IN,
     GREATER_THAN_OR_EQUAL,
     LESS_THAN_OR_EQUAL,
+    BETWEEN
 }
 
