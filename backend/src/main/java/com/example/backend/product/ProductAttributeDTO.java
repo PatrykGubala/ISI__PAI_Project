@@ -30,8 +30,6 @@ public class ProductAttributeDTO {
 
         if (productAttributeDTO.getValue() instanceof String) {
             productAttribute.setStringValue((String) productAttributeDTO.getValue());
-        } else if (productAttributeDTO.getValue() instanceof Integer) {
-            productAttribute.setIntegerValue((Integer) productAttributeDTO.getValue());
         } else if (productAttributeDTO.getValue() instanceof Double) {
             productAttribute.setDoubleValue((Double) productAttributeDTO.getValue());
         } else {

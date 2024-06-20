@@ -59,19 +59,32 @@ public class ProductController {
 
         if (categoryId != null) {
             CategoryDTO category = categoryService.getCategoryById(categoryId);
+            System.out.println("Category Fields: " + category.getFields());
             for (String key : attributes.keySet()) {
                 if (!"page".equals(key) && !"size".equals(key) && !"name".equals(key) && !"category".equals(key) && !"minPrice".equals(key) && !"maxPrice".equals(key)) {
-                    String value = attributes.getFirst(key);
-                    CategoryField field = category.getFields().stream()
-                            .filter(f -> f.getName().equals(key))
-                            .findFirst()
-                            .orElseThrow(() -> new IllegalArgumentException("Field not found"));
+                    try {
+                        String baseKey = key.replaceFirst("(Min|Max)$", "");
+                        CategoryField field = category.getFields().stream()
+                                .filter(f -> f.getName().equals(baseKey))
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalArgumentException("Field not found: " + baseKey));
 
-                    Object attributeValue = switch (field.getFieldType()) {
-                        case ENUM -> value;
-                        case RANGE -> Double.valueOf(value);
-                    };
-                    spec = spec.and(new ProductSpecification(new SearchCriteria("attributes." + key, attributeValue, SearchOperation.EQUALITY)));
+                        if (field.getFieldType() == FieldType.ENUM) {
+                            Set<String> enumValues = Set.of(attributes.getFirst(key).split(","));
+                            spec = spec.and(new ProductSpecification(new SearchCriteria("attributes." + baseKey, enumValues, SearchOperation.IN)));
+                        } else if (field.getFieldType() == FieldType.RANGE) {
+                            if (key.endsWith("Min")) {
+                                Double minValue = Double.valueOf(attributes.getFirst(key));
+                                spec = spec.and(new ProductSpecification(new SearchCriteria("attributes." + baseKey, minValue, SearchOperation.GREATER_THAN_OR_EQUAL)));
+                            } else if (key.endsWith("Max")) {
+                                Double maxValue = Double.valueOf(attributes.getFirst(key));
+                                spec = spec.and(new ProductSpecification(new SearchCriteria("attributes." + baseKey, maxValue, SearchOperation.LESS_THAN_OR_EQUAL)));
+                            }
+                        }
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Error processing attribute: " + key + " - " + e.getMessage());
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
                 }
             }
         }
@@ -79,7 +92,6 @@ public class ProductController {
         Page<ProductDTO> products = productService.findProducts(spec, pageable);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable("id") UUID id) {
         ProductDTO productDTO = productService.getProductById(id);

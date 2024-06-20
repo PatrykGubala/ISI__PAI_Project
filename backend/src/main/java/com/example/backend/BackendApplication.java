@@ -85,7 +85,7 @@ public class BackendApplication {
 				motorization.setName("Motorization");
 				motorization.setDescription("All motor vehicles");
 				motorization.setFields(List.of(
-						new CategoryField("Mileage", FieldType.RANGE, true, 0, 200000, 0, 200000),
+						new CategoryField("Mileage", FieldType.RANGE, true, 0.0, 200000.0, 0.0, 200000.0),
 						new CategoryField("Condition", FieldType.ENUM, true, List.of("NEW", "USED"), List.of("NEW", "USED"))
 				));
 
@@ -98,7 +98,7 @@ public class BackendApplication {
 				cars.setParentCategory(motorization);
 				cars.setFields(List.of(
 						new CategoryField("Brand", FieldType.ENUM, true, List.of("Toyota", "Honda"), List.of("Toyota", "Honda")),
-						new CategoryField("Mileage", FieldType.RANGE, true, 0, 200000, 0, 200000),
+						new CategoryField("Mileage", FieldType.RANGE, true, 0.0, 200000.0, 0.0, 200000.0),
 						new CategoryField("Condition", FieldType.ENUM, true, List.of("NEW", "USED"), List.of("NEW", "USED"))
 				));
 
@@ -109,7 +109,7 @@ public class BackendApplication {
 				motorcycles.setParentCategory(motorization);
 				motorcycles.setFields(List.of(
 						new CategoryField("Brand", FieldType.ENUM, true, List.of("Yamaha", "Kawasaki"), List.of("Yamaha", "Kawasaki")),
-						new CategoryField("Mileage", FieldType.RANGE, true, 0, 200000, 0, 200000),
+						new CategoryField("Mileage", FieldType.RANGE, true, 0.0, 200000.0, 0.0, 200000.0),
 						new CategoryField("Condition", FieldType.ENUM, true, List.of("NEW", "USED"), List.of("NEW", "USED"))
 				));
 
@@ -156,23 +156,23 @@ public class BackendApplication {
 				new ProductAttribute("Brand", "Toyota", toyotaCorolla),
 				new ProductAttribute("Model", "Corolla", toyotaCorolla),
 				new ProductAttribute("Year", "2015", toyotaCorolla),
-				new ProductAttribute("Mileage", "50000", toyotaCorolla),
-				new ProductAttribute("Condition", "Used", toyotaCorolla)
+				new ProductAttribute("Mileage", 50000.0, toyotaCorolla),
+				new ProductAttribute("Condition", "USED", toyotaCorolla)
 		));
 		setProductAttributes(hondaCivic, List.of(
 				new ProductAttribute("Brand", "Honda", hondaCivic),
 				new ProductAttribute("Model", "Civic", hondaCivic),
 				new ProductAttribute("Year", "2018", hondaCivic),
-				new ProductAttribute("Mileage", "30000", hondaCivic),
-				new ProductAttribute("Condition", "Used", hondaCivic)
+				new ProductAttribute("Mileage", 30000.0, hondaCivic),
+				new ProductAttribute("Condition", "NEW", hondaCivic)
 		));
 
 		setProductAttributes(kawasakiNinja400, List.of(
 				new ProductAttribute("Brand", "Kawasaki", kawasakiNinja400),
 				new ProductAttribute("Model", "Ninja 400", kawasakiNinja400),
 				new ProductAttribute("Year", "2020", kawasakiNinja400),
-				new ProductAttribute("Mileage", "5000", kawasakiNinja400),
-				new ProductAttribute("Condition", "Used", kawasakiNinja400)
+				new ProductAttribute("Mileage", 5000.0, kawasakiNinja400),
+				new ProductAttribute("Condition", "USED", kawasakiNinja400)
 		));
 
 		return List.of(toyotaCorolla, hondaCivic, kawasakiNinja400);

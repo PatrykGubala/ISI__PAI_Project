@@ -13,10 +13,6 @@ import './Main.css';
 const { Content: AntContent } = Layout;
 
 const Main = () => {
-    const {
-        token: { colorBgContainer, borderRadiusLG },
-    } = theme.useToken();
-
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -24,6 +20,7 @@ const Main = () => {
     const pageSize = 5;
     const navigate = useNavigate();
     const { login: authenticateUser } = useContext(AuthContext);
+
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
         const accessToken = queryParams.get('access_token');
@@ -36,6 +33,7 @@ const Main = () => {
             navigate('/');
         }
     }, [navigate, authenticateUser]);
+
     useEffect(() => {
         const fetchData = async (filters = {}) => {
             try {
@@ -53,18 +51,23 @@ const Main = () => {
     const handleFilter = async (values) => {
         const filters = {};
 
-        if (values.categoryId) filters.category = values.categoryId;
+        if (values.category) filters.category = values.category;
         if (values.priceFrom) filters.minPrice = values.priceFrom;
         if (values.priceTo) filters.maxPrice = values.priceTo;
 
         Object.keys(values).forEach(key => {
-            if (key.startsWith('attributes')) {
+            if (key.startsWith('attributes.')) {
+                filters[key.substring(11)] = values[key];
+            } else {
                 filters[key] = values[key];
             }
         });
-
+        Object.keys(filters).forEach(key => {
+            if (filters[key] === undefined || filters[key] === 'undefined') {
+                delete filters[key];
+            }
+        });
         try {
-            const pageSize = 10;
             const queryString = new URLSearchParams({ ...filters, page: 0, size: pageSize }).toString();
             const response = await axiosInstance.get(`/products?${queryString}`);
             setProducts(response.data.content);

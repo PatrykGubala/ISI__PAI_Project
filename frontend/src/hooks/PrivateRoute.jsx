@@ -1,27 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext.jsx';
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8080';
-
-const refreshAccessToken = async () => {
-    const refreshToken = localStorage.getItem('refresh_token');
-    if (!refreshToken) {
-        throw new Error('Refresh token not found');
-    }
-
-    const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {}, {
-        headers: {
-            Authorization: `Bearer ${refreshToken}`
-        }
-    });
-
-    const { access_token, refresh_token } = response.data;
-    localStorage.setItem('access_token', access_token);
-    localStorage.setItem('refresh_token', refresh_token);
-    return access_token;
-};
+import axiosInstance from '../pages/Interceptors/axiosInstance';
 
 const PrivateRoute = () => {
     const { isLoggedIn, login, logout } = useContext(AuthContext);
@@ -42,7 +22,14 @@ const PrivateRoute = () => {
 
             if (isTokenExpired) {
                 try {
-                    await refreshAccessToken();
+                    const response = await axiosInstance.post('/auth/refresh-token', {}, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('refresh_token')}`
+                        }
+                    });
+                    const { access_token, refresh_token } = response.data;
+                    localStorage.setItem('access_token', access_token);
+                    localStorage.setItem('refresh_token', refresh_token);
                     login();
                 } catch (error) {
                     console.error('Error refreshing access token:', error.message);
