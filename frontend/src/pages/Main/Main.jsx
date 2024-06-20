@@ -13,6 +13,9 @@ import './Main.css';
 const { Content: AntContent } = Layout;
 
 const Main = () => {
+    const {
+        token: { colorBgContainer, borderRadiusLG },
+    } = theme.useToken();
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);

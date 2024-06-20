@@ -20,31 +20,37 @@ const Profil = () => {
 
     useEffect(() => {
         const fetchProfileData = async () => {
+            setLoading(true);
             try {
+                const tokenResponse = await axiosInstance.post('/auth/refresh-token');
+                localStorage.setItem('access_token', tokenResponse.data.access_token);
+                localStorage.setItem('refresh_token', tokenResponse.data.refresh_token);
+
                 const response = await axiosInstance.get('/user/profile');
-                const userData = response.data;
-                setProfileData(userData);
-                setLoading(false);
+                setProfileData(response.data);
             } catch (error) {
                 console.error('Error fetching user data:', error);
-                setLoading(false);
             }
+            setLoading(false);
         };
 
-        fetchProfileData();
+        if (username) {
+            fetchProfileData();
+        } else {
+            setLoading(false);
+        }
     }, [username]);
 
-    const fetchProductsData = async (page) => {
-        try {
-            const response = await axiosInstance.get(`/user/products?page=${page - 1}&size=${pageSize}`);
-            setProducts(response.data.content);
-            setTotalProducts(response.data.totalElements);
-        } catch (error) {
-            console.error('Error fetching products:', error);
-        }
-    };
-
     useEffect(() => {
+        const fetchProductsData = async (page) => {
+            try {
+                const response = await axiosInstance.get(`/user/products?page=${page - 1}&size=${pageSize}`);
+                setProducts(response.data.content);
+                setTotalProducts(response.data.totalElements);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
         fetchProductsData(currentPage);
     }, [currentPage]);
 

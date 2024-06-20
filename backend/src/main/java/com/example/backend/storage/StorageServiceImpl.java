@@ -72,7 +72,11 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public Path load(String filename) {
-        return rootLocation.resolve(filename);
+        Path file = rootLocation.resolve(filename);
+        if (!Files.exists(file)) {
+            throw new StorageFileNotFoundException("Could not read file: " + filename);
+        }
+        return file;
     }
 
     @Override
@@ -93,6 +97,18 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public void deleteAll() {
-        FileSystemUtils.deleteRecursively(rootLocation.toFile());
+        try {
+            Files.walk(rootLocation)
+                    .filter(Files::isRegularFile)
+                    .forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new StorageException("Failed to delete file", e);
+                        }
+                    });
+        } catch (IOException e) {
+            throw new StorageException("Failed to delete files", e);
+        }
     }
 }
