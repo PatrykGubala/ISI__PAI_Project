@@ -40,7 +40,6 @@ const Header = () => {
         ...(isAdmin() ? [{ key: 'ManageCategory', label: 'Zarządzanie kategoriami', icon: <PlusOutlined />}] : []),
         ...(isUser() ? [{ key: 'Contact', label: 'Kontakt', icon: <PhoneOutlined /> }] : []),
         ...(isUser() ? [{ key: 'Profil', label: 'Twoje konto', icon: <UserOutlined /> }] : []),
-        ...(isAdmin() ? [{ key: 'Admin', label: 'Admin', icon: <LogoutOutlined />, onClick: handleAdmin }] : []),
         ...(isAdmin() ? [{ key: 'AdminInbox', label: 'Wiadomości', icon: <LogoutOutlined /> }] : []),
         ...(isAdmin() ? [{ key: 'AdminPay', label: 'Payments', icon: <LogoutOutlined /> }] : []),
         { key: 'Logout', label: 'Wyloguj', icon: <LogoutOutlined />, onClick: handleLogout }

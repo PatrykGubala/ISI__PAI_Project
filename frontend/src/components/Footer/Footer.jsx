@@ -4,7 +4,7 @@ import './Footer.css';
 const Footer = () => {
     return (
         <footer className="footer">
-             ©{new Date().getFullYear()}
+            Portal z ogłoszeniami ©{new Date().getFullYear()}
         </footer>
     );
 };

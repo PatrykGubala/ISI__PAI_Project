@@ -88,22 +88,7 @@ const Profil = () => {
                 </div>
             ),
         },
-        {
-            key: '2',
-            label: 'Historia zakupów',
-            children: (
-                <Card className="history-card" hoverable>
-                    <div className="history-details">
-                        <h3>Historia</h3>
-                    </div>
-                </Card>
-            ),
-        },
-        {
-            key: '3',
-            label: 'Płatności',
-            children: 'Content of Tab Pane 3',
-        },
+
     ];
 
     return (
@@ -140,11 +125,7 @@ const Profil = () => {
                                     <Input className="input" name="phoneNumber" value={profileData.phoneNumber} readOnly />
                                 </div>
                             </div>
-                            <div className="edit-button">
-                                <Link to="/edit-profile">
-                                    <Button type="primary">Edytuj dane</Button>
-                                </Link>
-                            </div>
+
                         </div>
                     </div>
                     <div className="profile-tabs">

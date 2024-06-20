@@ -180,19 +180,19 @@ const AddAdvertisement = () => {
         <div className="add-advertisement-container">
             <Header />
             <Form form={form} onFinish={handleSubmit} initialValues={{ name: '', description: '', price: '' }}>
-                <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please enter the name' }]} className="form-item">
+                <Form.Item label="Nazwa" name="name" rules={[{ required: true, message: 'Please enter the name' }]} className="form-item">
                     <Input className="input-field" />
                 </Form.Item>
-                <Form.Item label="Description" name="description" rules={[{ required: true, message: 'Please enter a description' }]} className="form-item">
+                <Form.Item label="Opis" name="description" rules={[{ required: true, message: 'Please enter a description' }]} className="form-item">
                     <Input.TextArea className="input-field" />
                 </Form.Item>
-                <Form.Item label="Price" name="price" rules={[{ required: true, message: 'Please enter a price' }]} className="form-item">
+                <Form.Item label="Cena" name="price" rules={[{ required: true, message: 'Please enter a price' }]} className="form-item">
                     <Input type="number" className="input-field" />
                 </Form.Item>
-                <Form.Item label="Images" name="images" className="form-item">
+                <Form.Item label="Zdjęcia" name="images" className="form-item">
                     <Input type="file" multiple onChange={(event) => setFileList([...event.target.files])} className="input-field" />
                 </Form.Item>
-                <Form.Item label="Category" name="categoryId" rules={[{ required: true, message: 'Please select a category' }]} className="form-item">
+                <Form.Item label="Kategoria" name="categoryId" rules={[{ required: true, message: 'Please select a category' }]} className="form-item">
                     <Dropdown overlay={menu} trigger={['click']}>
                         <Button className="category-select-button">
                             {selectedCategory}
@@ -201,7 +201,7 @@ const AddAdvertisement = () => {
                 </Form.Item>
                 {categoryFields.map(renderField)}
                 <Form.Item className="">
-                    <Button type="primary" htmlType="submit" loading={loading} className="submit-button">Add Advertisement</Button>
+                    <Button type="primary" htmlType="submit" loading={loading} className="submit-button">Dodaj ogłoszenie</Button>
                 </Form.Item>
             </Form>
         </div>
