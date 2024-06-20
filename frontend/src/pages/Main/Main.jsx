@@ -86,7 +86,6 @@ const Main = () => {
         <Layout>
             <Header />
             <AntContent>
-                <Search />
                 <Filter handleFilter={handleFilter} />
                 <ProductsList categories={categories} products={products} />
                 <div className="pagination-container">

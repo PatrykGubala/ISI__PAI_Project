@@ -18,8 +18,6 @@ const Product = ({ product }) => {
                 <div className="product-details">
                     <h3>{product.name}</h3>
                     <p>Cena: {product.price}</p>
-                    <p>Data: {product.date}</p>
-                    <p>Miejscowość: {product.location}</p>
                 </div>
             </div>
         </Card>

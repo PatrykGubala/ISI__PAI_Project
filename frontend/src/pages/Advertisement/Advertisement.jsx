@@ -60,16 +60,12 @@ const Advertisement = () => {
                     </Carousel>
                 </div>
                 <div className="column advertisement-right">
-                    <div className="date">Dodano {advertisementData.date}</div>
                     <div className="title">{advertisementData.name}</div>
-                    <div className="price">{advertisementData.price} PLN</div>
+                    <div className="price">{advertisementData.price} USD</div>
                     <Button type="primary" onClick={handlePurchase}>
                         Kup
                     </Button>
-                    <Button type="default" onClick={handleShowNumber}>
-                        {showNumber ? phoneNumber : 'Pokaż numer'}
-                    </Button>
-                    <div className="location-title">LOKALIZACJA</div>
+
                     <div className="row location">
                         <div className="pushpin-icon" />
                         <div>{advertisementData.location}</div>

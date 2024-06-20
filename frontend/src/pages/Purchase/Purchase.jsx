@@ -37,7 +37,7 @@ const Purchase = () => {
             try {
                 const productResponse = await axiosInstance.get(`/products/${id}`);
                 setAdvertisementData(productResponse.data);
-                setTotalPrice(productResponse.data.price + serviceCost);
+                setTotalPrice(productResponse.data.price + serviceCost + shippingCost);
 
                 const userResponse = await axiosInstance.get('/user/profile');
                 setUserData({
@@ -75,7 +75,7 @@ const Purchase = () => {
     };
 
     const handleNavigation = () => {
-        navigate('/');
+        navigate('./../../TransferInfo');
     };
 
     const createOrder = async () => {
@@ -116,7 +116,7 @@ const Purchase = () => {
                         <div className="shipping-info">
                             <div className="shipping-price">
                                 <h3>Paczkomat InPost</h3>
-                                <p>15 PLN</p>
+                                <p>15 USD</p>
                             </div>
                         </div>
                     </div>
@@ -127,7 +127,7 @@ const Purchase = () => {
                         <div className="shipping-info">
                             <div className="shipping-price">
                                 <h3>Kurier DPD</h3>
-                                <p>25 PLN</p>
+                                <p>25 USD</p>
                             </div>
                         </div>
                     </div>
@@ -138,7 +138,7 @@ const Purchase = () => {
                         <div className="shipping-info">
                             <div className="shipping-price">
                                 <h3>Kurier DHL</h3>
-                                <p>20 PLN</p>
+                                <p>20 USD</p>
                             </div>
                         </div>
                     </div>
@@ -254,23 +254,19 @@ const Purchase = () => {
                 <div className="purchase-right">
                     <Card className="product-card" hoverable>
                         <div className="product-info">
-                            <div className="product-image">
-                                <img src={advertisementData.image} alt={advertisementData.name} />
-                            </div>
+
                             <div className="product-details">
                                 <h3>{advertisementData.name}</h3>
-                                <p>Cena: {advertisementData.price} PLN</p>
-                                <p>Data: {advertisementData.date}</p>
-                                <p>Miejscowość: {advertisementData.location}</p>
+                                <p>Cena: {advertisementData.price} USD</p>
                             </div>
                         </div>
                     </Card>
-                    <div className="part-price">Produkt: {advertisementData.price} PLN</div>
+                    <div className="part-price">Produkt: {advertisementData.price} USD</div>
                     {selectedShipping && (
-                        <div className="part-price">Dostawa: {shippingCost} PLN</div>
+                        <div className="part-price">Dostawa: {shippingCost} USD</div>
                     )}
-                    <div className="part-price">Opłata serwisowa: {serviceCost} PLN</div>
-                    <div className="total-price">Całkowita kwota: {totalPrice} PLN</div>
+                    <div className="part-price">Opłata serwisowa: {serviceCost} USD</div>
+                    <div className="total-price">Całkowita kwota: {totalPrice} USD</div>
                     <PayPalCheckoutButton
                         amount={totalPrice}
                         clientID={'ASRGeFLIV4kKWUSHrn5bA4Ozf7hnp9zVzi7TGqxv5Jacwjjv8ltlNBYMeR43MaGbzoEoeihAEPr5R5j0'}

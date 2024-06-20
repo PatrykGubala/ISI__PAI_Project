@@ -1,14 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './Cancel.css';
+import {Layout} from "antd";
 
 const Cancel = () => {
-    return (
-        <div>
-            <h2>Payment Cancelled</h2>
-            <p>Your payment has been cancelled.</p>
-            <Link to="/">Back to Home</Link>
-        </div>
-    );
-};
+
+        return (
+            <Layout className="cancel-page">
+
+                <div>
+                    <h2>Płatność udana!</h2>
+                    <p>Dziękujemy za twój zakup.</p>
+                    <Link to="/">Powrót do strony głównej</Link>
+                </div>
+            </Layout>
+        );
+    };
+
 
 export default Cancel;

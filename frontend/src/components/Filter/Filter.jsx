@@ -161,7 +161,7 @@ const Filter = ({ handleFilter }) => {
 
                 <div className="row">
                     <Form.Item className="full-width">
-                        <Button type="primary" htmlType="submit">Filter</Button>
+                        <Button type="primary" htmlType="submit">Filtruj</Button>
                     </Form.Item>
                 </div>
             </Form>

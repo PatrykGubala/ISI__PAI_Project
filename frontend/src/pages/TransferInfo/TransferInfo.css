@@ -1,4 +1,4 @@
-.success-page body {
+.transfer-page body {
     margin: 0;
     padding: 0;
     display: flex;
@@ -8,23 +8,23 @@
     font-family: Arial, sans-serif;
 }
 
-.success-page h2 {
+.transfer-page h2 {
     font-size: 48px;
     text-align: center;
     margin-bottom: 20px;
 }
 
-.success-page p {
+.transfer-page p {
     font-size: 24px;
     text-align: center;
     margin-bottom: 20px;
 }
 
-.success-page div {
+.transfer-page div {
     text-align: center;
 }
 
-.success-page a {
+.transfer-page a {
     font-size: 20px;
     text-align: center;
     display: inline-block;
@@ -33,6 +33,6 @@
     color: #1890ff;
 }
 
-.success-page a:hover {
+.transfer-page a:hover {
     color: #40a9ff;
 }

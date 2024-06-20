@@ -44,6 +44,8 @@
 
 .advertisement-right {
     flex: 1;
+    justify-content: center;
+    align-items: center;
     background-color: #ffffff;
     padding: 2rem;
     border-radius: 5px;
