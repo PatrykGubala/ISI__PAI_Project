@@ -31,6 +31,12 @@ const AddAdvertisement = () => {
             message.error('Failed to fetch categories');
         }
     };
+    const validatePrice = async (_, value) => {
+        if (value && value <= 0) {
+            return Promise.reject('Price must be a non-negative number');
+        }
+        return Promise.resolve();
+    };
 
     const fetchCategoryFields = async (categoryId) => {
         try {
@@ -186,7 +192,7 @@ const AddAdvertisement = () => {
                 <Form.Item label="Opis" name="description" rules={[{ required: true, message: 'Please enter a description' }]} className="form-item">
                     <Input.TextArea className="input-field" />
                 </Form.Item>
-                <Form.Item label="Cena" name="price" rules={[{ required: true, message: 'Please enter a price' }]} className="form-item">
+                <Form.Item label="Cena" name="price" rules={[{ required: true, message: 'Please enter a price' },{ validator: validatePrice }]} className="form-item">
                     <Input type="number" className="input-field" />
                 </Form.Item>
                 <Form.Item label="Zdjęcia" name="images" className="form-item">

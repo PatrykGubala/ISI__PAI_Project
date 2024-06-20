@@ -38,8 +38,10 @@ const Header = () => {
         { key: '', label: 'Dom', icon: <HomeOutlined /> },
         ...(isUser() ? [{ key: 'AddAdvertisement', label: 'Dodaj ogłoszenie', icon: <PlusOutlined /> }] : []),
         ...(isAdmin() ? [{ key: 'ManageCategory', label: 'Zarządzanie kategoriami', icon: <PlusOutlined />}] : []),
+        ...(isAdmin() ? [{ key: 'RoleManage', label: 'Zarządzanie rolami', icon: <PlusOutlined />}] : []),
         ...(isUser() ? [{ key: 'Contact', label: 'Kontakt', icon: <PhoneOutlined /> }] : []),
         ...(isUser() ? [{ key: 'Profil', label: 'Twoje konto', icon: <UserOutlined /> }] : []),
+        ...(isAdmin() ? [{ key: 'Admin', label: 'Admin', icon: <LogoutOutlined />, onClick: handleAdmin }] : []),
         ...(isAdmin() ? [{ key: 'AdminInbox', label: 'Wiadomości', icon: <LogoutOutlined /> }] : []),
         ...(isAdmin() ? [{ key: 'AdminPay', label: 'Payments', icon: <LogoutOutlined /> }] : []),
         { key: 'Logout', label: 'Wyloguj', icon: <LogoutOutlined />, onClick: handleLogout }

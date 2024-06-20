@@ -15,5 +15,5 @@ public interface UserService {
     Optional<User> findByEmail(String email);
     List<User> getAllUsers();
     List<UserDTO> getAllUserDTOs();
-
+    void updateUserRole(UUID id, Role newRole);
 }

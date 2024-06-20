@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -91,6 +92,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasAuthority('user:add_product')")
     @PostMapping("/addProduct")
     public ResponseEntity<?> addProduct(@RequestBody ProductDTO productDTO, @AuthenticationPrincipal User user) {
         if (user == null) {
@@ -112,7 +114,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save product: " + e.getMessage());
         }
     }
-
+    @PreAuthorize("hasAuthority('user:add_product')")
     @PostMapping("/addProductWithImage")
     @Transactional
     public ResponseEntity<?> addProductWithImages(
@@ -190,6 +192,7 @@ public class UserController {
         Message savedMessage = messageService.saveMessage(message);
         return ResponseEntity.status(201).body(savedMessage);
     }
+    @PreAuthorize("hasAuthority('user:update_product')")
     @PutMapping("/products/{productId}")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable UUID productId, @RequestBody ProductDTO productDTO, @RequestParam("images") MultipartFile[] images, @AuthenticationPrincipal User user) {
         ProductDTO existingProduct = productService.getProductById(productId);
@@ -213,7 +216,7 @@ public class UserController {
         ProductDTO updatedProduct = productService.updateProduct(productDTO);
         return ResponseEntity.ok(updatedProduct);
     }
-
+    @PreAuthorize("hasAuthority('user:delete_product')")
     @DeleteMapping("/products/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable("id") UUID id, @AuthenticationPrincipal User user) {
         ProductDTO productDTO = productService.getProductById(id);
@@ -236,7 +239,8 @@ public class UserController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "category", required = false) UUID categoryId,
-            @RequestParam(value = "priceRange", required = false) double[] priceRange,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
             @RequestParam MultiValueMap<String, String> attributes) {
 
         if (user == null) {
@@ -256,6 +260,12 @@ public class UserController {
         if (categoryId != null) {
             Set<UUID> allRelevantCategoryIds = categoryService.findAllCategoryIdsIncludingSubcategories(categoryId);
             spec = spec.and(new ProductSpecification(new SearchCriteria("category.id", allRelevantCategoryIds, SearchOperation.IN)));
+        }
+        if (minPrice != null) {
+            spec = spec.and(new ProductSpecification(new SearchCriteria("price", minPrice, SearchOperation.GREATER_THAN)));
+        }
+        if (maxPrice != null) {
+            spec = spec.and(new ProductSpecification(new SearchCriteria("price", maxPrice, SearchOperation.LESS_THAN)));
         }
 
         if (categoryId != null) {

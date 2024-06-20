@@ -19,6 +19,7 @@ import Confirmation from "./pages/Confirmation/Confirmation.jsx";
 import Error from "./pages/Error/Error.jsx"
 import AdminPay from "./pages/AdminPay/AdminPay.jsx"
 import Cancel from "./pages/Cancel/Cancel.jsx";
+import RoleManage from "./pages/RoleManager/RoleManage.jsx"
 import TransferInfo from "./pages/TransferInfo/TransferInfo.jsx";
 const App = () => {
     return (
@@ -33,6 +34,7 @@ const App = () => {
                     <Route element={<PrivateRoute />}>
                         <Route exact path="/AddAdvertisement" element={<AddAdvertisement />} />
                         <Route exact path="/ManageCategory" element={<ManageCategory />} />
+                        <Route exact path="/RoleManage" element={<RoleManage />} />
                         <Route exact path="/Profil" element={<Profil />} />
                         <Route exact path="/purchase/:id" element={<Purchase />} />
                         <Route exact path="/Contact" element={<Contact />} />

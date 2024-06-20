@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import static com.example.backend.user.Role.ADMIN;
 import static com.example.backend.user.Role.USER;
+import static com.example.backend.user.Role.USER2;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -60,7 +61,23 @@ public class BackendApplication {
 				userRepository.findByUsername("user").ifPresent(
 						existingUser -> System.out.println("User already exists."));
 			}
-
+			if (userRepository.findByUsername("user2").isEmpty()) {
+				var user = RegisterRequest.builder()
+						.username("andre")
+						.firstname("andre")
+						.lastname("andreovic")
+						.email("andre@mail.com")
+						.password("password123")
+						.phoneNumber("123456987")
+						.profileNecessaryFieldsComplete(true)
+						.role(USER2)
+						.build();
+				AuthResponse userResponse = authService.register(user, null);
+				System.out.println("User2 added. User2 token: " + userResponse.getAccessToken());
+			} else {
+				userRepository.findByUsername("user").ifPresent(
+						existingUser -> System.out.println("User already exists."));
+			}
 			if (userRepository.findByUsername("admin").isEmpty()) {
 				var admin = RegisterRequest.builder()
 						.username("admin")

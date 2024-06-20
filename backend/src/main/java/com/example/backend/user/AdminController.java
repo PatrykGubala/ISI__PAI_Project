@@ -66,6 +66,15 @@ public class AdminController {
         User updatedUser = userService.saveUser(user);
         return ResponseEntity.ok(updatedUser);
     }
+    @PutMapping("/users/{id}/role")
+    public ResponseEntity<String> updateRole(@PathVariable("id") UUID id, @RequestBody UpdateRoleRequest updateRoleRequest) {
+        try {
+            userService.updateUserRole(id, updateRoleRequest.getRole());
+            return ResponseEntity.ok("User role updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update user role");
+        }
+    }
 
     @PostMapping("/products")
     public ResponseEntity<ProductDTO> addProduct(@RequestBody ProductDTO productDTO) {

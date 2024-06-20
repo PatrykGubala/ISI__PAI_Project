@@ -11,10 +11,6 @@ public enum Permission {
     ADMIN_UPDATE("admin:update"),
     ADMIN_CREATE("admin:create"),
     ADMIN_DELETE("admin:delete"),
-    USER_READ("user:read"),
-    USER_UPDATE("user:update"),
-    USER_CREATE("user:create"),
-    USER_DELETE("user:delete"),
 
     ADD_CATEGORY("admin:add_category"),
     UPDATE_CATEGORY("admin:update_category"),

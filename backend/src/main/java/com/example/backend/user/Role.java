@@ -15,31 +15,21 @@ import static com.example.backend.user.Permission.*;
 public enum Role {
     ADMIN(
             Set.of(
-                    ADMIN_READ,
-                    ADMIN_UPDATE,
-                    ADMIN_DELETE,
-                    ADMIN_CREATE,
-                    USER_READ,
-                    USER_UPDATE,
-                    USER_DELETE,
-                    USER_CREATE,
-                    ADD_CATEGORY,
-                    UPDATE_CATEGORY,
-                    DELETE_CATEGORY,
-                    ADD_PRODUCT,
-                    UPDATE_PRODUCT,
-                    DELETE_PRODUCT
+
             )
     ),
     USER(
             Set.of(
-                    USER_READ,
-                    USER_UPDATE,
-                    USER_DELETE,
-                    USER_CREATE,
-                    ADD_PRODUCT,
-                    UPDATE_PRODUCT,
-                    DELETE_PRODUCT
+                    Permission.ADD_PRODUCT,
+                    Permission.UPDATE_PRODUCT,
+                    Permission.DELETE_PRODUCT
+            )
+    ),
+    USER2(
+            Set.of(
+                    Permission.ADD_PRODUCT,
+                    Permission.UPDATE_PRODUCT
+                    //  Permission.DELETE_PRODUCT
             )
     );
 

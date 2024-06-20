@@ -84,4 +84,11 @@ public class UserServiceImpl implements UserService {
         dto.setRole(user.getRole());
         return dto;
     }
+    @Override
+    public void updateUserRole(UUID id, Role newRole) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setRole(newRole);
+        userRepository.save(user);
+    }
 }
