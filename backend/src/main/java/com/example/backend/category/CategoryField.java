@@ -25,11 +25,11 @@ public class CategoryField {
 
     private String filterEnumValuesJson;
 
-    private Integer defaultRangeMin;
-    private Integer defaultRangeMax;
+    private Double defaultRangeMin;
+    private Double defaultRangeMax;
 
-    private Integer filterRangeMin;
-    private Integer filterRangeMax;
+    private Double filterRangeMin;
+    private Double filterRangeMax;
 
     public CategoryField(String name, FieldType fieldType, boolean filterable, List<String> defaultEnumValues, List<String> filterEnumValues) {
         this.name = name;
@@ -39,7 +39,7 @@ public class CategoryField {
         this.filterEnumValuesJson = filterEnumValues != null ? String.join(",", filterEnumValues) : null;
     }
 
-    public CategoryField(String name, FieldType fieldType, boolean filterable, Integer defaultRangeMin, Integer defaultRangeMax, Integer filterRangeMin, Integer filterRangeMax) {
+    public CategoryField(String name, FieldType fieldType, boolean filterable, Double defaultRangeMin, Double defaultRangeMax, Double filterRangeMin, Double filterRangeMax) {
         this.name = name;
         this.fieldType = fieldType;
         this.filterable = filterable;

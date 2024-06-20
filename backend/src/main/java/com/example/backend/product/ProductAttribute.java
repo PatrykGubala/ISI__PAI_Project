@@ -31,9 +31,6 @@ public class ProductAttribute {
     private String stringValue;
 
     @Column
-    private Integer integerValue;
-
-    @Column
     private Double doubleValue;
 
     @Transient
@@ -45,11 +42,6 @@ public class ProductAttribute {
         this.product = product;
     }
 
-    public ProductAttribute(String name, Integer integerValue, Product product) {
-        this.name = name;
-        this.integerValue = integerValue;
-        this.product = product;
-    }
 
     public ProductAttribute(String name, Double doubleValue, Product product) {
         this.name = name;
@@ -60,8 +52,6 @@ public class ProductAttribute {
         this.name = dto.getName();
         if (dto.getValue() instanceof String) {
             this.stringValue = (String) dto.getValue();
-        } else if (dto.getValue() instanceof Integer) {
-            this.integerValue = (Integer) dto.getValue();
         } else if (dto.getValue() instanceof Double) {
             this.doubleValue = (Double) dto.getValue();
         } else {
@@ -73,8 +63,6 @@ public class ProductAttribute {
         this.value = value;
         if (value instanceof String) {
             this.stringValue = (String) value;
-        } else if (value instanceof Integer) {
-            this.integerValue = (Integer) value;
         } else if (value instanceof Double) {
             this.doubleValue = (Double) value;
         } else {
@@ -85,8 +73,6 @@ public class ProductAttribute {
     public Object getValue() {
         if (this.stringValue != null) {
             return this.stringValue;
-        } else if (this.integerValue != null) {
-            return this.integerValue;
         } else if (this.doubleValue != null) {
             return this.doubleValue;
         } else {

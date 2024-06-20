@@ -38,7 +38,7 @@ public class ProductSpecification implements Specification<Product> {
                             throw new IllegalArgumentException("Unsupported value type: " + criteria.getValue().getClass());
                         }
                         yield builder.and(namePredicate, valuePredicate);
-                    }else if (keys.length == 2 && "user".equals(keys[0]) && "userId".equals(keys[1])) {
+                    } else if (keys.length == 2 && "user".equals(keys[0]) && "userId".equals(keys[1])) {
                         Join<Product, User> userJoin = root.join("user");
                         yield builder.equal(userJoin.get("userId"), criteria.getValue());
                     }
@@ -53,8 +53,13 @@ public class ProductSpecification implements Specification<Product> {
                         CriteriaBuilder.In<UUID> inClause = builder.in(categoryJoin.get("id"));
                         ((Set<UUID>) criteria.getValue()).forEach(inClause::value);
                         yield builder.and(inClause);
-                    }
-                    else{
+                    } else if (keys.length == 2 && "attributes".equals(keys[0])) {
+                        Join<Product, ProductAttribute> attributeJoin = root.join("attributes");
+                        Predicate namePredicate = builder.equal(attributeJoin.get("name"), keys[1]);
+                        CriteriaBuilder.In<Object> inClause = builder.in(attributeJoin.get("stringValue"));
+                        ((Set<?>) criteria.getValue()).forEach(inClause::value);
+                        yield builder.and(namePredicate, inClause);
+                    } else {
                         throw new IllegalArgumentException("Unsupported key structure for IN operation: " + criteria.getKey());
                     }
                 } else {
@@ -65,6 +70,28 @@ public class ProductSpecification implements Specification<Product> {
             }
             case NEGATION -> builder.notEqual(root.get(criteria.getKey()), criteria.getValue());
             case GREATER_THAN -> builder.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());
+            case GREATER_THAN_OR_EQUAL -> {
+                if (criteria.getKey().startsWith("attributes.")) {
+                    String attributeName = criteria.getKey().substring(11);
+                    Join<Product, ProductAttribute> attributeJoin = root.join("attributes");
+                    Predicate namePredicate = builder.equal(attributeJoin.get("name"), attributeName);
+                    Predicate valuePredicate = builder.greaterThanOrEqualTo(attributeJoin.get("doubleValue"), (Double) criteria.getValue());
+                    yield builder.and(namePredicate, valuePredicate);
+                } else {
+                    yield builder.greaterThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue().toString());
+                }
+            }
+            case LESS_THAN_OR_EQUAL -> {
+                if (criteria.getKey().startsWith("attributes.")) {
+                    String attributeName = criteria.getKey().substring(11);
+                    Join<Product, ProductAttribute> attributeJoin = root.join("attributes");
+                    Predicate namePredicate = builder.equal(attributeJoin.get("name"), attributeName);
+                    Predicate valuePredicate = builder.lessThanOrEqualTo(attributeJoin.get("doubleValue"), (Double) criteria.getValue());
+                    yield builder.and(namePredicate, valuePredicate);
+                } else {
+                    yield builder.lessThanOrEqualTo(root.get(criteria.getKey()), criteria.getValue().toString());
+                }
+            }
             case LESS_THAN -> builder.lessThan(root.get(criteria.getKey()), criteria.getValue().toString());
             case LIKE -> builder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
         };

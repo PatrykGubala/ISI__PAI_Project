@@ -13,6 +13,7 @@ const Filter = ({ handleFilter }) => {
     const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [categoryFields, setCategoryFields] = useState([]);
     const [breadcrumb, setBreadcrumb] = useState([]);
+    const [fieldTypes, setFieldTypes] = useState({});
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -69,6 +70,11 @@ const Filter = ({ handleFilter }) => {
             try {
                 const response = await axiosInstance.get(`/categories/${key}/fields`);
                 setCategoryFields(response.data);
+                const types = response.data.reduce((acc, field) => {
+                    acc[field.name] = field.fieldType;
+                    return acc;
+                }, {});
+                setFieldTypes(types);
             } catch (error) {
                 console.error('Error fetching category fields:', error);
                 message.error('Failed to fetch category fields');
@@ -92,13 +98,14 @@ const Filter = ({ handleFilter }) => {
                             min={field.defaultRangeMin}
                             max={field.defaultRangeMax}
                             defaultValue={[field.defaultRangeMin, field.defaultRangeMax]}
+                            onChange={(value) => form.setFieldsValue({ [field.name]: value })}
                         />
                     </Form.Item>
                 );
             case 'ENUM':
                 return (
                     <Form.Item key={field.name} label={field.name} name={field.name} className="full-width">
-                        <Select mode="multiple" placeholder={`Wybierz ${field.name}`}>
+                        <Select mode="multiple" placeholder={`Wybierz  ${field.name}`}>
                             {field.defaultEnumValuesJson && field.defaultEnumValuesJson.split(',').map(value => (
                                 <Option key={value} value={value}>{value}</Option>
                             ))}
@@ -111,7 +118,18 @@ const Filter = ({ handleFilter }) => {
     };
 
     const onFinish = (values) => {
-        handleFilter({ ...values, categoryId: selectedCategoryId });
+        const filters = {};
+        Object.keys(values).forEach(key => {
+            if (fieldTypes[key] === 'RANGE' && Array.isArray(values[key])) {
+                filters[`${key}Min`] = values[key][0];
+                filters[`${key}Max`] = values[key][1];
+            } else if (fieldTypes[key] === 'ENUM' && values[key] && values[key].length > 0) {
+                filters[key] = values[key];
+            } else if (fieldTypes[key] !== 'ENUM') {
+                filters[key] = values[key];
+            }
+        });
+        handleFilter({ ...filters, category: selectedCategoryId });
     };
 
     return (
@@ -122,7 +140,7 @@ const Filter = ({ handleFilter }) => {
                 onFinish={onFinish}
             >
                 <div className="row">
-                    <Form.Item label="Kategoria" name="categoryId" className="full-width">
+                    <Form.Item label="Kategoria" name="category" className="full-width">
                         <Dropdown overlay={menu} trigger={['click']} className="custom-dropdown">
                             <Button className="custom-dropdown-btn">
                                 {selectedCategory}
@@ -143,7 +161,7 @@ const Filter = ({ handleFilter }) => {
 
                 <div className="row">
                     <Form.Item className="full-width">
-                        <Button type="primary" htmlType="submit">Filtruj</Button>
+                        <Button type="primary" htmlType="submit">Filter</Button>
                     </Form.Item>
                 </div>
             </Form>
