@@ -148,9 +148,9 @@ public class BackendApplication {
 
 
 	private List<Product> createProducts(User user, Category cars, Category motorcycles) {
-		Product toyotaCorolla = new Product(UUID.randomUUID(), "Toyota Corolla", "A reliable car", 15000.00, cars, null, user, null);
-		Product hondaCivic = new Product(UUID.randomUUID(), "Honda Civic", "A sporty car", 18000.00, cars, null, user, null);
-		Product kawasakiNinja400 = new Product(UUID.randomUUID(), "Kawasaki Ninja 400", "A powerful motorcycle", 7000.00, motorcycles, null, user, null);
+		Product toyotaCorolla = new Product(UUID.randomUUID(), "Toyota Corolla", "A reliable car", 15000.00, cars, null,true, user, null);
+		Product hondaCivic = new Product(UUID.randomUUID(), "Honda Civic", "A sporty car", 18000.00, cars, null,true, user, null);
+		Product kawasakiNinja400 = new Product(UUID.randomUUID(), "Kawasaki Ninja 400", "A powerful motorcycle", 7000.00, motorcycles, null,true, user, null);
 
 		setProductAttributes(toyotaCorolla, List.of(
 				new ProductAttribute("Brand", "Toyota", toyotaCorolla),

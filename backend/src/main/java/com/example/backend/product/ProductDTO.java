@@ -23,6 +23,7 @@ public class ProductDTO {
     private UserDTO user;
     private CategoryDTO category;
     private UUID categoryId;
+    private boolean isAvailable;
     private List<ProductImageDTO> images = new ArrayList<>();
     private List<ProductAttributeDTO> productAttributes = new ArrayList<>();
 
@@ -34,6 +35,7 @@ public class ProductDTO {
         productDTO.setPrice(product.getPrice());
         productDTO.setCategory(CategoryDTO.convertToDTO(product.getCategory()));
         productDTO.setUser(UserDTO.convertToDTO(product.getUser()));
+        productDTO.setAvailable(product.isAvailable());
 
         List<ProductImageDTO> productImageDTOs = product.getImages().stream()
                 .map(image -> new ProductImageDTO(image.getId(), image.getImageUrl()))
@@ -56,6 +58,7 @@ public class ProductDTO {
         product.setPrice(productDTO.getPrice());
         product.setCategory(CategoryDTO.convertToEntity(productDTO.getCategory(), categoryRepository));
         product.setUser(UserDTO.convertToEntity(productDTO.getUser()));
+        product.setAvailable(productDTO.isAvailable());
 
         if (productDTO.getImages() != null) {
             List<ProductImage> productImages = productDTO.getImages().stream()
