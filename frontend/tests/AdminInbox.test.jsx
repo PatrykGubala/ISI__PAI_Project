@@ -38,10 +38,9 @@ describe('AdminInbox Component', () => {
         axiosGetStub.restore();
         axiosDeleteStub.restore();
     });
-//sprawdza, czy komponent AdminInbox poprawnie usuwa wiadomość po kliknięciu przycisku "Usuń".
     it('deletes a message when "Usuń" button is clicked', async () => {
         axiosGetStub.resolves({ data: mockMessages });
-        axiosDeleteStub.resolves(); // Możemy zwrócić pustą odpowiedź, bo nie zwraca ona żadnych danych
+        axiosDeleteStub.resolves();
 
         render(
             <MemoryRouter>
@@ -51,9 +50,9 @@ describe('AdminInbox Component', () => {
             </MemoryRouter>
         );
 
-        await screen.findByText('Skrzynka odbiorcza'); // Oczekiwanie na załadowanie komponentu
+        await screen.findByText('Skrzynka odbiorcza');
 
-        const deleteButton = screen.getAllByRole('button', { name: /Usuń/i })[0]; // Wybierz pierwszy przycisk "Usuń"
+        const deleteButton = screen.getAllByRole('button', { name: /Usuń/i })[0];
         fireEvent.click(deleteButton);
 
         await waitFor(() => {
@@ -61,7 +60,6 @@ describe('AdminInbox Component', () => {
         });
     });
 
-//sprawdza, czy po niepowodzeniu usunięcia wiadomości z komponentu AdminInbox, użytkownikowi wyświetlany jest odpowiedni komunikat błędu.
     it('displays error message when message deletion fails', async () => {
         axiosGetStub.resolves({ data: mockMessages });
         axiosDeleteStub.rejects(new Error('Failed to delete message'));
@@ -72,9 +70,9 @@ describe('AdminInbox Component', () => {
                 </AuthContext.Provider>
             </MemoryRouter>
         );
-        await screen.findByText('Skrzynka odbiorcza'); // Oczekiwanie na załadowanie komponentu
+        await screen.findByText('Skrzynka odbiorcza');
 
-        const deleteButton = screen.getAllByRole('button', { name: /Usuń/i })[0]; // Wybierz pierwszy przycisk "Usuń"
+        const deleteButton = screen.getAllByRole('button', { name: /Usuń/i })[0];
         fireEvent.click(deleteButton);
 
         await screen.findByText('Nie udało się usunąć wiadomości');
@@ -91,12 +89,10 @@ describe('AdminInbox Component', () => {
             </MemoryRouter>
         );
 
-        await screen.findByText('Skrzynka odbiorcza'); // Oczekiwanie na załadowanie komponentu
+        await screen.findByText('Skrzynka odbiorcza');
 
-        // Znajdź przycisk rozwijający pierwszy wiersz (można użyć role lub tekstu w zależności od implementacji)
         const expandButton = screen.getAllByRole('button', { name: /expand/i })[0];
         fireEvent.click(expandButton);
-        // Oczekiwanie na załadowanie i sprawdzenie, czy szczegóły wiadomości zostały rozwinięte
         await waitFor(() => {
             expect(screen.getByText(/Imię:/)).toBeInTheDocument();
             expect(screen.getByText(/John/)).toBeInTheDocument();

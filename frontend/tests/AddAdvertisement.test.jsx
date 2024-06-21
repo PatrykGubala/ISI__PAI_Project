@@ -75,7 +75,7 @@ describe('AddAdvertisement', () => {
             fireEvent.change(descriptionInput, { target: { value: 'Test Description' } });
 
             const priceInput = screen.getByLabelText(/Cena/i);
-            fireEvent.change(priceInput, { target: { value: '-50' } }); // Attempting to set a negative price
+            fireEvent.change(priceInput, { target: { value: '-50' } });
 
             const categoryDropdown = screen.getByRole('button', { name: /Select a category/i });
             fireEvent.click(categoryDropdown);
@@ -84,7 +84,6 @@ describe('AddAdvertisement', () => {
             fireEvent.click(submitButton);
         });
 
-        // Assert that the form does not submit and displays an error message
         await waitFor(() => {
             expect(screen.getByText(/Price must be a non-negative number/i)).toBeInTheDocument();
         });

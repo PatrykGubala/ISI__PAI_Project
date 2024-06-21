@@ -109,8 +109,8 @@ const Profil = () => {
                         <div className="profile-image">
                             <Image
                                 width={300}
-                                height={175}
-                                src="https://pfhb.pl/fileadmin/aktualnosci/2021/ciekawostki/sluch.JPG"
+                                height={300}
+                                src="https://sapblast.pl/wp-content/uploads/2021/02/img_avatar.png"
                                 alt="Profile"
                             />
                         </div>

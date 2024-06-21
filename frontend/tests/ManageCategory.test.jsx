@@ -7,7 +7,6 @@ import axiosInstance from '../src/pages/Interceptors/axiosInstance';
 import sinon from 'sinon';
 import { vi, describe, beforeAll, afterAll, it, expect } from 'vitest';
 
-// Mock axiosInstance
 vi.mock('../src/pages/Interceptors/axiosInstance', () => ({
     default: {
         get: vi.fn(),

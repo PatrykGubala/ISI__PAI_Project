@@ -32,7 +32,9 @@ public class ProductAttributeDTO {
             productAttribute.setStringValue((String) productAttributeDTO.getValue());
         } else if (productAttributeDTO.getValue() instanceof Double) {
             productAttribute.setDoubleValue((Double) productAttributeDTO.getValue());
-        } else {
+        }  else if (productAttributeDTO.getValue() instanceof Number) {
+            productAttribute.setDoubleValue(((Number) productAttributeDTO.getValue()).doubleValue());
+        }else {
             throw new IllegalArgumentException("Unsupported value type: " + productAttributeDTO.getValue().getClass());
         }
 

@@ -1,4 +1,3 @@
-// Importy potrzebnych bibliotek i komponentów
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Advertisement from '../src/pages/Advertisement/Advertisement.jsx';
@@ -19,7 +18,6 @@ describe('Advertisement Component', () => {
         location: 'Example Location'
     };
 
-    // Mockowanie axiosInstance za pomocą sinon
     let axiosGetStub;
 
     beforeEach(() => {
@@ -39,7 +37,6 @@ describe('Advertisement Component', () => {
             </MemoryRouter>
         );
     };
-// Test sprawdza, czy po poprawnym załadowaniu danych ogłoszenia, komponent wyświetla jego nazwę, cenę, opis.
     it('displays advertisement details after data is loaded', async () => {
         axiosGetStub.resolves({ data: mockAdvertisementData });
         setup();

@@ -23,7 +23,7 @@ public class ProductDTO {
     private UserDTO user;
     private CategoryDTO category;
     private UUID categoryId;
-    private boolean isAvailable;
+    private boolean isAvailable = true;
     private List<ProductImageDTO> images = new ArrayList<>();
     private List<ProductAttributeDTO> productAttributes = new ArrayList<>();
 

@@ -120,18 +120,25 @@ const AddAdvertisement = () => {
         if (fileList.length > 0) {
             fileList.forEach(file => data.append('images', file));
         }
-
+        const productAttributes = categoryFields.map(field => {
+            let value = formData[field.name];
+            if (field.fieldType === 'RANGE') {
+                value = parseFloat(value); 
+            }
+            return {
+                name: field.name,
+                value: value
+            };
+        });
 
         const productDetails = {
             name: formData.name,
             description: formData.description,
             price: formData.price,
             categoryId: selectedCategoryId,
-            productAttributes: categoryFields.map(field => ({
-                name: field.name,
-                value: formData[field.name]
-            }))
+            productAttributes: productAttributes
         };
+
         data.append('name', formData.name);
         data.append('description', formData.description);
         data.append('price', formData.price);
