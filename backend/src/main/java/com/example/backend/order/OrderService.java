@@ -6,6 +6,7 @@ import com.example.backend.user.User;
 import com.example.backend.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -24,12 +25,16 @@ public class OrderService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Transactional
     public Order createOrder(OrderRequest orderRequest) {
         User user = userRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Product product = productRepository.findById(orderRequest.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+            Product product = productRepository.findById(orderRequest.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+            System.out.println("Creating order for User ID: " + user.getUserId() + " and Product ID: " + product.getId());
+
 
         Order order = new Order();
         order.setOrderDate(new Date());
@@ -39,6 +44,11 @@ public class OrderService {
         order.setDeliveryAddress(orderRequest.getDeliveryAddress());
         order.setPrice(orderRequest.getPrice());
         order.setStatus(orderRequest.getStatus());
+
+        product.setAvailable(false);
+        productRepository.save(product);
+
+        productRepository.flush();
 
         return orderRepository.save(order);
     }

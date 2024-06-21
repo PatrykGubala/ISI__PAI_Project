@@ -43,8 +43,13 @@ public class ProductSpecification implements Specification<Product> {
                         yield builder.equal(userJoin.get("userId"), criteria.getValue());
                     }
                 }
-                yield builder.equal(root.get(criteria.getKey()), criteria.getValue());
-            }
+                Predicate basePredicate = builder.equal(root.get(criteria.getKey()), criteria.getValue());
+                if ("isAvailable".equals(criteria.getKey())) {
+                    Predicate isAvailablePredicate = builder.equal(root.get("isAvailable"), true);
+                    yield builder.and(basePredicate, isAvailablePredicate);
+                } else {
+                    yield basePredicate;
+                }            }
             case IN -> {
                 if (criteria.getKey().contains(".")) {
                     String[] keys = criteria.getKey().split("\\.");

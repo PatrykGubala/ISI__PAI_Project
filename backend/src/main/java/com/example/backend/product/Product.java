@@ -2,7 +2,6 @@ package com.example.backend.product;
 
 import com.example.backend.category.Category;
 import com.example.backend.user.User;
-import com.example.backend.user.UserDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -43,6 +42,9 @@ public class Product {
     @JsonManagedReference
     private List<ProductImage> images;
 
+    @Column(nullable = false)
+    private boolean isAvailable = true;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_id")
@@ -60,6 +62,7 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
+                ", isAvailable=" + isAvailable +
                 ", category=" + category +
                 '}';
     }

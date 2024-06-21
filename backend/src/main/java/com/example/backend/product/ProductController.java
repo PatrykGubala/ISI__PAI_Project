@@ -40,7 +40,7 @@ public class ProductController {
             @RequestParam MultiValueMap<String, String> attributes) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Specification<Product> spec = Specification.where(null);
+        Specification<Product> spec = Specification.where(new ProductSpecification(new SearchCriteria("isAvailable", true, SearchOperation.EQUALITY)));
 
         if (name != null && !name.isEmpty()) {
             spec = spec.and(new ProductSpecification(new SearchCriteria("name", name, SearchOperation.LIKE)));
